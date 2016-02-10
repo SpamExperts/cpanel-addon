@@ -1,0 +1,40 @@
+<?php echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t)); ?>
+<?php
+    // if API access is disable we should prevent using any actions
+    // @see https://trac.spamexperts.com/ticket/22536
+    if (!$this->hasAPIAccess) {
+        return;
+    }
+?>
+<h3><?php echo $this->t->_('Branding'); ?></h3>
+<?php
+if( $this->hasWhitelabel == False )
+{
+	echo '<div class="warning">' . $this->t->_('You do not have a license for whitelabel or have not configured the addon.') . '</div>';
+	return;
+}
+?>
+<p><?php echo $this->t->_('On this page you can change how the addon looks for the customers.'); ?></p>
+
+<h4><?php echo $this->t->_('Current branding'); ?></h4>
+<p><?php echo $this->t->_('Your branding is currently set to:'); ?></p>
+<ul class="icons">
+	<li style="height:auto;"><img id="some_icon" src="data:image/png;base64,<?php echo $this->brandicon; ?>" border="0"><br /><?php echo $this->brandname; ?></li>
+</ul>
+<div style="clear: left;"></div>
+<h4><?php echo $this->t->_('Change branding'); ?></h4>
+<p><?php echo $this->t->_('If you want to change the branding shown above, you can do this in the form below.'); ?></p>
+<?php echo $this->form; ?>
+
+<!-- Tooltip code -->
+<script type="text/javascript">
+$(document).ready(
+    function() {
+        $(':input').popover({ offset: 15} );
+        <?php if(file_exists('psf/brandicon.png')) { ?>
+            if ($.browser.msie) {
+                $('#some_icon').attr({src: "psf/brandicon.png?"+<?php echo filemtime('psf/brandicon.png'); ?>});
+            }
+        <?php } ?>
+});
+</script>

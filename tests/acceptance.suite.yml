@@ -1,0 +1,37 @@
+# Codeception Test Suite Configuration
+#
+# Suite for acceptance tests.
+# Perform tests in browser using the WebDriver or PhpBrowser.
+# If you need both WebDriver and PHPBrowser tests - create a separate suite.
+
+class_name: WebGuy
+modules:
+    enabled:
+        - WebDriver
+        - Helper\Acceptance
+        - Asserts
+    config:
+        WebDriver:
+         url: 'http://localhost/'
+         browser: firefox
+         wait: 0
+         restart: true
+#         window_size: 1240x768
+         clear_cookies: true
+
+env:
+    edge:
+        username: 'EDGE_USERNAME'
+        password:  'EDGE_PASSWORD'
+        whm_access_hash: 'EDGE_WHM_ACCESS_HASH'
+        url: 'EDGE_URL'
+    current:
+        username: 'CURRENT_USERNAME'
+        password:  'CURRENT_PASSWORD'
+        whm_access_hash: 'CURRENT_WHM_ACCESS_HASH'
+        url: 'CURRENT_URL'
+    stable:
+        username: 'STABLE_USERNAME'
+        password:  'STABLE_PASSWORD'
+        whm_access_hash: 'STABLE_WHM_ACCESS_HASH'
+        url: 'STABLE_URL'

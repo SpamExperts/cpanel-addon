@@ -1,0 +1,29 @@
+{
+  "name": "SpamExperts/ProSpamFilter",
+  "description": "Bridge between Webhosting panels & The Spam Filter",
+  "minimum-stability": "stable",
+  "license": "Closed Source",
+  "authors": [
+    {
+      "name": "SpamExperts B.V. Frontend Team",
+      "email": "frontend@spamexperts.com"
+    }
+  ],
+  "require-dev": {
+    "codeception/codeception": "@stable",
+    "squizlabs/php_codesniffer": "*",
+    "wimg/php-compatibility": "dev-master",
+    "simplyadmire/composer-plugins" : "@dev"
+  },
+  "require": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Prospamfilter\\": "src/Prospamfilter"
+    }
+  },
+  "scripts": {
+    "post-update-cmd": "rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility",
+    "post-install-cmd": "rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rp vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility"
+  }
+}

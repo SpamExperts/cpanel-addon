@@ -1,0 +1,442 @@
+<?php echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t)); ?>
+<?php
+    // if API access is disable we should prevent using any actions
+    // @see https://trac.spamexperts.com/ticket/22536
+    if (!$this->hasAPIAccess) {
+        return;
+    }
+?>
+    <h3><?php echo $this->t->_('List Domains'); ?></h3>
+    <div id="ajaxoutput" class="alert alert-warning" style="display:none"><button type="button" class="close" aria-label="Close" id="hideOutput"><span aria-hidden="true">&times;</span></button></div>
+<?php
+if( !$this->isConfigured )
+{
+    echo '<div class="warning">' . sprintf($this->t->_('You do not have %s configured %s the addon. Please do this before using this section!'), '<a href="?q=admin/settings">', '</a>') . '</div>';
+    return;
+}
+?>
+<?php
+    if(!empty($this->itemsPerPageLimit)){
+        echo '<div id="itemsPerPageInfo" class="alert alert-info">' . $this->itemsPerPageLimit . '</div>';
+    } else {
+        echo '<div id="itemsPerPageInfo" class="alert alert-info" style="display: none;"></div>';
+    }
+?>
+
+<p><?php switch ($this->accesslevel) {
+    case 'role_admin':
+    case 'role_reseller':
+        echo $this->t->_("This page shows you a list of all domains owned by you and its respective status in the spamfilter.");
+        break;
+    default:
+        echo $this->t->_("This page shows you a list of all domains owned by you.");
+        break;
+} ?></p>
+
+    <script type="text/javascript">
+        /*
+         Add brandname (in case of it was set) to page title
+         */
+        $(document).ready(function() {
+            try{
+                brandname = '<?php if(isset($brandname)) echo $brandname; ?>';
+                parentDocumentTitle = window.top.document.title;
+                if (parentDocumentTitle.indexOf(brandname) == -1) {
+                    window.top.document.title = parentDocumentTitle + ' - ' +  brandname;
+                } 
+            } catch(e) {
+        
+            }
+        });
+    </script>
+
+
+<?php if(isset($this->paginator)) { ?>
+
+    <div style="overflow: hidden; display:inline" class="tableButtons">
+        <div style='display:inline;'><input type='text' placeholder='Type to search for a domain' name="search" id="searchInput" value="<?php echo $this->searchValue;?>"><button type="submit" id="searchSubmit" class='btn btn-primary' style='margin: 0 0 9px 5px'>Search</button><button id="searchReset" class='btn btn-default' style='margin: 0 0 9px 5px'>Reset</button></div>
+
+        <div class="pull-right">
+            <button class="btn btn-default" id="checkAllDomains">Check status for all domains</button>
+            <button class="btn btn-default" id="toggleSelected">Toggle Protection for selected</button>
+        </div>
+    </div>
+
+    <div class="progressbar-holder" style="display: none;">
+        <div class="progressbar-label"></div>
+        <div class="progressbar-percentage-wrapper" style="width: 100%;height: 10px;">
+            <div class="percentage-holder" style="background: #3b62ff;width: 50%;height:10px"></div>
+        </div>
+    </div>
+    <br />
+
+    <table class="table table-bordered table-striped" id="domainoverview">
+        <thead>
+        <tr>
+            <th style="width: 1%;"><input type="checkbox" id="checkall" style="margin:0"></th>
+            <th><a id="sortDomain" href=""><?php echo $this->t->_('Domain name'); ?><?=(('asc' == $this->sortorder) ? '&#9650;' : '&#9660;')?></a></th>
+            <th><?php echo $this->t->_('Type'); ?></th>
+            <th><?php echo $this->t->_('Present in filter'); ?></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        if( count($this->paginator) == 0 )
+        {
+		echo '<tr><td colspan="5">'. $this->t->_('No content to display') . '</td></tr>';
+        }
+
+        $page = '';
+        if (!empty($_GET['q'])) {
+            preg_match('/page\/([0-9]+)/i', $_GET['q'], $matches);
+            if(!empty($matches[1])) {
+                $page = (0 < (int)$matches[1]) ? '/'.$matches[0] : '';
+            }
+        }
+        $idn = new IDNA_Convert;
+        foreach( $this->paginator as $d )
+        {
+            $owner_domain = (!empty($d['owner_domain'])) ? '/owner_domain/' . $d['owner_domain'] : '';
+            $owner_user = (!empty($d['user'])) ? '/owner_user/' . $d['user'] : '';
+            $asAlis = '';
+            if (in_array($d['type'], array('addon', 'parked', 'alias')) && 0 < $this->setting_add_as_alias) {
+                $check_status = 'Check status';
+                $togle_protection = 'Toggle Protection';
+                $loginLink = 'Login';
+                $asAlis = 'class="tTip" title="' . $this->t->_('The addon domains and parked domains are being treated as aliases. Go to configuration if you wish to change this behaviour'). '"';
+                $enableCheckbox = false;
+            } else {
+                $check_status = '<span class="pstatus" id="'.$d['domain'].'" ownerd="'. $owner_domain . '"><a href="javascript:void(0)">Check status</a></span>';
+                $togle_protection = '<a class="toggle" href="' . $this->baseFile . '?q=ajax/action/do/toggleprotection/domain/' . $d['domain'] . '/type/' . $d['type'] . $owner_domain . $owner_user . $page . '">Toggle Protection</a>';
+                $loginLink = '<a href="' . $this->baseFile . '?q=domain/login/domain/' . $d['domain'] . '/type/' . $d['type'] . $owner_domain . $owner_user . '" target="_blank">Login</a>';
+                $enableCheckbox = true;
+            }
+
+            ?>
+            <tr <?php echo $asAlis; ?>>
+                <td><input type="checkbox" <?php if (! $enableCheckbox) echo 'disabled="disabled"' ?> style="margin:0"></td>
+                <td><?php echo $idn->decode($d['domain']); ?></td>
+                <td><?php echo $d['type']; ?></td>
+                <td><?php echo $check_status; ?></td>
+                <td><?php echo $togle_protection; ?> | <?php echo $loginLink; ?></td>
+            </tr>
+        <?php
+        }
+        ?>
+        </tbody>
+    </table>
+<div id="underTablePanel">
+<div  id="itemsPerPageDiv">
+     <label for="items" id="itemsPerPageLabel">Items Per Page:</label>
+     <input id="itemsPerPage" name="items" type="number" min="1" value="<?=$this->items?>">
+     <button class="btn btn-primary" id="changeItems" type="button">Change</button>
+</div>
+
+<div id="pagesInfo"><?=$this->pagesInfo?></div>
+    <?php echo $this->paginationControl($this->paginator,
+        'Sliding',
+        'partials/pagination_control.phtml'); ?>
+</div>
+
+    <script type="text/javascript">
+        var ProgressBar = {
+            holder: $('.progressbar-holder'),
+            percentageHolder: $('.percentage-holder'),
+            label: $('.progressbar-label'),
+            show: function () {
+                ProgressBar.holder.show();
+            },
+            hide: function () {
+                ProgressBar.holder.hide();
+            },
+            setPercentage: function (percentage) {
+                if (percentage < 0 || percentage > 100) {
+                    return;
+                }
+
+                ProgressBar.show();
+                ProgressBar.percentageHolder.css('width', percentage+'%');
+            },
+            setupPercentage: function (value, total) {
+                var percentage = Math.ceil(value / total * 100);
+
+                if (value > total) {
+                    console.warn("Percentage setup: value should not be greater than total.")
+                }
+
+                if (value >= total) {
+                    percentage = 100;
+                }
+
+                ProgressBar.setPercentage(percentage);
+
+                var text = value + ' / ' + total + ' (' + percentage + '%)';
+                ProgressBar.label.html(text);
+            }
+        }
+
+        var DomainsChecker = {
+            isChecking: false,
+            total: 0,
+            checkedDomains: [],
+            checkAll: function () {
+                disableButtons();
+                DomainsChecker.isChecking = true;
+                DomainsChecker.total = $("span.pstatus").length;
+                DomainsChecker.checkedDomains = [];
+
+                // TODO: start the status checking in a more elegant way
+                $("span.pstatus").each(function () {
+                    $(this).click();
+                });
+
+                ProgressBar.setupPercentage(0, DomainsChecker.total);
+            },
+            setDomainChecked: function (domain) {
+                if (!DomainsChecker.isChecking) { // if it is called for a single domain the progressbar must not be shown
+                    return;
+                }
+
+                var domains = DomainsChecker.checkedDomains;
+
+                if (domains.indexOf(domain) == -1) {
+                    domains.push(domain);
+                }
+
+                ProgressBar.setupPercentage(domains.length, DomainsChecker.total);
+
+                if (domains.length == DomainsChecker.total) {
+                    DomainsChecker.isChecking = false;
+                    ProgressBar.hide();
+                    enableButtons();
+                }
+            }
+        }
+
+        var baseFile = '<?php echo $this->baseFile; ?>';
+        var domains = [];
+        var selected = [];
+        var i;
+        var loading_html = '<div id="togglegif" style="display:inline;"><div class="loader-gif"></div><strong><?php echo $this->t->_('Toggling...'); ?></strong></div>';
+        $(document).ready(function() {
+            $('.tTip').tooltip();
+            $("#searchSubmit").click(function() {
+                var pattern = /\b\/search\/[^/]*/g;
+                var matches = pattern.exec(window.location.href);
+                var goTo;
+                if(!$('#searchInput').val() && matches){
+                    goTo = window.location.href.replace(matches[0], "");
+                } else {
+                    if(matches){
+                        goTo = window.location.href.replace(matches[0], "/search/" + $('#searchInput').val());
+                    } else {
+                        goTo = prepareURI() + '/search/' + $('#searchInput').val();
+                    }
+                }
+                window.location = goTo;
+                return false;
+            });
+
+            $("#searchReset").click(function() {
+                var pattern = /\b\/search\/[^/]*/g;
+                var matches = pattern.exec(window.location.href);
+                var goTo;
+                goTo = window.location.href.replace(matches[0], "");
+                window.location = goTo;
+                return false;
+            });
+            
+            $("#changeItems").click(function(event){
+                event.preventDefault();
+                changeItemsPerPage();
+            });            
+
+            $("#toggleSelected").click(function(event) {
+                event.preventDefault();
+                toggleForSelectedDomains();
+                return false;
+            });
+
+            $("#checkAllDomains").click(function(event) {
+                event.preventDefault();
+                DomainsChecker.checkAll();
+                return false;
+            });
+
+        
+            $("#sortDomain").click(function() {
+                var pattern = /\b\/sortorder\/[^/]*/g;
+                var matches = pattern.exec(window.location.href);
+                var newOrder;
+                var goTo;
+                if('<?=$this->sortorder?>' == 'asc'){
+                    newOrder = 'desc';
+                } else {
+                    newOrder = 'asc';
+                }
+                if(matches){
+                    goTo = window.location.href.replace(matches[0], "/sortorder/"+ newOrder);
+                } else {
+                    goTo = prepareURI() + '/sortorder/' + newOrder;
+                }
+                window.location = goTo;
+                return false;
+            });
+
+            $('#checkall').change(function () {
+                if($('#checkall').is(':checked')){
+                    $('#domainoverview tr').find('input').each( function () {
+                        $(this).prop('checked', true);
+                    });
+                } else {
+                    $('#domainoverview tr').find('input').each( function () {
+                        $(this).prop('checked', false);
+                    });
+                }
+            });
+
+            $(".pstatus").click(function(event)
+            {
+                var domainName = $(this).attr('id');
+                var ownerDomain = $(this).attr('ownerd');
+                var loading_html = '<div class="loader-gif"></div><strong>Checking...</strong>';
+
+                // Set loading image.
+                $(this).html( loading_html );
+
+                // Do an actual lookup (AJAX action)
+                var myElement = this; // backup the object since else we cannot use it below.
+                $.getJSON( baseFile + "?q=ajax/action/do/checkstatus/domain/" + domainName + ownerDomain,
+                    function(json)
+                    {
+                        $(myElement).html( json.statusMsg );
+                        DomainsChecker.setDomainChecked(domainName);
+                    }
+                );
+            });
+
+            $("#hideOutput").live('click' ,function ()
+            {
+                $('#ajaxoutput').html('<button type="button" class="close" aria-label="Close" id="hideOutput"><span aria-hidden="true">&times;</span></button>');
+                $('#ajaxoutput').css({'display':'none'});
+            });
+            $(".toggle").click(function (event)
+            {
+                event.preventDefault();
+                toggleProtection($(this));
+            });
+
+            $(document).ajaxStop(function () {
+                $("ul.nav-pills").find("a").removeClass("disabled");
+                $("#toggleSelected").removeClass("disabled");
+                i = 0;
+                selected = [];
+                enableButtons();
+
+            });
+        });
+
+        function changeItemsPerPage(){
+            var items = parseInt($("#itemsPerPage").val());
+            if(items < 1 || items > 25){
+                $("#itemsPerPageInfo").html('The items per page parameter should be an integer greater than or equal to 1 and less than or equal to 25');
+                $("#itemsPerPageInfo").show(0);
+                $("html, body").animate({ scrollTop: 0 }, "slow");           
+                return false;
+            }
+            var pattern = /\b\/items\/[^/]*/g;
+            var matches = pattern.exec(window.location.href);
+            var goTo;
+            if(matches){
+                goTo = window.location.href.replace(matches[0], "/items/"+ items);
+            } else {                       
+                goTo = prepareURI() + '/items/' + items;                              
+            }  
+            window.location = goTo;
+            return false;
+        };
+        
+        function toggleProtection(thisObj){
+            thisObj.hide(0);
+            thisObj.before(loading_html);
+            protectionRequest(thisObj);
+        }
+        
+        function prepareURI(){
+            var s = window.location.href;
+            var pattern = /\?q=reseller\/listdomains/g;
+            var matches = pattern.exec(s);
+            if(matches){
+                return s;
+            } else {
+                var uri = s.substring(0,s.indexOf('?'));
+                return uri + '?q=reseller/listdomains';
+            }
+        }
+
+        function toggleForSelectedDomains(){
+            var checked = $('#domainoverview tr').filter(':has(:checkbox:checked)').filter(':has(a.toggle)');
+            if(checked.length > 0){
+                disableButtons();
+                checked.find('a.toggle').each(function () {
+                    $(this).hide(0);
+                    $(this).before(loading_html);
+                    selected.push($(this));
+                });
+                i=0;
+                protectionRequest(selected[i]);
+            }
+        }
+    
+        function disableButtons(){
+            $('#sortDomain').addClass("disabled");
+            $('.tableButtons').find('button').each(function() {
+                $(this).prop('disabled', true);
+                $(this).addClass("disabled");
+            });
+        }
+
+        function enableButtons(){
+            $('#sortDomain').removeClass("disabled");
+            $('.tableButtons').find('button').each(function() {
+                $(this).prop('disabled', false);
+                $(this).removeClass("disabled");
+            });
+        }
+
+        function protectionRequest(thisObj){
+            $("ul.nav-pills").find("a").addClass("disabled");
+            var url = thisObj.attr("href");
+            domains[thisObj.closest('tr').children('td:nth-child(2)').text()] = thisObj;
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: 'json',
+                complete: function (response) {
+                    var out = JSON.parse(response.responseText);
+                    var status = out.status;
+                    var msg = out.message;
+                    if (status === 'success') {
+                        $('#ajaxoutput').append('<span style="color: green;">' + msg + '<span><br>');
+                    } else {
+                        $('#ajaxoutput').append('<span style="color: red;">' + msg + '<span><br>');
+                    }
+                    $('#ajaxoutput').show(0);
+                    for (var key in domains){
+                        if(msg.indexOf(key) !== -1){
+                            domains[key].show(0);
+                            domains[key].prev().remove();
+                            delete domains[key];
+                        }
+                    }
+                    i++;
+                    if(i < selected.length){
+                        protectionRequest(selected[i]);
+                    }
+
+                }
+            });
+        }
+    </script>
+<?php } // isset paginator  ?>

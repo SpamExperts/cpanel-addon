@@ -1,0 +1,364 @@
+<?php
+
+echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t));
+
+// if API access is disable we should prevent using any actions
+// @see https://trac.spamexperts.com/ticket/22536
+if (!$this->hasAPIAccess) {
+    return;
+}
+
+if( !$this->isConfigured )
+{
+    echo '<div class="warning">' . sprintf($this->t->_('You have not %s configured %s the addon. Please do this before using this section!'), '<a href="?q=admin/settings">', '</a>') . '</div>';
+    return;
+}
+?>
+
+<script type="text/javascript">
+function hideProgressbar()
+{
+	// Replace bulkwarning
+	$('#bulkwarning').fadeOut().html('<div class="alert alert-success"><h4 class="alert-title"><?php echo $this->t->_('Bulkprotect has finished'); ?></h4><?php echo $this->t->_('The bulkprotect process has finished its work. Please see the tables below for the results.'); ?></div>').fadeIn();
+
+	// Hide progressbar
+	$('#progressbar').fadeOut();
+}
+
+function Zend_ProgressBar_Finish()
+{
+	document.getElementById('pg-percent').style.width = '100%';
+
+	document.getElementById('pg-text-1').innerHTML = 'All accounts protected';
+	document.getElementById('pg-text-2').innerHTML = '';
+
+	setTimeout("hideProgressbar()", 1000);
+
+	// Scroll up for results
+	$('html, body').animate({scrollTop: 0}, 'slow');
+}
+
+function TimePassed(timePassed)
+{
+    elapsedString = "";
+	if(timePassed > 604800)
+	{
+		weeks = Math.floor(timePassed / 604800);
+		timePassed -= weeks * 604800;
+		elapsedString = weeks+" weeks, ";
+	}
+	if(timePassed > 86400)
+	{
+		days = Math.floor(timePassed / 86400);
+		timePassed -= days * 86400;
+		elapsedString += days+" days, ";
+	}
+	if(timePassed > 3600)
+	{
+		hours = Math.floor(timePassed / 3600);
+		timePassed -= hours * 3600;
+		elapsedString += hours+" hours, ";
+	}
+	if(timePassed > 60)
+	{
+		minutes = Math.floor(timePassed / 60);
+		timePassed -= minutes * 60;
+		elapsedString += minutes+" minutes, ";
+	}
+	elapsedString += timePassed+" seconds";
+	return elapsedString;
+}
+
+var bulktimer = null;
+
+function BulkprotectInformer()
+{
+   
+   $.ajax({
+       url: "?q=ajax/action/do/bulkprotectinformer/",
+       type: "GET",
+       dataType: "json",
+       async: true,
+       success: function(info) {
+          if (info.text) $("#pg-text-2").html(info.text);
+          if($.inArray(info.status, ["run", "stop", "protecting"]) === -1)
+          {
+              clearTimeout(bulktimer);
+              $.ajax({url: "?q=ajax/action/do/bulkprotectinformerclear/"});
+          } else {
+         if (info.status == "stop") {
+            clearTimeout(bulktimer);
+            $.ajax({url: "?q=ajax/action/do/bulkprotectinformerclear/"});
+          } else {
+            bulktimer = window.setTimeout("BulkprotectInformer();", 500);
+          }
+        }
+    }
+        });
+    }
+
+var runbptimer = null;
+var count = 0;
+var total = 0;
+var time_elapsed = 0;
+var i = 0;
+var time_shift = 0;
+
+function runBulkprotectForDomain(d)
+{
+    var icon_ok = '<div class="ok-png"></div>';
+    var icon_notok = '<div class="not-ok-png"></div>';
+    var key = d['key'];
+    var domain = d['domain'];
+    var status_info = document.getElementById("status_info"+key);
+
+    if (!status_info && (count > 0)) {
+		var domainName = domain.domain;
+       $("#resultdomainstatus").append('<tr><td>' + punycode.ToUnicode(domainName) + '</td><td id="status_info'+key+'"><img src="psf/loading.gif" id="status_info_loading'+key+'"></td></tr>');
+
+	   var domainType = domain.type == 'account' ? 'domain' : domain.type;
+       var user_param = (domain.user) ? "/user/" + domain.user : "";
+       var owner_domain = (domain.owner_domain) ? "/owner_domain/" + domain.owner_domain : "";
+
+       $.ajax({
+               url: "?q=ajax/action/do/executebulkprotect/domain/"+ domainName +"/type/" + domainType + user_param + owner_domain,
+               dataType: "json",
+               async: true,
+               success: function(result)
+	               {
+	                   time_elapsed += Math.abs(result.time_execute - time_shift);
+	                   count--; i++;
+                       // We need to update
+	                   $.each(result.counts, function(key2, amount) {
+                           if (0 < amount) {
+                               var cell = $("#statsContainer #" + key2),
+                                   oldValue = cell.text();
+
+                               cell.text(parseInt(amount, 10) + parseInt(oldValue, 10));
+                           }
+	                   });
+					   var reason = '';
+			           if (result.reason_status == 'ok') {
+			               reason = '<font color="green">' + icon_ok + result.reason + '<font>';
+			           } else if (result.reason_status == 'error') {
+			               reason = '<font color="red">' + icon_notok + result.reason + '<font>';
+			           }
+			           $("#status_info"+key).html(reason);
+	                   $("#pg-percent").css("width", Math.round((100/total)*i)+"%");
+	                   $("#pg-text-1").html("<?php echo $this->t->_('Protecting account'); ?> " + i + " of " + total);
+
+                       $("#pg-text-2").html("<h4 class='alert-title'><?php echo $this->t->_('Estimated time remaining'); ?></h4> " + TimePassed(Math.round(count * (time_elapsed / i))));
+		               if (count == 0) {
+		                   Zend_ProgressBar_Finish();
+		                   $.ajax({ url: "?q=ajax/action/do/bulkprotecttimecomplete" });
+		               }
+
+		               time_shift = result.time_execute;
+
+		               getNextDomain();
+		           },
+
+		       error: function()
+	               {
+	                   count--; i++;
+	                   time_elapsed += 1;
+	                   $("#status_info"+key).html('<font color="red">'+icon_notok+'<?php echo $this->t->_('API communication failed'); ?></font>');
+
+	                   if (count == 0) {
+		                   Zend_ProgressBar_Finish();
+		                   $.ajax({ url: "?q=ajax/action/do/bulkprotecttimecomplete" });
+		               }
+
+		               getNextDomain();
+
+	                }
+              });
+    } else {
+        if (0 < domains_list.length) {
+            getNextDomain();
+        } else {
+            clearTimeout(runbptimer);
+        }
+    }
+
+	// Scroll down to see latest result
+	$('html, body').animate({scrollTop: $(document).height()}, 'slow');
+}
+
+var current_domain = null;
+var current_key = 0;
+var domains_list = null;
+
+function getNextDomain()
+{
+    var d = {};
+    if (current_domain instanceof Array) {
+    	var status_info = document.getElementById("status_info" + current_domain['key']);
+        if (status_info && (domains_list instanceof Array) && 0 < domains_list.length){
+            d = { key: current_key, domain: domains_list.splice(0, 1)[0] };
+            current_key++;
+        }
+    } else {
+    	if ($.isArray(domains_list) && (0 in domains_list)) {
+            d = { key: current_key, domain: domains_list.splice(0, 1)[0] };
+            current_key++;
+    	}
+    }
+
+    if (!$.isEmptyObject(d)) {
+        if (null == current_domain || d['domain']['domain'] != current_domain['domain']['domain']) {
+	        runBulkprotectForDomain(d);
+		    current_domain = d;
+	    } else {
+	        runbptimer = window.setTimeout("runBulkprotectForDomain(current_domain);", 100);
+        }
+    }
+}
+
+$(function () {
+	$("form").submit(function(event) {
+        event.preventDefault();
+        return false;
+    });
+
+    $("#submit").click(function (event) {
+        event.preventDefault();
+        $("#bulkindexinfo").css("display", "none");
+        $("#bulkruninfo").css("display", "block");
+        $("#pg-text-2").html("Retrieving all domains of this server. This might take a while.");
+
+        bulktimer = window.setTimeout("BulkprotectInformer();", 10);
+
+        $.ajax({
+            url: "?q=ajax/action/do/getcollectiondomains/",
+            type: "GET",
+            dataType: "json",
+            async: true,
+            success: function (domains) {
+                count = total = domains.length;
+
+                if (!domains || domains.length == 0) {
+                    Zend_ProgressBar_Finish();
+                    clearTimeout(bulktimer);
+                    $("#statsContainer").html('<div class="alert alert-info"><?php echo $this->t->_('There are no domains on this server.'); ?></div>');
+                    return false;
+                }
+                domains_list = domains;
+
+                getNextDomain();
+            },
+            timeout: 7200000
+        });
+    });
+});
+</script>
+
+<h3>Bulkprotect</h3>
+<div id="bulkindexinfo">
+	<p>
+		<?php echo $this->t->_('On this page you can add all current domains to the spamfilter. Depending on the settings it may (or may not) execute certain actions.'); ?><br/>
+		<?php echo $this->t->_('It is generally <i>not</i> required to run this more than once after the installation. Running bulk protect is usually only necessary after the first installation'); ?>
+	</p>
+
+	<div class="alert alert-info"><?php echo $this->t->_('Bulk protect has been executed last at:'); ?> <b><?php echo $this->lastBulkprotect; ?></b></div>
+
+	<?php echo $this->bulkProtect;?>
+
+</div>
+<div id="bulkruninfo" style="display:none;">
+    <div id='bulkwarning'>
+		<div class="alert"><strong><?php echo $this->t->_('BULK PROTECTING, DO NOT RELOAD THIS PAGE!'); ?></strong></div>
+		<br/>
+        <?php echo $this->t->_('Results will be shown here when the process has finished'); ?><br/>
+        <?php echo $this->t->_('It might take a while, especially if you have many domains or a slow connection.'); ?><br/>
+		<br/>
+<?php echo $this->t->_("Please be patient while we're running the bulk protector"); ?>
+	</div>
+
+	<div id="progressbar">
+		<div class="progress progress-striped active">
+			<div class="bar" style="width: 0%;" id="pg-percent"><span id="pg-text-1"></span></div>
+		</div>
+		<div id="pg-text-2" class="alert alert-info"></div>
+	</div>
+
+	<div id="statsContainer">
+        <table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<th><?php echo $this->t->_('Added domains'); ?></th>
+					<th><?php echo $this->t->_('Failed domains'); ?></th>
+					<th><?php echo $this->t->_('Normal domains'); ?></th>
+					<th><?php echo $this->t->_('Parked domains'); ?></th>
+					<th><?php echo $this->t->_('Addon domains'); ?></th>
+					<th><?php echo $this->t->_('Subdomains'); ?></th>
+					<th><?php echo $this->t->_('Skipped domains'); ?></th>
+					<th><?php echo $this->t->_('Updated domains'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td id="ok">0</td>
+					<td id="failed">0</td>
+					<td id="normal">0</td>
+					<td id="parked">0</td>
+					<td id="addon">0</td>
+					<td id="subdomain">0</td>
+					<td id="skipped">0</td>
+					<td id="updated">0</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div id="statusContainer">
+        <table class="table table-bordered table-striped">
+		  <thead>
+			<tr>
+			  <th><?php echo $this->t->_('Domain'); ?></th>
+			  <th><?php echo $this->t->_('Status'); ?></th>
+			</tr>
+		  </thead>
+		  <tbody id="resultdomainstatus">
+		  <!-- Result cells here -->
+		  </tbody>
+		</table>
+	</div>
+</div>
+
+
+<!-- Tooltip code -->
+<script type="text/javascript">
+function Zend_ProgressBar_Update(data)
+{
+	document.getElementById('pg-percent').style.width = data.percent + '%';
+	document.getElementById('pg-text-1').innerHTML = data.text;
+	// Fill this if it is not empty
+	if(!data.timeRemaining)
+	{
+		document.getElementById('pg-text-2').innerHTML = "Estimated time remaining: Calculating";
+	} else {
+		document.getElementById('pg-text-2').innerHTML = "Estimated time remaining: " + data.timeRemaining + " seconds";
+	}
+}
+
+
+// Update the overview by appending a tablerow
+function Bulk_Status_Update(data)
+{
+	// console.log("Domain has been processed: %s with status %s", data.domain, data.reason);
+	$('#statusTable > tbody:first').append("<tr>" + data.domain + "</tr><tr><?php echo $this->t->_('Status here'); ?></tr>");
+}
+
+function Bulk_Status_Update_Stats(data)
+{
+	// We need to update
+	// console.log("Updating %s to %d", data.counter, data.amount);
+	$("#statsContainer #" + data.counter).text( data.amount );
+}
+
+//$(document).ready(function()
+//{
+//	$('[title]').tipTip({activation: "hover", defaultPosition: "right", delay: 100, maxWidth: "auto", edgeOffset: 5});
+//});
+</script>

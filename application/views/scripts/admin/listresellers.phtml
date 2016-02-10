@@ -1,0 +1,37 @@
+<?php echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t)); ?>
+<h3><?php echo $this->t->_('List Resellers'); ?></h3>
+<p><?php echo $this->t->_('This page shows you a list of all resellers on this cPanel server. It allows you to login as them and change the addon settings.'); ?></p>
+<?php if (isset($this->paginator)) { ?>
+<table class="table table-bordered table-striped" id="reselleroverview">
+    <thead>
+    <tr>
+        <th><?php echo $this->t->_('Username'); ?></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (count($this->paginator) == 0) {
+            echo '<tr><td colspan="2">' . $this->t->_('There are no resellers in the system.') . '</td></tr>';
+        }
+
+        foreach ($this->paginator as $r) {
+            ?>
+        <tr>
+            <td><?php echo $r['username']; ?></td>
+            <td>
+                <a href="?q=admin/loginreseller/reseller/<?php echo $r['username']; ?>" target="_blank">Login</a> <!--|
+				<a href="?q=admin/togglereseller/reseller/<?php echo $r['username']; ?>">Toggle status</a>-->
+            </td>
+        </tr>
+            <?php
+        }
+        ?>
+    </tbody>
+</table>
+<?php echo $this->paginationControl(
+        $this->paginator,
+        'Sliding',
+        'partials/pagination_control.phtml'
+    ); ?>
+<?php } // isset paginator ?>

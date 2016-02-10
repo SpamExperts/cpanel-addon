@@ -1,0 +1,55 @@
+<?php echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t)); ?>
+<h3><?php echo $this->t->_('Support'); ?></h3>
+<h4><?php echo $this->t->_('Information'); ?></h4>
+<strong><?php echo $this->t->_('Controlpanel:'); ?></strong> <?php echo $this->type_controlpanel?> v<?php echo $this->version_controlpanel?><br/>
+<strong><?php echo $this->t->_('PHP version:'); ?></strong> <?php echo $this->php_version?><br/>
+<strong><?php echo $this->t->_('Addon version:'); ?></strong> <?php echo $this->addon_version?><br/>
+
+<h4><?php echo $this->t->_('Diagnostics'); ?></h4>
+<p><?php echo $this->t->_('In case you have issues with the addon, you can run a diagnostics on your installation prior to contacting support.'); ?><br/></p>
+<?php 
+echo $this->diagnostics;
+
+if(isset($this->results))
+{
+	echo '<table border="0" width="50%">';
+	echo "<tbody>";
+	foreach ($this->results as $name => $category_data)
+	{
+		$fancy_name = str_replace("_"," ", $name);
+		$fancy_name = ucfirst($fancy_name);	
+		if ($category_data === true)
+		{
+			echo "<tr>";
+				echo '<td width="85%"><strong>' . $fancy_name . ':</strong></td>';
+				echo '<td width="15%"><center><span style="color: green;">OK!</span></center></td>';
+			echo "</tr>";
+		} else {
+			echo "<tr>";
+			echo '<td colspan="2" ><strong>';
+			echo ucfirst($fancy_name);
+			echo ":</strong></td>";
+			echo "</tr>";
+			
+			foreach ($category_data as $level => $values)
+			{				
+				foreach($values as $value)
+				{				
+					echo "<tr>";
+						echo '<td width="85%">' . $value . '</td>';
+						
+						if($level == "warning")
+						{
+							echo '<td width="15%"><center><strong><span style="color: orange;">' . strtoupper($level) . '</span></strong></center></td>';
+						} else {
+							echo '<td width="15%"><center><strong><span style="color: red;">' . strtoupper($level) . '</span></strong></center></td>';
+						}
+					echo "</tr>";
+				}
+			}
+		}
+	}
+	echo "</tbody>";
+	echo "</table>";
+}
+?>

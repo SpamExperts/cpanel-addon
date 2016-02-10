@@ -1,0 +1,10 @@
+<html>
+    <head>
+     <title><?php echo (($this->t instanceof Zend_Translate_Adapter_Gettext)
+                ? $this->t->_('An error has occured') : 'An error has occured'); ?></title>
+    </head>
+    <body>
+            <?php echo $this->content; ?>
+    </body>
+</html>
+

@@ -1,0 +1,17 @@
+<?php echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t)); ?>
+<h3><?php echo $this->t->_('Update'); ?></h3>
+<p>
+<?php echo $this->t->_('On this page you can manually update the addon to the latest version.'); ?>
+<br/>
+<?php echo sprintf($this->t->_('Auto-update is currently %s.'), '<strong>' . $this->autoUpdate . '</strong>'); ?> <?php echo sprintf($this->t->_('You can modify this in the %s configuration %s'), '<a href="?q=admin/settings">', '</a>'); ?>
+</p>
+
+<?php echo $this->form; ?>
+
+<!-- Tooltip code -->
+<script type="text/javascript">$(function () {
+    $(':input').popover({
+        offset: 15,
+        trigger: 'hover'
+    });
+});</script>

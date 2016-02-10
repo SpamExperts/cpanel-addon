@@ -1,0 +1,17 @@
+<?php echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t)); ?>
+
+<h3><?php echo $this->t->_('Configuration'); ?></h3>
+<p><?php echo $this->t->_('On this page you can configure the admin settings of the addon.'); ?></p>
+<p><?php echo $this->t->_('You can hover over the options to see more detailed information about what they do.'); ?></p>
+
+<?php echo $this->form; ?>
+
+<!-- Tooltip code -->
+<script type="text/javascript">
+    $(function () {
+        $(':input').popover({
+            offset: 15,
+            trigger: 'hover'
+        });
+    });
+</script>

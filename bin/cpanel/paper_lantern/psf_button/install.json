@@ -1,0 +1,12 @@
+[
+    {
+        "icon": "se-logo.png",
+        "group_id": "email",
+        "order": 999,
+        "name": "SpamExperts",
+        "type": "link",
+        "id": "psf",
+        "uri": "prospamfilter/index.html",
+        "feature": "prospamfilter"
+    }
+]

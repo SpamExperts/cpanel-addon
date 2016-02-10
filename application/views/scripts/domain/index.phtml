@@ -1,0 +1,79 @@
+<?php echo $this->flashMessages(); ?>
+
+<?php
+// if API access is disable we should prevent using any actions
+// @see https://trac.spamexperts.com/ticket/22536
+if (!$this->hasAPIAccess) {
+    return;
+}
+?>
+<h3><?php echo $this->t->_('List Domains'); ?></h3>
+<p><?php switch ($this->accesslevel) {
+    case 'role_admin':
+    case 'role_reseller':
+        echo $this->t->_('This page shows you a list of all domains owned by you and its respective status in the spamfilter.');
+        break;
+    default:
+        echo $this->t->_('This page shows you a list of all domains owned by you.');
+        break;
+} ?></p>
+
+<script type="text/javascript">
+    /*
+        Add brandname (in case of it was set) to page title
+    */
+    $(document).ready(function() {
+        brandname = '<?php echo $this->brandname ;?>';
+        parentDocumentTitle = window.top.document.title;
+        if (parentDocumentTitle.indexOf(brandname) == -1) {
+            window.top.document.title = parentDocumentTitle + ' - ' +  brandname;
+        }
+
+    });
+</script>
+
+<?php if (isset($this->paginator)) { ?>
+<table class="table table-bordered table-striped" id="domainoverview">
+    <thead>
+    <tr>
+        <th><?php echo $this->t->_('Domainname'); ?></th>
+        <th><?php echo $this->t->_('Type'); ?></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (count($this->paginator) == 0) {
+            echo '<tr><td colspan="3">' . $this->t->_('There are no domains assigned to your account') . '</td></tr>';
+        }
+
+        $idn = new IDNA_Convert;
+
+        foreach ($this->paginator as $domain) {
+            $owner_domain = (!empty($domain['owner_domain'])) ? '/owner_domain/' . $domain['owner_domain'] : '';
+            $owner_user   = (!empty($domain['user'])) ? '/owner_user/' . $domain['user'] : '';
+
+            ?>
+        <tr>
+            <td><?php echo $idn->decode($domain['domain']); ?></td>
+            <td><?php echo $domain['type']; ?></td>
+            <td>
+            <?php if (in_array($domain['type'], array('subdomain', 'addon', 'parked', 'alias')) && 0 < $this->settings->add_extra_alias) : ?>
+            Login
+            <?php else : ?>
+            <a href="<?php echo $this->baseFile; ?>?q=domain/login/domain/<?php echo $domain['domain']; ?>/type/<?php echo $domain['type']; ?><?php echo $owner_domain; ?><?php echo $owner_user; ?>"
+               target="_blank">Login</a>
+            <?php endif; ?></td>
+        </tr>
+            <?php
+        }
+        ?>
+    </tbody>
+</table>
+<?php echo $this->paginationControl(
+        $this->paginator,
+        'Sliding',
+        'partials/pagination_control_domain.phtml'
+    ); ?>
+<?php } // isset paginator ?>
+

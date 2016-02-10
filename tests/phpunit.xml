@@ -1,0 +1,11 @@
+<phpunit bootstrap="./bootstrap.php"
+         processIsolation="true">
+    <testsuites>
+        <testsuite name="Common tests">
+            <directory>./common</directory>
+        </testsuite>
+        <testsuite name="Tests for the cPanel Driver">
+            <directory>./cpanel</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

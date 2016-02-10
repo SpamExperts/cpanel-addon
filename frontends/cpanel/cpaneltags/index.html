@@ -1,0 +1,58 @@
+<cpanel Branding="include(stdheader.html)">
+<style type="text/css">body {background-color: #E6E6E6 !important;}</style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<div id="mydata" class="body-content">
+	<center>
+		<h1>Please wait....</h1>
+		<br/>
+			<img alt="Loading" width="32" height="32" src="psf/waiting.gif" />
+		<br/>
+		<h2>Loading your domainnames</h2>
+		Please contact support if this page doesn't load!
+		<br/>
+		<noscript>
+			<strong>Your browser does not support Javascript!</strong><br/>
+			This addon (and the antispam control panel) requires you to have javascript.<br/>
+			Please enable javascript for this website in order to make it work.
+		</noscript>
+	</center>
+</div>
+
+<script type="text/javascript">
+try
+{
+	var _GET = window.location.search.substr(1);
+	// Do not cache (just in case)
+	$.ajaxSetup( {cache:false} );
+	var psf = (_GET) ? "psf.php?"+_GET+"&paneltype=cpanel" : "psf.php?paneltype=cpanel" ;
+	// Load the dynamic content in order to stay in the cPanel layout.
+	$("#mydata").load(psf, function(response, status, xhr)
+	{
+	  if (status == "error")
+	  {
+			// Uh oh, something went wrong.
+			var msg = "Sorry but there was an error: ";
+			$('#mydata').text( msg + xhr.status + " " + xhr.statusText );
+		}
+	});
+}
+catch(err)
+{
+	$('#mydata').text( "Something went wrong while loading the dynamic content. This may be a temporary failure, so please try again." );
+}
+
+try
+{
+	$(document).ready(function(){
+		// Fix all links
+		$("a[href='index.html']").attr('href', '../index.html')
+		$("a[href='trademarks.html']").attr('href', '../trademarks.html')
+		$("a[href='contact/contactinfo.html']").attr('href', '../contact/contactinfo.html')
+	});
+}
+catch(err)
+{
+	// Something went wrong.
+}
+</script>
+<cpanel Branding="include(stdfooter.html)">

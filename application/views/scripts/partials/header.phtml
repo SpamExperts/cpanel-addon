@@ -1,0 +1,19 @@
+<header>
+	<h1><?php echo $this->brandname; ?></h1>
+		<?php if((!$this->hide_nav) && (isset($this->acl))) { ?>
+		<div class="subnav">
+			<ul class="nav nav-pills">
+				<?php if ($this->acl->isAllowed('settings_admin')) { ?>		<li><a href="?q=admin/settings"><?php echo $this->t->_('Configuration'); ?></a></li> 			<?php } ?>
+				<?php if ($this->acl->isAllowed('settings_branding')) { ?>	<li><a href="?q=admin/branding"><?php echo $this->t->_('Branding'); ?></a></li>				<?php } ?>
+				<?php if ($this->acl->isAllowed('list_accounts')) { ?>		<li><a href="?q=reseller/listaccounts"><?php echo $this->t->_('Accounts List'); ?></a></li>	<?php } ?>
+				<?php if ($this->acl->isAllowed('list_domains')) { ?>		<li><a href="?q=reseller/listdomains"><?php echo $this->t->_('Domain List'); ?></a></li>		<?php } ?>
+				<?php if ($this->acl->isAllowed('bulkprotect')) { ?>		<li><a href="?q=bulkprotect/index"><?php echo $this->t->_('Bulkprotect'); ?></a></li>			<?php } ?>
+				<?php if ($this->acl->isAllowed('migration')) { ?>			<li><a href="?q=admin/migrate"><?php echo $this->t->_('Migration'); ?></a></li>				<?php } ?>
+				<?php if ($this->acl->isAllowed('update')) { ?>				<li><a href="?q=admin/update"><?php echo $this->t->_('Update'); ?></a></li>					<?php } ?>
+				<?php if ($this->acl->isAllowed('support')) { ?>			<li><a href="?q=admin/support"><?php echo $this->t->_('Support'); ?></a></li>					<?php } ?>
+			</ul>
+		</div>
+		<?php } ?>
+	<hr>
+</header>
+<?php echo $this->flashMessages(); ?>

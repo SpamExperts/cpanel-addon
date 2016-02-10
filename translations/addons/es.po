@@ -1,0 +1,1234 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-05 17:56+0100\n"
+"PO-Revision-Date: 2016-02-05 10:45+0000\n"
+"Last-Translator: SpamExperts ES <translator-es@spamexperts.com>\n"
+"Language-Team: Spanish "
+"<https://hosted.weblate.org/projects/spamexperts/addons/es/>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.5-dev\n"
+
+#: application/controllers/AdminController.php:133
+#: application/controllers/AdminController.php:215
+#: application/controllers/AdminController.php:287
+#: application/controllers/AdminController.php:314
+#: application/controllers/AdminController.php:410
+#: application/controllers/AdminController.php:428
+#: application/controllers/AdminController.php:462
+#: application/controllers/BulkprotectController.php:138
+#: application/controllers/ResellerController.php:130
+#: application/controllers/ResellerController.php:238
+msgid "You do not have permission to this part of the system."
+msgstr "No tiene los permisos para esta parte del sistema."
+
+#: application/controllers/AdminController.php:187
+msgid "The settings have been saved."
+msgstr "La configuración fue guardada."
+
+#: application/controllers/AdminController.php:193
+msgid "The configuration could not be saved."
+msgstr "La configuración no pudo ser guardada."
+
+#: application/controllers/AdminController.php:199
+#: application/controllers/AdminController.php:269
+#: application/controllers/AdminController.php:396
+#: application/controllers/AdminController.php:512
+msgid "One or more settings are not correctly set."
+msgstr ""
+
+#: application/controllers/AdminController.php:236
+msgid "No new icon uploaded, using the current one."
+msgstr ""
+
+#: application/controllers/AdminController.php:245
+msgid "The branding settings have been saved."
+msgstr ""
+
+#: application/controllers/AdminController.php:248
+msgid "Brandname is set to "
+msgstr ""
+
+#: application/controllers/AdminController.php:263
+msgid "The branding settings could not be saved."
+msgstr ""
+
+#: application/controllers/AdminController.php:296
+msgid "Unable to retrieve resellers."
+msgstr "No es posible obtener revendedores."
+
+#: application/controllers/AdminController.php:331
+#, php-format
+msgid ""
+"Your system seems to be quite outdated - the required binary (%s) cannot be "
+"found. The update process has been interrupted."
+msgstr ""
+
+#: application/controllers/AdminController.php:361
+msgid "Installing addon update"
+msgstr ""
+
+#: application/controllers/AdminController.php:361
+msgid "in tier"
+msgstr ""
+
+#: application/controllers/AdminController.php:388
+#, php-format
+msgid ""
+"There is no %s update available to install. You are already at the latest "
+"version."
+msgstr ""
+
+#: application/controllers/AdminController.php:418
+msgid "This feature is not yet implemented."
+msgstr "Esta característica aun no ha sido implementada."
+
+#: application/controllers/AdminController.php:501
+msgid "Credentials have been saved."
+msgstr "Las credenciales fueron guardadas."
+
+#: application/controllers/AdminController.php:506
+msgid "Unable to migrate to new user."
+msgstr ""
+
+#: application/controllers/AjaxController.php:91
+msgid " This domain is present in the filter."
+msgstr ""
+
+#: application/controllers/AjaxController.php:92
+msgid " This domain is <strong>not</strong> present in the filter."
+msgstr ""
+
+#: application/controllers/AjaxController.php:130
+msgid "The process of protecting is running..."
+msgstr ""
+
+#: application/controllers/AjaxController.php:198
+#: application/controllers/ResellerController.php:352
+msgid "Processing of addon- and parked domains is disabled in settings"
+msgstr ""
+
+#: application/controllers/AjaxController.php:204
+#: application/controllers/ResellerController.php:367
+#, php-format
+msgid "You're not allowed to operate on the domain '%s'"
+msgstr ""
+
+#: application/controllers/AjaxController.php:287
+#: application/controllers/ResellerController.php:441
+msgid " you are not the owner of it."
+msgstr ""
+
+#: application/controllers/AjaxController.php:291
+#: application/controllers/ResellerController.php:445
+msgid " because domain uses remote exchanger."
+msgstr ""
+
+#: application/controllers/AjaxController.php:295
+#: application/controllers/ResellerController.php:449
+msgid " because data is invalid."
+msgstr ""
+
+#: application/controllers/AjaxController.php:299
+#: application/controllers/ResellerController.php:453
+msgid " unknown error."
+msgstr ""
+
+#: application/controllers/AjaxController.php:303
+#: application/controllers/ResellerController.php:457
+msgid " because API communication failed."
+msgstr ""
+
+#: application/controllers/AjaxController.php:307
+#: application/controllers/AjaxController.php:323
+#: application/controllers/ResellerController.php:461
+#: application/controllers/ResellerController.php:477
+msgid " because domain already exists."
+msgstr ""
+
+#: application/controllers/AjaxController.php:311
+#: application/controllers/ResellerController.php:465
+msgid " because domain is not valid."
+msgstr ""
+
+#: application/controllers/AjaxController.php:315
+#: application/controllers/ResellerController.php:469
+msgid " because root domain cannot be added."
+msgstr ""
+
+#: application/controllers/AjaxController.php:319
+#: application/controllers/ResellerController.php:473
+msgid " because API request has failed."
+msgstr ""
+
+#: application/controllers/AjaxController.php:327
+#: application/controllers/ResellerController.php:481
+msgid " because alias already exists."
+msgstr ""
+
+#: application/controllers/AjaxController.php:331
+#: application/controllers/ResellerController.php:485
+msgid " because domain limit reached."
+msgstr ""
+
+#: application/controllers/AjaxController.php:338
+#: application/controllers/ResellerController.php:495
+#, php-format
+msgid ""
+"The protection status of %s could not be changed to <strong>%s</strong>%s"
+msgstr ""
+
+#: application/controllers/AjaxController.php:341
+#: application/controllers/ResellerController.php:502
+#, php-format
+msgid "The protection status of %s has been changed to <strong>%s</strong>"
+msgstr ""
+
+#: application/controllers/BulkprotectController.php:150
+msgid ""
+"You have not executed a bulkprotect yet.<br/>This is recommended to protect "
+"all domains on this server."
+msgstr ""
+
+#: application/controllers/DomainController.php:161
+msgid "This addon is not available at your access level."
+msgstr ""
+
+#: application/controllers/DomainController.php:186
+#: application/controllers/ResellerController.php:186
+msgid "Unable to retrieve domains."
+msgstr ""
+
+#: application/controllers/DomainController.php:197
+#: application/controllers/ResellerController.php:197
+#: application/views/scripts/bulkprotect/index.phtml:241
+msgid "There are no domains on this server."
+msgstr ""
+
+#: application/controllers/DomainController.php:227
+msgid "You should provide a domain to login with."
+msgstr ""
+
+#: application/controllers/DomainController.php:244
+msgid "This domain does not belong to you."
+msgstr ""
+
+#: application/controllers/DomainController.php:255
+msgid ""
+"You cannot log in. Please check configuration for parked, addon and "
+"subdomains."
+msgstr ""
+
+#: application/controllers/DomainController.php:310
+#, php-format
+msgid ""
+"Unable to login. %s can not be added as an alias, because the main domain %s "
+"is not present in the filter."
+msgstr ""
+
+#: application/controllers/DomainController.php:347
+#: application/controllers/DomainController.php:368
+msgid ""
+"Unable to login, possibly professional spam and virus filtering has not been "
+"enabled for your domain yet. Please contact your provider for options to "
+"activate this service."
+msgstr ""
+
+#: application/controllers/DomainController.php:477
+msgid "This domain does not exist."
+msgstr ""
+
+#: application/controllers/DomainController.php:483
+msgid "There is no domain with given type."
+msgstr ""
+
+#: application/controllers/EmailController.php:84
+msgid "This access level is not yet available."
+msgstr ""
+
+#: application/controllers/IndexController.php:85
+#, php-format
+msgid "There is an upgrade available to %s"
+msgstr ""
+
+#: application/controllers/IndexController.php:85
+msgid "Upgrade now"
+msgstr ""
+
+#: application/controllers/IndexController.php:140
+msgid "Your access level is not high enough to use this addon."
+msgstr ""
+
+#: application/controllers/IndexController.php:140
+#: application/controllers/IndexController.php:161
+msgid "Please contact your provider."
+msgstr ""
+
+#: application/controllers/IndexController.php:151
+msgid ""
+"The addon appears to be not configured. You need to do this before you can "
+"use it."
+msgstr ""
+
+#: application/controllers/IndexController.php:151
+msgid "Configure addon"
+msgstr ""
+
+#: application/controllers/IndexController.php:161
+msgid "Resellers have no permissions to use this addon."
+msgstr ""
+
+#: application/controllers/ResellerController.php:142
+msgid ""
+"The items per page parameter should be an integer greater than or equal to 1 "
+"and less than or equal to 25"
+msgstr ""
+
+#: application/controllers/ResellerController.php:211
+msgid "There are no domains that meet your requirements."
+msgstr ""
+
+#: application/controllers/ResellerController.php:264
+msgid "Unable to retrieve accounts."
+msgstr ""
+
+#: application/controllers/ResellerController.php:306
+#, php-format
+msgid ""
+"The protection status of account %s could not be changed to <strong>%s</"
+"strong>"
+msgstr ""
+
+#: application/controllers/ResellerController.php:313
+#, php-format
+msgid ""
+"The protection status of account %s has been changed to <strong>%s</strong>"
+msgstr ""
+
+#: application/views/scripts/admin/branding.phtml:9
+#: application/views/scripts/index/index.phtml:21
+#: application/views/scripts/partials/header.phtml:7
+msgid "Branding"
+msgstr ""
+
+#: application/views/scripts/admin/branding.phtml:13
+msgid ""
+"You do not have a license for whitelabel or have not configured the addon."
+msgstr ""
+
+#: application/views/scripts/admin/branding.phtml:17
+msgid "On this page you can change how the addon looks for the customers."
+msgstr ""
+
+#: application/views/scripts/admin/branding.phtml:19
+msgid "Current branding"
+msgstr ""
+
+#: application/views/scripts/admin/branding.phtml:20
+msgid "Your branding is currently set to:"
+msgstr ""
+
+#: application/views/scripts/admin/branding.phtml:25
+msgid "Change branding"
+msgstr ""
+
+#: application/views/scripts/admin/branding.phtml:26
+msgid ""
+"If you want to change the branding shown above, you can do this in the form "
+"below."
+msgstr ""
+
+#: application/views/scripts/admin/listresellers.phtml:2
+msgid "List Resellers"
+msgstr ""
+
+#: application/views/scripts/admin/listresellers.phtml:3
+msgid ""
+"This page shows you a list of all resellers on this cPanel server. It allows "
+"you to login as them and change the addon settings."
+msgstr ""
+
+#: application/views/scripts/admin/listresellers.phtml:8
+#: application/views/scripts/reseller/listaccounts.phtml:16
+msgid "Username"
+msgstr ""
+
+#: application/views/scripts/admin/listresellers.phtml:15
+msgid "There are no resellers in the system."
+msgstr ""
+
+#: application/views/scripts/admin/migrate.phtml:9
+#: application/views/scripts/index/index.phtml:69
+#: application/views/scripts/partials/header.phtml:11
+msgid "Migration"
+msgstr ""
+
+#: application/views/scripts/admin/migrate.phtml:13
+#: application/views/scripts/bulkprotect/index.phtml:13
+#, php-format
+msgid ""
+"You have not %s configured %s the addon. Please do this before using this "
+"section!"
+msgstr ""
+
+#: application/views/scripts/admin/migrate.phtml:17
+msgid ""
+"On this page you can migrate to a different admin/reseller in the spamfilter."
+msgstr ""
+
+#: application/views/scripts/admin/migrate.phtml:18
+msgid ""
+"During migration, the domains will be assigned to the new user (given the "
+"credentials for the new user are correct) and the configuration of the addon "
+"will be switched to the new user."
+msgstr ""
+
+#: application/views/scripts/admin/settings.phtml:3
+#: application/views/scripts/index/index.phtml:9
+#: application/views/scripts/partials/header.phtml:6
+msgid "Configuration"
+msgstr ""
+
+#: application/views/scripts/admin/settings.phtml:4
+msgid "On this page you can configure the admin settings of the addon."
+msgstr ""
+
+#: application/views/scripts/admin/settings.phtml:5
+msgid ""
+"You can hover over the options to see more detailed information about what "
+"they do."
+msgstr ""
+
+#: application/views/scripts/admin/support.phtml:2
+#: application/views/scripts/index/index.phtml:93
+#: application/views/scripts/partials/header.phtml:13
+msgid "Support"
+msgstr ""
+
+#: application/views/scripts/admin/support.phtml:3
+msgid "Information"
+msgstr ""
+
+#: application/views/scripts/admin/support.phtml:4
+msgid "Controlpanel:"
+msgstr ""
+
+#: application/views/scripts/admin/support.phtml:5
+msgid "PHP version:"
+msgstr ""
+
+#: application/views/scripts/admin/support.phtml:6
+msgid "Addon version:"
+msgstr ""
+
+#: application/views/scripts/admin/support.phtml:8
+msgid "Diagnostics"
+msgstr ""
+
+#: application/views/scripts/admin/support.phtml:9
+msgid ""
+"In case you have issues with the addon, you can run a diagnostics on your "
+"installation prior to contacting support."
+msgstr ""
+
+#: application/views/scripts/admin/update.phtml:2
+#: application/views/scripts/index/index.phtml:81
+#: application/views/scripts/partials/header.phtml:12
+msgid "Update"
+msgstr ""
+
+#: application/views/scripts/admin/update.phtml:4
+msgid "On this page you can manually update the addon to the latest version."
+msgstr ""
+
+#: application/views/scripts/admin/update.phtml:6
+#, php-format
+msgid "Auto-update is currently %s."
+msgstr ""
+
+#: application/views/scripts/admin/update.phtml:6
+#, php-format
+msgid "You can modify this in the %s configuration %s"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:22
+msgid "Bulkprotect has finished"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:22
+msgid ""
+"The bulkprotect process has finished its work. Please see the tables below "
+"for the results."
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:146
+msgid "Protecting account"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:148
+msgid "Estimated time remaining"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:163
+msgid "API communication failed"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:257
+msgid ""
+"On this page you can add all current domains to the spamfilter. Depending on "
+"the settings it may (or may not) execute certain actions."
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:258
+msgid ""
+"It is generally <i>not</i> required to run this more than once after the "
+"installation. Running bulk protect is usually only necessary after the first "
+"installation"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:261
+msgid "Bulk protect has been executed last at:"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:268
+msgid "BULK PROTECTING, DO NOT RELOAD THIS PAGE!"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:270
+msgid "Results will be shown here when the process has finished"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:271
+msgid ""
+"It might take a while, especially if you have many domains or a slow "
+"connection."
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:273
+msgid "Please be patient while we're running the bulk protector"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:287
+msgid "Added domains"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:288
+msgid "Failed domains"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:289
+msgid "Normal domains"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:290
+msgid "Parked domains"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:291
+msgid "Addon domains"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:292
+msgid "Subdomains"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:293
+msgid "Skipped domains"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:294
+msgid "Updated domains"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:316
+msgid "Domain"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:317
+msgid "Status"
+msgstr ""
+
+#: application/views/scripts/bulkprotect/index.phtml:348
+msgid "Status here"
+msgstr ""
+
+#: application/views/scripts/domain/index.phtml:10
+#: application/views/scripts/reseller/listdomains.phtml:9
+msgid "List Domains"
+msgstr ""
+
+#: application/views/scripts/domain/index.phtml:14
+#: application/views/scripts/reseller/listdomains.phtml:29
+msgid ""
+"This page shows you a list of all domains owned by you and its respective "
+"status in the spamfilter."
+msgstr ""
+
+#: application/views/scripts/domain/index.phtml:17
+#: application/views/scripts/reseller/listdomains.phtml:32
+msgid "This page shows you a list of all domains owned by you."
+msgstr ""
+
+#: application/views/scripts/domain/index.phtml:39
+msgid "Domainname"
+msgstr ""
+
+#: application/views/scripts/domain/index.phtml:40
+#: application/views/scripts/reseller/listdomains.phtml:78
+msgid "Type"
+msgstr ""
+
+#: application/views/scripts/domain/index.phtml:47
+msgid "There are no domains assigned to your account"
+msgstr ""
+
+#: application/views/scripts/error/error.phtml:4
+msgid "An error has occured"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:10
+msgid "Change the settings of the addon to better suit your needs."
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:22
+msgid ""
+"Change the look &amp; feel of the addon, you can update the icon and name "
+"underneath."
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:33
+msgid "Account List"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:34
+msgid "Show the list of reseller accounts and individually configure them."
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:45
+#: application/views/scripts/partials/header.phtml:9
+msgid "Domain List"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:46
+msgid ""
+"Show the list of all domains you have access to and individually protect "
+"them."
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:57
+#: application/views/scripts/partials/header.phtml:10
+msgid "Bulkprotect"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:58
+msgid "Protect all the domains on the server with one click"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:70
+msgid ""
+"Migrate <i>all domains</i> on this server to a different AntiSpam admin/"
+"reseller."
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:82
+msgid ""
+"Make sure you are always using the latest version of our addon to benefit "
+"from new features and improvements."
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:94
+msgid ""
+"Is the addon not working properly? This feature allows you to run "
+"diagnostics and retrieve information required for getting support."
+msgstr ""
+
+#: application/views/scripts/partials/header.phtml:8
+msgid "Accounts List"
+msgstr ""
+
+#: application/views/scripts/reseller/listaccounts.phtml:2
+msgid "List Accounts"
+msgstr ""
+
+#: application/views/scripts/reseller/listaccounts.phtml:6
+#: application/views/scripts/reseller/listdomains.phtml:14
+#, php-format
+msgid ""
+"You do not have %s configured %s the addon. Please do this before using this "
+"section!"
+msgstr ""
+
+#: application/views/scripts/reseller/listaccounts.phtml:10
+msgid ""
+"This page shows you a list of all users owned by you and allows you to (un)"
+"protect all domains associated to that account."
+msgstr ""
+
+#: application/views/scripts/reseller/listaccounts.phtml:17
+msgid "Primary domain"
+msgstr ""
+
+#: application/views/scripts/reseller/listaccounts.phtml:25
+msgid "There are no users assigned to your account"
+msgstr ""
+
+#: application/views/scripts/reseller/listaccounts.phtml:34
+msgid "Enable Protection"
+msgstr ""
+
+#: application/views/scripts/reseller/listaccounts.phtml:34
+msgid "Disable Protection"
+msgstr ""
+
+#: application/views/scripts/reseller/listdomains.phtml:77
+msgid "Domain name"
+msgstr ""
+
+#: application/views/scripts/reseller/listdomains.phtml:79
+msgid "Present in filter"
+msgstr ""
+
+#: application/views/scripts/reseller/listdomains.phtml:87
+msgid "No content to display"
+msgstr ""
+
+#: application/views/scripts/reseller/listdomains.phtml:107
+msgid ""
+"The addon domains and parked domains are being treated as aliases. Go to "
+"configuration if you wish to change this behaviour"
+msgstr ""
+
+#: application/views/scripts/reseller/listdomains.phtml:221
+msgid "Toggling..."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:21
+#: library/SpamFilter/Forms/AdminConfig.php:28
+msgid "AntiSpam API URL"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:29
+msgid ""
+"This is the URL you use to login to your AntiSpam Web Interface. Please "
+"prepend the URL with http:// or https://"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:35
+#: library/SpamFilter/Forms/AdminConfig.php:41
+msgid "API hostname"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:42
+msgid ""
+"This is the hostname of the first antispam server, usually the same as the "
+"AntiSpam Web Interface URL unless you're using a CNAME for that."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:47
+#: library/SpamFilter/Forms/AdminConfig.php:52
+msgid "API username"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:53
+#: library/SpamFilter/Forms/Migrate.php:34
+msgid ""
+"This is the name of the user that is being used to communicate with the "
+"spamfilter."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:53
+msgid "You can only change this at the migration page."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:67
+#: library/SpamFilter/Forms/AdminConfig.php:72
+msgid "API password"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:73
+msgid ""
+"This is the password from the user that is being used to communicate with "
+"the spamfilter. Can be left empty once it has been validated."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:91
+#: library/SpamFilter/Forms/AdminConfig.php:96
+msgid "Primary MX"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:97
+msgid ""
+"This is for the first (virtual) MX record. It can be either your cluster's "
+"first server or an other DNS name if you're using Round Robin DNS."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:102
+#: library/SpamFilter/Forms/AdminConfig.php:105
+msgid "Secondary MX"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:106
+msgid ""
+"This is for the second (virtual) MX record. It can be either your cluster's "
+"second server or an other DNS name if you're using Round Robin DNS."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:111
+#: library/SpamFilter/Forms/AdminConfig.php:114
+msgid "Tertiary MX"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:115
+msgid ""
+"This is for the third (virtual) MX record. It can be either your cluster's "
+"third server or an other DNS name if you're using Round Robin DNS."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:120
+#: library/SpamFilter/Forms/AdminConfig.php:123
+msgid "Quaternary MX"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:124
+msgid ""
+"This is for the fourth (virtual) MX record. It can be either your cluster's "
+"third server or another DNS name if you're using Round Robin DNS."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:130
+#: library/SpamFilter/Forms/AdminConfig.php:134
+msgid "SPF Record"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:135
+msgid ""
+"Record entered in this field will be written into DNS zone of new added "
+"domain to the SpamFilter. Use BulkProtect to force this record for all "
+"existing domains."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:146
+msgid "1 minute"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:147
+msgid "5 minutes"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:148
+msgid "15 minutes"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:149
+msgid "1 hour"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:150
+msgid "4 hours"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:151
+msgid "24 hours"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:154
+#: library/SpamFilter/Forms/AdminConfig.php:159
+msgid "TTL to use for MX records"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:160
+msgid ""
+"How long should nameservers cache the value. Setting this to a low(er) value "
+"is only useful when records change often."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:194
+#: library/SpamFilter/Forms/AdminConfig.php:199
+msgid "Language"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:200
+msgid "Choose a language for the SpamFilter plugin."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:208
+#, php-format
+msgid "Enable SSL for API requests to the spamfilter and %s"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:210
+#: library/SpamFilter/Forms/AdminConfig.php:219
+msgid "SSL"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:211
+#, php-format
+msgid "Use SSL to communicate with the Spamcluster API and %s."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:220
+#, php-format
+msgid ""
+"OpenSSL is not available in %s. This feature will be <strong>disabled</"
+"strong> and all communication with the API's is being done in plaintext!"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:226
+#: library/SpamFilter/Forms/AdminConfig.php:228
+msgid "Enable automatic updates"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:229
+msgid ""
+"Automatically install new updates if they are released. They are being "
+"checked once a day and being ran by cron."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:234
+msgid "Automatically add domains to the SpamFilter"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:236
+msgid "Automatically add domains to the Spamfilter"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:237
+msgid ""
+"Automatically add the local domain to the spamfilter when it is added to "
+"this server."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:242
+#: library/SpamFilter/Forms/AdminConfig.php:244
+msgid "Automatically delete domains from the SpamFilter"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:245
+msgid ""
+"Automatically remove the local domain from the spamfilter when it is removed "
+"from this server."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:250
+#: library/SpamFilter/Forms/AdminConfig.php:252
+msgid "Automatically change the MX records for domains"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:253
+msgid ""
+"Automatically change the MX records for the domains to the virtual MX "
+"records when they are being added to the panel or when using bulk protect."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:258
+#: library/SpamFilter/Forms/AdminConfig.php:260
+msgid "Configure the email address for this domain"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:261
+msgid ""
+"Automatically configure the email address for the domain owner. This email "
+"is being used to send out the protection reports and for the lost password "
+"feature"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:273
+#: library/SpamFilter/Forms/AdminConfig.php:274
+msgid "Process addon-, parked and subdomains"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:275
+msgid ""
+"Also process addon-, parked and subdomains. The behaviour is controlled by "
+"other options."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:276
+msgid ""
+"Add addon-, parked and subdomains as an alias instead of a normal domain. "
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:277
+msgid ""
+"Add addon-, parked and subdomains as an alias instead of a normal domain."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:278
+msgid ""
+"When adding addon-, parked or subdomains, treat them as an alias for the "
+"root domain they belong to."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:281
+#: library/SpamFilter/Forms/AdminConfig.php:282
+msgid "Process addon- and parked domains"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:283
+msgid ""
+"Also process addon- and parked domains. The behaviour is controlled by other "
+"options."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:284
+msgid "Add addon- and parked domains as an alias instead of a normal domain. "
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:285
+msgid "Add addon- and parked domains as an alias instead of a normal domain."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:286
+msgid ""
+"When adding addon- or parked domains, treat them as an alias for the root "
+"domain they belong to."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:292
+#: library/SpamFilter/Forms/AdminConfig.php:294
+msgid "Use existing MX records as routes in the spamfilter."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:295
+msgid ""
+"Use the existing MX records as destination hosts in the spamfilter. Useful "
+"if they point to a different server than this one."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:300
+#: library/SpamFilter/Forms/AdminConfig.php:302
+msgid "Do not protect remote domains"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:303
+msgid ""
+"Skip domains if they are set to 'remote'. This usually happens when a "
+"different server is handling the incoming email for the domain"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:308
+#: library/SpamFilter/Forms/AdminConfig.php:310
+#, php-format
+msgid "Redirect back to %s upon logout"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:311
+#, php-format
+msgid ""
+"Redirect the user back to %s if they logout from the antispam control panel."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:317
+#: library/SpamFilter/Forms/AdminConfig.php:319
+msgid "Add the domain to the spamfilter during login if it does not exist"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:320
+#, php-format
+msgid ""
+"If the domain does not exist in the spamfilter while trying to log in trough "
+"%s, it will try adding it."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:326
+msgid "Force changing route & MX records, even if the domain exists."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:328
+msgid "Force changing route &amp; MX records, even if the domain exists."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:329
+msgid ""
+"This will force the destination server / MX records to be set if the domain "
+"already exists."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:337
+#: library/SpamFilter/Forms/AdminConfig.php:339
+msgid "Change email routing setting \"auto\" to \"local\" in bulk protect."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:340
+msgid ""
+"This change ensures that this server is handling the email for the selected "
+"domains. Does not change anything for remote domains if they are skipped."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:346
+#: library/SpamFilter/Forms/AdminConfig.php:348
+msgid "Add/Remove a domain when the email routing is changed in "
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:349
+msgid ""
+"This will ADD a domain if it is changed to 'local', and REMOVE it if it is "
+"changed to anything else (e.g. remote)."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:354
+#: library/SpamFilter/Forms/AdminConfig.php:356
+msgid "Enable addon in cPanel for reseller accounts."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:357
+msgid ""
+"This will ADD possibility for reseller accounts to use ProSpamFilter addon "
+"in cPanel."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:362
+#: library/SpamFilter/Forms/AdminConfig.php:364
+msgid "Use IP as destination route instead of domain"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:365
+msgid "Force using of IP as destination route instead of hostname."
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:369
+msgid "Set SPF record for domains"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:371
+msgid "Set SPF automatically for domains"
+msgstr ""
+
+#: library/SpamFilter/Forms/AdminConfig.php:372
+msgid ""
+"This setting will enable automatic adding of SPF record into DNS Zone for "
+"new domains in the SpamFilter and enable add/edit SPF Records for existing "
+"domains."
+msgstr ""
+
+#: library/SpamFilter/Forms/BrandingConfig.php:20
+#: library/SpamFilter/Forms/BrandingConfig.php:26
+msgid "Brandname"
+msgstr ""
+
+#: library/SpamFilter/Forms/BrandingConfig.php:27
+msgid ""
+"This is the brandname used to reference to the addon in the customer part of "
+"the controlpanel."
+msgstr ""
+
+#: library/SpamFilter/Forms/BrandingConfig.php:34
+#: library/SpamFilter/Forms/BrandingConfig.php:42
+msgid "Brandicon"
+msgstr ""
+
+#: library/SpamFilter/Forms/BrandingConfig.php:43
+msgid ""
+"This is the brandicon (48x48px, non transparent PNG) used in the customer "
+"part of the controlpanel."
+msgstr ""
+
+#: library/SpamFilter/Forms/BrandingConfig.php:52
+msgid "Save Branding Settings"
+msgstr ""
+
+#: library/SpamFilter/Forms/Bulkprotect.php:19
+msgid "Execute bulkprotect"
+msgstr ""
+
+#: library/SpamFilter/Forms/Diagnostics.php:15
+msgid "Run diagnostics"
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:16
+#: library/SpamFilter/Forms/Migrate.php:23
+msgid "Current username"
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:24
+msgid "This is the current username that is being replaced."
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:29
+#: library/SpamFilter/Forms/Migrate.php:33
+msgid "New username"
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:36
+msgid "This should not be empty or identical to the current user."
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:40
+#: library/SpamFilter/Forms/Migrate.php:45
+msgid "New password"
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:46
+msgid ""
+"This is the password from the user that is being used to communicate with "
+"the spamfilter."
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:55
+msgid ""
+"I am sure I want to migrate all protected domains on this server to this new "
+"user."
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:59
+msgid "Confirmation"
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:60
+msgid "Please confirm whether you want to do this."
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:61
+msgid "You have to confirm that you want to execute this action"
+msgstr ""
+
+#: library/SpamFilter/Forms/Migrate.php:66
+msgid "Migrate"
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:16
+msgid "Stable builds (release, preferred builds)"
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:17
+msgid "Testing builds (testing)"
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:18
+msgid "Trunk builds (unstable)"
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:21
+#: library/SpamFilter/Forms/UpdateConfig.php:26
+msgid "Tier of addon to install"
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:27
+msgid "What type of addon release would you like to install?"
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:31
+msgid "Force a reinstall even if the system is up to date."
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:32
+msgid "Reinstall addon"
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:33
+msgid "Reinstalls the addon (excluding config)"
+msgstr ""
+
+#: library/SpamFilter/Forms/UpdateConfig.php:37
+msgid "Click to upgrade"
+msgstr ""

@@ -1,0 +1,27 @@
+<?php echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t)); ?>
+<?php
+// if API access is disable we should prevent using any actions
+// @see https://trac.spamexperts.com/ticket/22536
+if (!$this->hasAPIAccess) {
+    return;
+}
+//?>
+<h3><?php echo $this->t->_('Migration'); ?></h3>
+<?php
+if( !$this->isConfigured )
+{
+	echo '<div class="warning">' . sprintf($this->t->_('You have not %s configured %s the addon. Please do this before using this section!'), '<a href="?q=admin/settings">', '</a>') . ' </div>';
+	return;
+}
+?>
+<p><?php echo $this->t->_('On this page you can migrate to a different admin/reseller in the spamfilter.'); ?></p>
+<p><?php echo $this->t->_('During migration, the domains will be assigned to the new user (given the credentials for the new user are correct) and the configuration of the addon will be switched to the new user.'); ?></p>
+<?php echo $this->form; ?>
+
+<!-- Tooltip code -->
+<script type="text/javascript">$(function () {
+    $(':input').popover({
+        offset: 15,
+        trigger: 'hover'
+    });
+});</script>

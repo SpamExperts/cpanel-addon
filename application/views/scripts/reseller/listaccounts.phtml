@@ -1,0 +1,44 @@
+<?php echo $this->partial('partials/header.phtml', array('acl' => $this->acl, 't' => $this->t)); ?>
+<h3><?php echo $this->t->_('List Accounts'); ?></h3>
+<?php
+if( !$this->isConfigured )
+{
+	echo '<div class="warning">' . sprintf($this->t->_('You do not have %s configured %s the addon. Please do this before using this section!'), '<a href="?q=admin/settings">', '</a>') . '</div>';
+	return;
+}
+?>
+<p><?php echo $this->t->_('This page shows you a list of all users owned by you and allows you to (un)protect all domains associated to that account.'); ?></p>
+<?php if(isset($this->paginator)) { ?>
+<!-- @TODO: Float right, buttonize -->
+<table class="table table-bordered table-striped" id="domainoverview">
+	<thead>
+		<tr>
+			<th><?php echo $this->t->_('Username'); ?></th>
+			<th><?php echo $this->t->_('Primary domain'); ?></th>
+			<th></th>
+		</tr>	
+	</thead>
+	<tbody>
+<?php 
+	if( count($this->paginator) == 0 )
+	{
+		echo '<tr><td colspan="3">' . $this->t->_('There are no users assigned to your account') . '</td></tr>';
+	}
+
+	foreach( $this->paginator as $u ) 
+	{
+	?>
+		<tr>
+			<td><?php echo $u['user']; ?></td>
+			<td><?php echo $u['domain']; ?></td>
+			<td><a href="?q=reseller/toggleuser/user/<?php echo $u['user']; ?>/state/enable"><?php echo $this->t->_('Enable Protection'); ?></a> | <a href="?q=reseller/toggleuser/user/<?php echo $u['user']; ?>/state/disable"><?php echo $this->t->_('Disable Protection'); ?></a></td>
+		</tr>
+	<?php 
+	}
+	?>
+	</tbody>
+</table>
+<?php echo $this->paginationControl($this->paginator,
+                                    'Sliding',
+                                    'partials/pagination_control.phtml'); ?>
+<?php } // isset paginator ?>
