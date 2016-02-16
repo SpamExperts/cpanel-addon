@@ -104,34 +104,21 @@ class SpamFilter_Updater
         }
 
         $logger->info("[Update] Going to update the {$paneltype} addon to v{$version} in tier {$tier}");
-        //  Windows way to update addon
-        if (SpamFilter_Core::isWindows()) { 
-            $tier = ($tier <> "stable") ? ' trunk' : '';
-            $cmd = '"' . BASE_PATH . DS . 'bin' . DS . 'installer' . DS . 'installer.bat" ' . $tier;  
-            $pid = shell_exec($cmd);
-        } else {
 
-            if (in_array($paneltype, array('plesk')) && $viaFrontend) {
-                $logger->info("[Update] Triggering alternative update system.");
-
-                return SpamFilter_Updater::alternativeUpdate($tier, $forced, $viaFrontend);
+        /**
+         * The update log file (/tmp/psf_update.log) should not exist
+         * @see https://trac.spamexperts.com/ticket/20771
+         */
+        $updateLogFilePrefix = 'psf_update';
+        foreach (scandir('/tmp') as $eachTmpFile) {
+            if (preg_match("~^{$updateLogFilePrefix}.*\\.log\$~i", $eachTmpFile)) {
+                unlink('/tmp/'.$eachTmpFile);
             }
-
-            /**
-             * The update log file (/tmp/psf_update.log) should not exist
-             * @see https://trac.spamexperts.com/ticket/20771
-             */
-            $updateLogFilePrefix = 'psf_update';
-            foreach (scandir('/tmp') as $eachTmpFile) {
-                if (preg_match("~^{$updateLogFilePrefix}.*\\.log\$~i", $eachTmpFile)) {
-                    unlink('/tmp/'.$eachTmpFile);
-                }
-            }
-            $updateLogFile = '/tmp/' . uniqid($updateLogFilePrefix) . '.log';
-            $cmd = 'nohup nice -n 10 /usr/local/prospamfilter/bin/installer/installer.sh'
-                . (($tier <> "stable") ? ' trunk' : '') . ' > ' . $updateLogFile . ' 2>&1 & echo $!';
-            $pid = shell_exec($cmd);
         }
+        $updateLogFile = '/tmp/' . uniqid($updateLogFilePrefix) . '.log';
+        $cmd = 'nohup nice -n 10 /usr/local/prospamfilter/bin/installer/installer.sh'
+            . (($tier <> "stable") ? ' trunk' : '') . ' > ' . $updateLogFile . ' 2>&1 & echo $!';
+        $pid = shell_exec($cmd);
 
         $logger->info("[Update] The installer.sh has been executed with the PID=$pid");
 
