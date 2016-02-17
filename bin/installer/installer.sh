@@ -114,7 +114,7 @@ random=`cat /dev/urandom | tr -dc A-Za-z0-9 | head -c5 | md5sum | awk {'print $1
 # check for branch
 if [ -n "$1" ]
 then
-    if [ "trunk" == "$1" ]
+    if [ "trunk" == "$1" ] || [ "master" == "$1" ]
     then
         CHECKURL="http://download.seinternal.com/integration/?act=getversion&panel=$paneltype&tier=testing&rand=$random"
         filepart="_testing.tar.gz"
