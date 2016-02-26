@@ -351,7 +351,7 @@ class Uninstaller
 	 */
 	private function start_uninstall()
 	{
-		$version = file_get_contents(".." . DS . "application" . DS . "version.txt");
+		$version = file_get_contents(dirname(__FILE__)."/.." . DS . "application" . DS . "version.txt");
 		echo "This system will uninstall ProSpamFilter v{$version}\n";
 		return true;
 	}
