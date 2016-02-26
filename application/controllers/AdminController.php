@@ -99,6 +99,10 @@ class AdminController extends Zend_Controller_Action
         // Get the translator
         $this->t = Zend_Registry::get('translator');
 
+        if (! empty($_POST['apipass'])) {
+            SpamFilter_ResellerAPI_Action::disableMessageRegistrationOnInvalidCredentials();
+        }
+
         /**
          * Get changed brandname (in case of it was set)
          * @see https://trac.spamexperts.com/ticket/16804
@@ -108,6 +112,8 @@ class AdminController extends Zend_Controller_Action
         if (!$brandname) {
             $brandname = 'Professional Spam Filter';
         }
+
+        SpamFilter_ResellerAPI_Action::enableMessageRegistrationOnInvalidCredentials();
 
         $this->view->headTitle()->set($brandname);
         $this->view->headTitle()->setSeparator(' | ');

@@ -103,6 +103,18 @@ class SpamFilter_ResellerAPI_Action
 
     private $_api_access_allowed = true;
 
+    private static $messageRegistrationOnInvalidCredentials = true;
+
+    public static function disableMessageRegistrationOnInvalidCredentials()
+    {
+        self::$messageRegistrationOnInvalidCredentials = false;
+    }
+
+    public static function enableMessageRegistrationOnInvalidCredentials()
+    {
+        self::$messageRegistrationOnInvalidCredentials = true;
+    }
+
     /**
      * Constructor
      *
@@ -344,7 +356,7 @@ class SpamFilter_ResellerAPI_Action
                         'message' => "Access to the Spamfilter API is currently disabled due to invalid credentials. You still may run some operations via this add-on but it's strictly prohibited as it can potentially lead to out-of-sync or even broken data. Please check the configuration and if the problem persists contact your administrator or service provider.",
                         'status' => 'error'
                     );
-                    if ($this->_messageQueue) {
+                    if ($this->_messageQueue && self::$messageRegistrationOnInvalidCredentials) {
                         $this->_messageQueue->addMessage($message);
                     }
                 }
