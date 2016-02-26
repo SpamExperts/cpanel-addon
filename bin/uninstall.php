@@ -110,6 +110,68 @@ class Uninstaller
 		return true;
 	}
 
+	private function unregisterCpanelAppInAppConfig()
+	{
+		$cpanelAppsToUnregister = array();
+		$cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
+
+		foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+			if (is_dir("{$cPanelWebdirsRoot}/{$eachDir}")
+				&& !in_array($eachDir, array('.', '..', 'x3.bak'))
+				&& !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
+			) {
+				$cpanelAppsToUnregister[] = "prospamfilter_cpanel_{$eachDir}";
+			}
+		}
+
+		foreach ($cpanelAppsToUnregister as $app) {
+			$isConfigured = trim(shell_exec("/usr/local/cpanel/bin/is_registered_with_appconfig cpanel $app"));
+
+			if ('0' == $isConfigured) {
+				continue;
+			}
+
+			$output = trim(shell_exec("/usr/local/cpanel/bin/unregister_appconfig $app"));
+
+			if (false === stripos($output, "$app unregistered")) {
+				echo "Failed to unregister $app: \n".$output."\n";
+			} else {
+				echo "$app unregistered successfully\n";
+			}
+		}
+
+		shell_exec("/usr/local/cpanel/bin/unregister_appconfig prospamfilter_whm");
+
+		$phpSymlink = '/usr/local/bin/prospamfilter_php';
+
+		if (is_link($phpSymlink)) {
+			unlink($phpSymlink);
+		}
+
+		$cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
+
+		foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+			if (is_dir("{$cPanelWebdirsRoot}/{$eachDir}")
+				&& !in_array($eachDir, array('.', '..'))
+				&& !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
+			) {
+				$link = "{$cPanelWebdirsRoot}/{$eachDir}/prospamfilter";
+
+				if (is_link($link)) {
+					unlink($link);
+				}
+
+			}
+		}
+
+		$file = '/usr/local/cpanel/whostmgr/addonfeatures/prospamfilter';
+
+		if (file_exists($file)) {
+			unlink($file);
+		}
+	}
+
+
 	/**
 	 * Execute panel specific settings
 	 *
@@ -124,10 +186,10 @@ class Uninstaller
 		switch( $paneltype )
 		{
 			case "CPANEL":
+				$this->unregisterCpanelAppInAppConfig();
+
                 $panel = new SpamFilter_PanelSupport('cpanel');
 				// Delink cPanel addon from webdirs.
-                @unlink("/usr/local/cpanel/base/frontend/x3/prospamfilter/");
-				@unlink("/usr/local/cpanel/base/frontend/x3mail/prospamfilter/");
 				@unlink("/usr/local/cpanel/whostmgr/docroot/cgi/psf/");
 				@unlink("/usr/local/prospamfilter/frontend/cpanel/psf");
 
