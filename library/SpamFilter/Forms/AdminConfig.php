@@ -94,8 +94,8 @@ class SpamFilter_Forms_AdminConfig extends Twitter_Form
 			  ->setValue( $config->mx1 )
 					->setAttrib('class', 'span3')
 					->setAttrib('title', $translate->_('Primary MX'))
-					->setAttrib('data-content', $translate->_("This is for the first (virtual) MX record. It can be either your cluster's first server or an other DNS name if you're using Round Robin DNS."));
-		          //->setDescription("This is for the first (virtual) MX record. It can be either your cluster's first server or an other DNS name if you're using Round Robin DNS.");
+					->setAttrib('data-content', $translate->_("This is for the first (virtual) MX record. It can be either your cluster's first server or another DNS name if you're using Round Robin DNS."));
+		          //->setDescription("This is for the first (virtual) MX record. It can be either your cluster's first server or another DNS name if you're using Round Robin DNS.");
 		$this->addElement( $mx1 );
 
 		$mx2 = new Zend_Form_Element_Text('mx2');
@@ -103,8 +103,8 @@ class SpamFilter_Forms_AdminConfig extends Twitter_Form
 			->setValue( $config->mx2 )
 					->setAttrib('class', 'span3')
 					->setAttrib('title', $translate->_('Secondary MX'))
-					->setAttrib('data-content', $translate->_("This is for the second (virtual) MX record. It can be either your cluster's second server or an other DNS name if you're using Round Robin DNS."));
-		        //->setDescription("This is for the second (virtual) MX record. It can be either your cluster's first server or an other DNS name if you're using Round Robin DNS.");
+					->setAttrib('data-content', $translate->_("This is for the second (virtual) MX record. It can be either your cluster's second server or another DNS name if you're using Round Robin DNS."));
+		        //->setDescription("This is for the second (virtual) MX record. It can be either your cluster's first server or another DNS name if you're using Round Robin DNS.");
 		$this->addElement( $mx2 );
 
 		$mx3 = new Zend_Form_Element_Text('mx3');
@@ -112,8 +112,8 @@ class SpamFilter_Forms_AdminConfig extends Twitter_Form
 			->setValue( $config->mx3 )
 				->setAttrib('class', 'span3')
 				->setAttrib('title', $translate->_('Tertiary MX'))
-				->setAttrib('data-content', $translate->_("This is for the third (virtual) MX record. It can be either your cluster's third server or an other DNS name if you're using Round Robin DNS."));
-			//->setDescription("This is for the third (virtual) MX record. It can be either your cluster's first server or an other DNS name if you're using Round Robin DNS.");
+				->setAttrib('data-content', $translate->_("This is for the third (virtual) MX record. It can be either your cluster's third server or another DNS name if you're using Round Robin DNS."));
+			//->setDescription("This is for the third (virtual) MX record. It can be either your cluster's first server or another DNS name if you're using Round Robin DNS.");
 		$this->addElement( $mx3 );
 
                 $mx4 = new Zend_Form_Element_Text('mx4');
@@ -122,7 +122,7 @@ class SpamFilter_Forms_AdminConfig extends Twitter_Form
                             ->setAttrib('class', 'span3')
                             ->setAttrib('title', $translate->_('Quaternary MX'))
                             ->setAttrib('data-content', $translate->_("This is for the fourth (virtual) MX record. It can be either your cluster's third server or another DNS name if you're using Round Robin DNS."));
-                        //->setDescription("This is for the fourth (virtual) MX record. It can be either your cluster's first server or an other DNS name if you're using Round Robin DNS.");
+                        //->setDescription("This is for the fourth (virtual) MX record. It can be either your cluster's first server or another DNS name if you're using Round Robin DNS.");
                 $this->addElement( $mx4 );
                 
                 if(strtolower($this->_paneltype) == 'cpanel') {
