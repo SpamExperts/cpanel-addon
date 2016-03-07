@@ -35,3 +35,8 @@ env:
         password:  'STABLE_PASSWORD'
         whm_access_hash: 'STABLE_WHM_ACCESS_HASH'
         url: 'STABLE_URL'
+    release:
+        username: 'RELEASE_USERNAME'
+        password:  'RELEASE_PASSWORD'
+        whm_access_hash: 'RELEASE_WHM_ACCESS_HASH'
+        url: 'RELEASE_URL'
