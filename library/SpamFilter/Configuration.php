@@ -407,30 +407,30 @@ class SpamFilter_Configuration
             // Generate a clean config
             $config = new Zend_Config(array(), true);
 
-            // Generate new values
-            foreach ($cfgData as $key => $value) {
-                $config->$key = $value;
+            /**
+             * In order to allow all types of characters including quotes
+             * we will not use Zend Config Writter
+             * @see https://trac.spamexperts.com/ticket/27306
+             */
+
+            // Generate config string
+            $configStr = "";
+            foreach ($cfgData as $k => $v){
+                $configStr .= $k.'="'.addslashes($v).'"' . "\n";
             }
 
             // Write values to the INI file
-            $writer = new Zend_Config_Writer_Ini(
-                    array(
-                     'config'   => $config,
-                'filename' => $this->_configFile
-                    )
-            );
-            // Lets write.
             try {
-                $writer->write();
-            } catch (Zend_Config_Exception $e) {
+                file_put_contents($this->_configFile, $configStr);
+            } catch (Exception $e) {
                 Zend_Registry::get('logger')->err($e->getMessage() . ' in ' . __FILE__ . ':' . __LINE__);
             }
 
             // Write config to variable
-            $this->_configData = $config;
+            $this->_configData = $this->_getIniContent($this->_configFile);
 
             // Write config to registry
-            Zend_Registry::set('general_config', $config);
+            Zend_Registry::set('general_config', $this->_configData);
 
             // All done.
             return true;
