@@ -1,8 +1,6 @@
 <?php
 
-namespace Filesystem;
-
-class WindowsFilesystem extends AbstractFilesystem
+class Filesystem_WindowsFilesystem extends Filesystem_AbstractFilesystem
 {
     public function removeDirectory($directory)
     {

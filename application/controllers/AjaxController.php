@@ -113,11 +113,8 @@ class AjaxController extends Zend_Controller_Action
                 $config = Zend_Registry::get('general_config');
 
                 if (0 < $config->add_extra_alias && is_array($data)) {
-                    $data = array_values(
-                        array_filter($data, function($domain) {
-                            return !isset($domain['owner_domain']);
-                        })
-                    );
+                    $input = array_filter($data, array($this, 'checkOwnerDomainNotSet'));
+                    $data = array_values($input);
                 }
 
                 if (!$data) {
@@ -358,4 +355,8 @@ class AjaxController extends Zend_Controller_Action
 
         exit(0);
 	}
+
+    public function checkOwnerDomainNotSet($domain) {
+        return !isset($domain['owner_domain']);
+    }
 }

@@ -1,11 +1,9 @@
 <?php
 
-namespace Installer;
-
 /**
  * Data class holding install paths
  */
-class InstallPaths
+class Installer_InstallPaths
 {
     public $base;
     public $config;

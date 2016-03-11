@@ -1,12 +1,10 @@
 <?php
 
-namespace Filesystem;
-
-abstract class AbstractFilesystem
+abstract class Filesystem_AbstractFilesystem
 {
     public static function createFilesystem()
     {
-        $filesystem = \SpamFilter_Core::isWindows() ? new WindowsFilesystem() : new LinuxFilesystem();
+        $filesystem = SpamFilter_Core::isWindows() ? new Filesystem_WindowsFilesystem() : new Filesystem_LinuxFilesystem();
 
         return $filesystem;
     }

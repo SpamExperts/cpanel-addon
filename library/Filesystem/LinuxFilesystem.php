@@ -1,8 +1,6 @@
 <?php
 
-namespace Filesystem;
-
-class LinuxFilesystem extends AbstractFilesystem
+class Filesystem_LinuxFilesystem extends Filesystem_AbstractFilesystem
 {
     public function removeDirectory($directory)
     {

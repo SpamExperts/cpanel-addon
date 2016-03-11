@@ -96,14 +96,14 @@ if ($paneltype == "PLESK")
                 $addonDomains = $_panel->getAddonDomains($username);
 
                 if ($addonDomains) {
-                    $addonDomains = array_map(function($data){return $data['alias'];}, $addonDomains);
+                    $addonDomains = array_map('getAliasFromArray', $addonDomains);
                     $domains = array_merge($domains, $addonDomains);
                 }
 
                 $parkedDomains = $_panel->getParkedDomains($username);
 
                 if ($parkedDomains) {
-                    $parkedDomains = array_map(function($data){return $data['alias'];}, $parkedDomains);
+                    $parkedDomains = array_map('getAliasFromArray', $parkedDomains);
                     $domains = array_merge($domains, $parkedDomains);
                 }
 
@@ -394,4 +394,8 @@ function translateCPHookNames($event, $stage){
                         'Api2::Email::setmxcheck'              =>  'setmxcheck');        
     }
     return $translate[$event];
+}
+
+function getAliasFromArray($data) {
+    return $data['alias'];
 }
