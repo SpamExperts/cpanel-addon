@@ -416,7 +416,7 @@ class SpamFilter_Configuration
             // Generate config string
             $configStr = "";
             foreach ($cfgData as $k => $v){
-                $configStr .= $k.'="'.addslashes($v).'"' . "\n";
+                $configStr .= $k.'="'.str_replace('"', '\"',$v).'"' . "\n";
             }
 
             // Write values to the INI file
