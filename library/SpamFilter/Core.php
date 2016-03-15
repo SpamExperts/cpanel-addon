@@ -242,18 +242,17 @@ class SpamFilter_Core
 
     final static public function invalidateDomainsCaches()
     {
-        try {
-            $prefix = self::getDomainsCacheId();
-        } catch (InvalidArgumentException $e) {
-            $prefix = 'alldomains_';
-        }
-
-        /** @noinspection PhpUndefinedClassInspection */
-        foreach (SpamFilter_Panel_Cache::listMatches("$prefix") as $cacheId) {
-            /** @noinspection PhpUndefinedClassInspection */
-            SpamFilter_Panel_Cache::clear($cacheId, false);
-        }
+		self::clearCacheWithPrefix('alldomains_');
+		self::clearCacheWithPrefix('user_domains_');
+		SpamFilter_Panel_Cache::clear('collectiondomains');
     }
+
+	final static private function clearCacheWithPrefix($prefix = null)
+	{
+		foreach (SpamFilter_Panel_Cache::listMatches("$prefix") as $cacheId) {
+			SpamFilter_Panel_Cache::clear($cacheId, false);
+		}
+	}
 
 	/**
 	 * Checks whether the requirements are met

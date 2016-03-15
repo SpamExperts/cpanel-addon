@@ -167,7 +167,6 @@ class DomainController extends Zend_Controller_Action
 
         // Proceed
         $cacheKey = strtolower('user_domains_' . md5(SpamFilter_Core::getUsername()));
-        SpamFilter_Panel_Cache::clear( $cacheKey );
         $domains = SpamFilter_Panel_Cache::get( $cacheKey );
 
 		// No cache set, proceed with retrieval

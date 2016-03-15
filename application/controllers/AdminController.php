@@ -182,9 +182,10 @@ class AdminController extends Zend_Controller_Action
                     if ( $config->add_extra_alias != $_POST['add_extra_alias'] ||
                          $config->handle_extra_domains != $_POST['handle_extra_domains']
                     ) {
+                        // refresh domains for other users as well
+                        SpamFilter_Core::invalidateDomainsCaches();
+
                         $cacheKey = SpamFilter_Core::getDomainsCacheId();
-                        SpamFilter_Panel_Cache::clear('user_domains_' . $cacheKey);
-                        SpamFilter_Panel_Cache::clear(strtolower('user_domains_' . md5(SpamFilter_Core::getUsername())));
                         $domains = $this->_panel->getDomains( array('username' => SpamFilter_Core::getUsername(), 'level' => 'owner' ) );
                         SpamFilter_Panel_Cache::set($cacheKey, $domains);
                     }
