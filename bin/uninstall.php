@@ -244,7 +244,19 @@ class Uninstaller
                                                 'event'     =>      'ParkAdmin::unpark',
                                                 'stage'     =>      'pre',
                                                 'blocking'  =>      1
-                                            ),
+                                          ),
+                                          array(
+                                                'category'  =>      'Whostmgr',
+                                                'event'     =>      'Domain::park',
+                                                'stage'     =>      'post',
+                                                'blocking'  =>      1
+                                          ),
+                                          array(
+                                                'category'  =>      'Whostmgr',
+                                                'event'     =>      'Domain::unpark',
+                                                'stage'     =>      'pre',
+                                                'blocking'  =>      1
+                                          ),
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::AddonDomain::addaddondomain',
                                                 'stage'     =>      'post',

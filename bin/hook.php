@@ -55,6 +55,10 @@ if (!Zend_Registry::isRegistered('general_config')) {
 }
 $config = Zend_Registry::get('general_config');
 
+$writer = new Zend_Log_Writer_Stream('/var/log/addon.log');
+$logger = new Zend_Log($writer);
+$logger->debug("start hook");
+
 if ($paneltype == "PLESK")
 {
 	$data = argv2array( $argv );
@@ -84,6 +88,11 @@ if ($paneltype == "PLESK")
         // Now it is JSON
         $dataArray = json_decode($in, true);
         $action = translateCPHookNames($dataArray['context']['event'],$dataArray['context']['stage']);
+
+        $logger->debug("Event is ".$dataArray['context']['event']);
+        $logger->debug("Stage is ".$dataArray['context']['stage']);
+
+        $logger->debug("Action is ".$action);
 
         switch($action){
             case 'adddomain':
@@ -388,13 +397,15 @@ function translateCPHookNames($event, $stage){
     if($stage == 'pre'){
     $translate = array( 'Accounts::Remove'                     =>  'deldomain',
                         'Api2::AddonDomain::deladdondomain'    =>  'deladdondomain',
-                        'ParkAdmin::unpark'                    =>  'unpark'
+                        'ParkAdmin::unpark'                    =>  'unpark',
+                        'Domain::unpark'                       =>  'unpark'
                  );
     } else {
     $translate = array( 'Accounts::Create'                     =>  'adddomain',
                         'Accounts::Modify'                     =>  'modifyaccount',                        
                         'Restore'                              =>  'restore',
                         'ParkAdmin::park'                      =>  'park',
+                        'Domain::park'                         =>  'park',
                         'Api2::SubDomain::addsubdomain'        =>  'addsubdomain',
                         'Api2::AddonDomain::addaddondomain'    =>  'addaddondomain',
                         'Api2::CustInfo::savecontactinfo'      =>  'savecontactinfo',
