@@ -112,6 +112,11 @@ if ($paneltype == "PLESK")
                                     $domain = $_panel->getMainDomain($dataArray['data']['user']);
                                     $alias = $dataArray['data']['args']['newdomain'];
                                     break;
+			case 'addsubdomain':
+                                    $domain = $_panel->getMainDomain($dataArray['data']['user']);
+                                    $alias = $dataArray['data']['args']['domain'].$domain;
+                                    break;
+
             case 'deladdondomain':  
                                     $domain = $_panel->getMainDomain($dataArray['data']['user']);
                                     $alias = $dataArray['data']['args']['domain'];
@@ -211,6 +216,7 @@ switch( $action )
 		break;
 
     case "park":
+	case "addsubdomain":
     case "addaddondomain":
         if (empty($alias)) {
             Zend_Registry::get('logger')->debug("[Hook] Alias not supplied. Cannot proceed");
@@ -381,13 +387,16 @@ if (isset($status['status'])) {
 function translateCPHookNames($event, $stage){
     if($stage == 'pre'){
     $translate = array( 'Accounts::Remove'                     =>  'deldomain',
-                        'Api1::Park::unpark'                   =>  'unpark',        
-                        'Api2::AddonDomain::deladdondomain'    =>  'deladdondomain');
+                        'Api2::Park::unpark'                   =>  'unpark',
+                        'Api2::AddonDomain::deladdondomain'    =>  'deladdondomain',
+                        'Domain::park'                         =>  'park'
+                 );
     } else {
     $translate = array( 'Accounts::Create'                     =>  'adddomain',
                         'Accounts::Modify'                     =>  'modifyaccount',                        
                         'Restore'                              =>  'restore',
-                        'Api1::Park::park'                     =>  'park',
+                        //'Api2::Park::park'                     =>  'park',
+                        'Api2::SubDomain::addsubdomain'        =>  'addsubdomain',
                         'Api2::AddonDomain::addaddondomain'    =>  'addaddondomain',
                         'Api2::CustInfo::savecontactinfo'      =>  'savecontactinfo',
                         'Api2::Email::setalwaysaccept'         =>  'setalwaysaccept',

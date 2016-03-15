@@ -235,12 +235,12 @@ class Uninstaller
                                                 'action'    =>      ''),
                                    
                                           array('category'  =>      'Cpanel',
-                                                'event'     =>      'Api1::Park::park',
+                                                'event'     =>      'Api2::Park::park',
                                                 'stage'     =>      'post',
                                                 'action'    =>      ''),
                                           
                                           array('category'  =>      'Cpanel',
-                                                'event'     =>      'Api1::Park::unpark',
+                                                'event'     =>      'Api2::Park::unpark',
                                                 'stage'     =>      'pre',
                                                 'action'    =>      ''),
                                    
@@ -253,12 +253,6 @@ class Uninstaller
                                                 'event'     =>      'Api2::AddonDomain::deladdondomain',
                                                 'stage'     =>      'pre',
                                                 'action'    =>      ''),
-                                   
-                                          array('category'  =>      'Cpanel',
-                                                'event'     =>      'Api1::SubDomain::addsubdomain',
-                                                'stage'     =>      'post',
-                                                'action'    =>      ''),
-                                   
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::SubDomain::addsubdomain',
                                                 'stage'     =>      'post',

@@ -90,14 +90,24 @@ class SpamFilter_PanelSupport_Cpanel
                 'action'    =>      ''
             ),
             array(
+                'category'  =>      'Whostmgr',
+                'event'     =>      'Domain::park',
+                'stage'     =>      'pre',
+                'blocking'  =>      1
+            ),
+			array('category'  =>    'PkgAcct',
+                'event'     =>      'Restore',
+                'stage'     =>      'post',
+                'action'    =>      ''),
+            array(
                 'category'  =>      'Cpanel',
-                'event'     =>      'Api1::Park::park',
+                'event'     =>      'Api2::Park::park',
                 'stage'     =>      'post',
                 'action'    =>      ''
             ),
             array(
                 'category'  =>      'Cpanel',
-                'event'     =>      'Api1::Park::unpark',
+                'event'     =>      'Api2::Park::unpark',
                 'stage'     =>      'pre',
                 'action'    =>      ''
             ),
@@ -113,6 +123,14 @@ class SpamFilter_PanelSupport_Cpanel
                 'stage'     =>      'pre',
                 'action'    =>      ''
             ),
+			array('category'  =>     'Cpanel',
+                'event'     =>      'Api2::SubDomain::addsubdomain',
+                'stage'     =>      'post',
+                'action'    =>      ''),
+            array('category'  =>      'Cpanel',
+                'event'     =>      'Api2::SubDomain::delsubdomain',
+                'stage'     =>      'pre',
+                'action'    =>      ''),
             array(
                 'category'  =>      'Cpanel',
                 'event'     =>      'Api2::CustInfo::savecontactinfo',
