@@ -233,17 +233,18 @@ class Uninstaller
                                                 'event'     =>      'Restore',
                                                 'stage'     =>      'post',
                                                 'action'    =>      ''),
-                                   
-                                          array('category'  =>      'Cpanel',
-                                                'event'     =>      'Api2::Park::park',
+                                          array(
+                                                'category'  =>      'Whostmgr',
+                                                'event'     =>      'ParkAdmin::park',
                                                 'stage'     =>      'post',
-                                                'action'    =>      ''),
-                                          
-                                          array('category'  =>      'Cpanel',
-                                                'event'     =>      'Api2::Park::unpark',
+                                                'blocking'  =>      1
+                                          ),
+                                          array(
+                                                'category'  =>      'Whostmgr',
+                                                'event'     =>      'ParkAdmin::unpark',
                                                 'stage'     =>      'pre',
-                                                'action'    =>      ''),
-                                   
+                                                'blocking'  =>      1
+                                            ),
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::AddonDomain::addaddondomain',
                                                 'stage'     =>      'post',

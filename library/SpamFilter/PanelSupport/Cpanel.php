@@ -91,7 +91,13 @@ class SpamFilter_PanelSupport_Cpanel
             ),
             array(
                 'category'  =>      'Whostmgr',
-                'event'     =>      'Domain::park',
+                'event'     =>      'ParkAdmin::park',
+                'stage'     =>      'post',
+                'blocking'  =>      1
+            ),
+            array(
+                'category'  =>      'Whostmgr',
+                'event'     =>      'ParkAdmin::unpark',
                 'stage'     =>      'pre',
                 'blocking'  =>      1
             ),
@@ -99,18 +105,6 @@ class SpamFilter_PanelSupport_Cpanel
                 'event'     =>      'Restore',
                 'stage'     =>      'post',
                 'action'    =>      ''),
-            array(
-                'category'  =>      'Cpanel',
-                'event'     =>      'Api2::Park::park',
-                'stage'     =>      'post',
-                'action'    =>      ''
-            ),
-            array(
-                'category'  =>      'Cpanel',
-                'event'     =>      'Api2::Park::unpark',
-                'stage'     =>      'pre',
-                'action'    =>      ''
-            ),
             array(
                 'category'  =>      'Cpanel',
                 'event'     =>      'Api2::AddonDomain::addaddondomain',

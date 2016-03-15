@@ -387,15 +387,14 @@ if (isset($status['status'])) {
 function translateCPHookNames($event, $stage){
     if($stage == 'pre'){
     $translate = array( 'Accounts::Remove'                     =>  'deldomain',
-                        'Api2::Park::unpark'                   =>  'unpark',
                         'Api2::AddonDomain::deladdondomain'    =>  'deladdondomain',
-                        'Domain::park'                         =>  'park'
+                        'ParkAdmin::unpark'                    =>  'unpark'
                  );
     } else {
     $translate = array( 'Accounts::Create'                     =>  'adddomain',
                         'Accounts::Modify'                     =>  'modifyaccount',                        
                         'Restore'                              =>  'restore',
-                        //'Api2::Park::park'                     =>  'park',
+                        'ParkAdmin::park'                      =>  'park',
                         'Api2::SubDomain::addsubdomain'        =>  'addsubdomain',
                         'Api2::AddonDomain::addaddondomain'    =>  'addaddondomain',
                         'Api2::CustInfo::savecontactinfo'      =>  'savecontactinfo',
