@@ -235,18 +235,6 @@ class Uninstaller
                                                 'action'    =>      ''),
                                           array(
                                                 'category'  =>      'Whostmgr',
-                                                'event'     =>      'ParkAdmin::park',
-                                                'stage'     =>      'post',
-                                                'blocking'  =>      1
-                                          ),
-                                          array(
-                                                'category'  =>      'Whostmgr',
-                                                'event'     =>      'ParkAdmin::unpark',
-                                                'stage'     =>      'pre',
-                                                'blocking'  =>      1
-                                          ),
-                                          array(
-                                                'category'  =>      'Whostmgr',
                                                 'event'     =>      'Domain::park',
                                                 'stage'     =>      'post',
                                                 'blocking'  =>      1
