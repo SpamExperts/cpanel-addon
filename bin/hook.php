@@ -55,10 +55,6 @@ if (!Zend_Registry::isRegistered('general_config')) {
 }
 $config = Zend_Registry::get('general_config');
 
-$writer = new Zend_Log_Writer_Stream('/var/log/addon.log');
-$logger = new Zend_Log($writer);
-$logger->debug("start hook");
-
 if ($paneltype == "PLESK")
 {
 	$data = argv2array( $argv );
@@ -88,11 +84,6 @@ if ($paneltype == "PLESK")
         // Now it is JSON
         $dataArray = json_decode($in, true);
         $action = translateCPHookNames($dataArray['context']['event'],$dataArray['context']['stage']);
-
-        $logger->debug("Event is ".$dataArray['context']['event']);
-        $logger->debug("Stage is ".$dataArray['context']['stage']);
-
-        $logger->debug("Action is ".$action);
 
         switch($action){
             case 'adddomain':
@@ -131,9 +122,9 @@ if ($paneltype == "PLESK")
                                     $alias = $dataArray['data']['args']['domain'];
                                     break;
             case 'park':
-            case 'unpark':            
-                                    $domain = $_panel->getMainDomain($dataArray['data']['user']);;
-                                    $alias = $dataArray['data']['args'][0];
+            case 'unpark':
+                                    $domain = $dataArray['data']['target_domain'];
+                                    $alias = $dataArray['data']['new_domain'];
                                     break;     
             case 'savecontactinfo':
                                     $email = $dataArray['data']['args']['email'];
@@ -370,11 +361,7 @@ switch( $action )
 		// Re-check the MX records and remove the ones that don't belong.
 		// Currently only needed in Plesk
 		Zend_Registry::get('logger')->info("[Hook] Doing postdomainadd for Plesk (Domain: {$domain}).");
-                $status = $hook->AddDomain($domain);
-                $logger->debug("[Hook] Post add domain finished and returned: " . print_r($status, true));
-                if (!empty($status['reason'])) {
-                    $logger->info("Hook AddDomain status: " . $status['reason']);
-                }                
+        $status = $hook->AddDomain($domain);
 	break;
 
 	default:
@@ -397,14 +384,12 @@ function translateCPHookNames($event, $stage){
     if($stage == 'pre'){
     $translate = array( 'Accounts::Remove'                     =>  'deldomain',
                         'Api2::AddonDomain::deladdondomain'    =>  'deladdondomain',
-                        'ParkAdmin::unpark'                    =>  'unpark',
-                        'Domain::unpark'                       =>  'unpark'
+                        'Domain::unpark'                       =>  'unpark',
                  );
     } else {
     $translate = array( 'Accounts::Create'                     =>  'adddomain',
                         'Accounts::Modify'                     =>  'modifyaccount',                        
                         'Restore'                              =>  'restore',
-                        'ParkAdmin::park'                      =>  'park',
                         'Domain::park'                         =>  'park',
                         'Api2::SubDomain::addsubdomain'        =>  'addsubdomain',
                         'Api2::AddonDomain::addaddondomain'    =>  'addaddondomain',
