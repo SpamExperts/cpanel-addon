@@ -331,7 +331,7 @@ class C01ConfigurationCest
 
         $aliases = $I->makeSpampanelApiRequest()->getDomainAliases($account['domain']);
         $I->assertContains($addonDomainName, $aliases);
-        $I->clickOneOf([CpanelClientPage::HOME_MENU_LINK, CpanelClientPage::HOME_MENU_LINK_V52]);
+        $I->clickHomeMenuLink();
         $parkedDomain = $I->addParkedDomainAsClient($account['domain']);
         $aliases = $I->makeSpampanelApiRequest()->getDomainAliases($account['domain']);
         $I->assertContains($parkedDomain, $aliases);
@@ -389,5 +389,85 @@ class C01ConfigurationCest
         $I->selectOption('domainselect', $account['domain']);
         $I->click('Edit');
         $I->seeInField('input', '"'.$spfRecord.'"');
+    }
+
+     /**
+     * Verify
+     */
+    public function verifyDomainListRefreshForCustomerLevel(ConfigurationSteps $I)
+    {
+        $I->setConfigurationOptions(array(
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true
+        ));
+
+        $I->createDefaultPackage();
+
+        $account = $I->createNewAccount();
+
+        // addon domain
+        $I->loginAsClient($account['username'], $account['password']);
+        $parkedDomain = $I->addParkedDomainAsClient($account['domain']);
+        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+        $I->clickHomeMenuLink();
+        $subDomain = $I->addSubdomainAsClient($account['domain']);
+        $I->clickHomeMenuLink();
+        $I->checkDomainListAsClient([$parkedDomain, $addonDomainName, $subDomain]);
+
+        $I->loginAsRoot();
+        $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
+        $I->setConfigurationOptions(array(
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => false
+        ));
+
+        $I->loginAsClient($account['username'], $account['password']);
+
+        $I->checkDomainListAsClient($account['domain']);
+        $I->dontSeeInDomainTable($parkedDomain);
+        $I->dontSeeInDomainTable($addonDomainName);
+        $I->dontSeeInDomainTable($subDomain);
+    }
+
+    /**
+     * Verify
+     */
+    public function verifyDomainListRefreshForResellerLevel(ConfigurationSteps $I)
+    {
+        $reseller = $I->createNewAccount(['reseller' => true]);
+        $I->login($reseller['username'], $reseller['password']);
+
+        $I->setConfigurationOptions(array(
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true
+        ));
+
+        $I->createDefaultPackage();
+
+        $account = $I->createNewAccount(['ui' => true]);
+
+        // addon domain
+        $I->loginAsClient($account['username'], $account['password']);
+        $parkedDomain = $I->addParkedDomainAsClient($account['domain']);
+        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+        $I->clickHomeMenuLink();
+        $subDomain = $I->addSubdomainAsClient($account['domain']);
+        $I->clickHomeMenuLink();
+        $I->checkDomainListAsClient([$parkedDomain, $addonDomainName, $subDomain]);
+
+        $I->login($reseller['username'], $reseller['password']);
+        $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
+        $I->setConfigurationOptions(array(
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => false
+        ));
+
+        $I->loginAsClient($account['username'], $account['password']);
+
+        $I->checkDomainListAsClient($account['domain']);
+        $I->dontSeeInDomainTable($parkedDomain);
+        $I->dontSeeInDomainTable($addonDomainName);
+        $I->dontSeeInDomainTable($subDomain);
+
+//        $I->searchDomainList($addonDomainName);
+//        $I->see('addon', DomainListPage::TYPE_COLUMN_FROM_FIRST_ROW);
+        $I->pauseExecution();
+
     }
 }

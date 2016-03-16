@@ -69,6 +69,11 @@ class CommonSteps extends \WebGuy
         $I->waitForText($title);
     }
 
+    public function clickCurrentBrandname()
+    {
+        $this->click($this->currentBrandname);
+    }
+
     public function checkPsfIsPresent()
     {
         $I = $this;
@@ -136,15 +141,41 @@ class CommonSteps extends \WebGuy
             $params['reseller'] = false;
         }
 
+        if (empty($params['ui'])) {
+            $params['ui'] = false;
+        }
+
         $params['pkgname'] = $this->defaultPackage;
         $params['reseller'] = (int) $params['reseller'];
-
         $I = $this;
-        $I->makeCpanelApiRequest()->addAccount($params);
 
-        if ($params['reseller']) {
-            $this->grantAllAccessToReseller($params['username']);
+        if ($params['ui']) {
+            $I->searchAndClickCommand("Create a New Account");
+            $I->fillField('#domain', $params['domain']);
+            $I->fillField('#username', $params['username']);
+            $I->fillField('#password', $params['password']);
+            $I->fillField('#password2', $params['password']);
+            $I->fillField('#contactemail', $params['contactemail']);
+
+            if ($params['reseller']) {
+                $I->checkOption("//input[@name='reseller']");
+            }
+            $I->click("//input[@class='btn btn-primary']");
+            $I->waitForText("Account Creation Status: ok (Account Creation Ok)", 200, '#masterContainer');
+
+            if ($params['reseller']) {
+                $I->grantAllAccessToReseller($params['username']);
+            }
+
+        } else {
+            $I->makeCpanelApiRequest()->addAccount($params);
+
+            if ($params['reseller']) {
+                $this->grantAllAccessToReseller($params['username']);
+            }
         }
+
+
 
         $account = array(
             'domain' => $params['domain'],
@@ -340,12 +371,18 @@ class CommonSteps extends \WebGuy
 
     public function checkDomainListAsClient($domain)
     {
+        $domains = is_array($domain) ? $domain : [];
+
         $I = $this;
+        $I->waitForText($this->currentBrandname);
         $I->see($this->currentBrandname);
         $I->click($this->currentBrandname);
         $I->waitForText('List Domains');
         $I->see('This page shows you a list of all domains owned by you.');
-        $I->seeInDomainTable($domain);
+
+        foreach ($domains as $domain) {
+            $I->seeInDomainTable($domain);
+        }
     }
 
     public function seeInDomainTable($domain)
@@ -474,9 +511,15 @@ class CommonSteps extends \WebGuy
         $I->waitForElementNotVisible('div.mask', 60);
     }
 
+    public function clickHomeMenuLink()
+    {
+        $this->clickOneOf([CpanelClientPage::HOME_MENU_LINK, CpanelClientPage::HOME_MENU_LINK_V52]);
+    }
+
     public function changeToX3Theme()
     {
-        $this->clickOneOf([CpanelClientPage::DASHBOARD_LINK, CpanelClientPage::HOME_MENU_LINK_V52]);
+        $this->clickHomeMenuLink();
+        $this->click("#lnkDashboard");
         $this->selectOption('#ddlChangeTheme', 'x3');
         $this->waitForText($this->currentBrandname, 30);
     }
