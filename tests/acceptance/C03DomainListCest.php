@@ -32,10 +32,21 @@ class C03DomainListCest
         $account = $I->createNewAccount([
             'reseller' => true
         ]);
+        $secondAccount = $I->createNewAccount([
+            'reseller' => true
+        ]);
+        $I->login($secondAccount['username'], $secondAccount['password']);
+        $secondAccountDomain = $I->createNewAccount([
+            'ui' => true
+        ]);
+
         $I->logout();
 
         $I->login($account['username'], $account['password']);
         $I->checkDomainList($account['domain']);
+
+        $I->dontSee($secondAccount['domain'], \Pages\DomainListPage::DOMAIN_TABLE);
+        $I->dontSee($secondAccountDomain['domain'], \Pages\DomainListPage::DOMAIN_TABLE);
 
         $I->logout();
         $I->loginAsRoot();
