@@ -117,12 +117,14 @@ class SpamFilter_PanelSupport_Cpanel
                 'stage'     =>      'pre',
                 'action'    =>      ''
             ),
-			array('category'  =>    'Cpanel',
+			array(
+                'category'  =>    'Cpanel',
                 'event'     =>      'Api2::SubDomain::addsubdomain',
                 'stage'     =>      'post',
                 'action'    =>      '',
                 'escalateprivs' =>  1),
-            array('category'  =>    'Cpanel',
+            array(
+                'category'  =>    'Cpanel',
                 'event'     =>      'Api2::SubDomain::delsubdomain',
                 'stage'     =>      'pre',
                 'action'    =>      '',
@@ -2751,7 +2753,13 @@ class SpamFilter_PanelSupport_Cpanel
                 echo 'Skipped hook ' . $hook['event'] . ' as it already exists.' . PHP_EOL;
                 continue;
             } else {
-                system("/usr/local/cpanel/bin/manage_hooks " . $do . " script " . $file . " --manual --category " . $hook['category'] . " --event '" . $hook['event'] . "' --stage " . $hook['stage'] . " --action='" . $hook['action'] . "'");
+                $commandStr = "/usr/local/cpanel/bin/manage_hooks " . $do . " script " . $file . " --manual --category " . $hook['category'] . " --event '" . $hook['event'] . "' --stage " . $hook['stage'] . " --action='" . $hook['action'] . "'";
+                if (isset($hook['escalateprivs']) && $hook['escalateprivs']) {
+                    $commandStr .= " --escalateprivs";
+
+                }
+
+                system($commandStr);
             }                        
         }
         return "Done." . PHP_EOL;
