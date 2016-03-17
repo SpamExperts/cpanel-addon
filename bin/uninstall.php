@@ -257,12 +257,14 @@ class Uninstaller
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::SubDomain::addsubdomain',
                                                 'stage'     =>      'post',
-                                                'action'    =>      ''),
+                                                'action'    =>      '',
+                                                'escalateprivs' =>  1),
                                    
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::SubDomain::delsubdomain',
                                                 'stage'     =>      'pre',
-                                                'action'    =>      ''),                                   
+                                                'action'    =>      '',
+                                                'escalateprivs' =>  1),
                                                                                                         
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::CustInfo::savecontactinfo',
