@@ -2759,10 +2759,6 @@ class SpamFilter_PanelSupport_Cpanel
 
                 }
 
-                $writer = new Zend_Log_Writer_Stream('/var/log/install_debug.log');
-                $logger = new Zend_Log($writer);
-                $logger->debug("Command: ".$commandStr);
-
                 system($commandStr);
             }                        
         }
