@@ -114,7 +114,7 @@ if ($paneltype == "PLESK")
                                     break;
 			case 'addsubdomain':
                                     $domain = $_panel->getMainDomain($dataArray['data']['user']);
-                                    $alias = $dataArray['data']['args']['domain'].$domain;
+                                    $alias = $dataArray['data']['args']['domain'].".".$domain;
                                     break;
 
             case 'deladdondomain':  
