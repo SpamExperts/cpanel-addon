@@ -313,6 +313,7 @@ class CommonSteps extends \WebGuy
 
         $subDomain = $subDomainPrefix.'.'.$domain;
         $I = $this;
+        $I->waitForText('Subdomains', 10);
         $I->click('Subdomains');
         $I->fillField('#domain', $subDomainPrefix);
         $I->selectOption('#rootdomain', $domain);

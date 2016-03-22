@@ -321,7 +321,9 @@ class C01ConfigurationCest
     public function verifyAddAddonParkedAndSubdomainsAsAnAliasInsteadOfANormalDomain(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::ADD_ADDON_CPANEL_OPT => true
+            ConfigurationPage::ADD_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false
         ));
 
         $account = $I->createNewAccount();
@@ -337,10 +339,12 @@ class C01ConfigurationCest
         $I->assertContains($parkedDomain, $aliases);
 
 //        Waiting for #26940
-//        $I->click('#lnkMenu');
-//        $subDomain = $I->addSubdomainAsClient($account['domain']);
-//        $aliases = $I->makeSpampanelApiRequest()->getDomainAliases($account['domain']);
-//        $I->assertContains($subDomain, $aliases);
+        $I->pauseExecution();
+        $I->click('#lnkMenu');
+        $subDomain = $I->addSubdomainAsClient($account['domain']);
+        $aliases = $I->makeSpampanelApiRequest()->getDomainAliases($account['domain']);
+        $I->pauseExecution();
+        $I->assertContains($subDomain, $aliases);
     }
 
     /**
