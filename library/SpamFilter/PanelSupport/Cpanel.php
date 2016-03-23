@@ -90,17 +90,21 @@ class SpamFilter_PanelSupport_Cpanel
                 'action'    =>      ''
             ),
             array(
-                'category'  =>      'Cpanel',
-                'event'     =>      'Api1::Park::park',
+                'category'  =>      'Whostmgr',
+                'event'     =>      'Domain::park',
                 'stage'     =>      'post',
-                'action'    =>      ''
+                'blocking'  =>      1
             ),
             array(
-                'category'  =>      'Cpanel',
-                'event'     =>      'Api1::Park::unpark',
+                'category'  =>      'Whostmgr',
+                'event'     =>      'Domain::unpark',
                 'stage'     =>      'pre',
-                'action'    =>      ''
+                'blocking'  =>      1
             ),
+			array('category'  =>    'PkgAcct',
+                'event'     =>      'Restore',
+                'stage'     =>      'post',
+                'action'    =>      ''),
             array(
                 'category'  =>      'Cpanel',
                 'event'     =>      'Api2::AddonDomain::addaddondomain',
@@ -113,6 +117,18 @@ class SpamFilter_PanelSupport_Cpanel
                 'stage'     =>      'pre',
                 'action'    =>      ''
             ),
+			array(
+                'category'  =>    'Cpanel',
+                'event'     =>      'Api2::SubDomain::addsubdomain',
+                'stage'     =>      'post',
+                'action'    =>      '',
+                'escalateprivs' =>  1),
+            array(
+                'category'  =>    'Cpanel',
+                'event'     =>      'Api2::SubDomain::delsubdomain',
+                'stage'     =>      'pre',
+                'action'    =>      '',
+                'escalateprivs' =>  1),
             array(
                 'category'  =>      'Cpanel',
                 'event'     =>      'Api2::CustInfo::savecontactinfo',
@@ -2737,7 +2753,13 @@ class SpamFilter_PanelSupport_Cpanel
                 echo 'Skipped hook ' . $hook['event'] . ' as it already exists.' . PHP_EOL;
                 continue;
             } else {
-                system("/usr/local/cpanel/bin/manage_hooks " . $do . " script " . $file . " --manual --category " . $hook['category'] . " --event '" . $hook['event'] . "' --stage " . $hook['stage'] . " --action='" . $hook['action'] . "'");
+                $commandStr = "/usr/local/cpanel/bin/manage_hooks " . $do . " script " . $file . " --manual --category " . $hook['category'] . " --event '" . $hook['event'] . "' --stage " . $hook['stage'] . " --action='" . $hook['action'] . "'";
+                if (isset($hook['escalateprivs']) && $hook['escalateprivs']) {
+                    $commandStr .= " --escalateprivs";
+
+                }
+
+                system($commandStr);
             }                        
         }
         return "Done." . PHP_EOL;

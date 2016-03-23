@@ -233,17 +233,18 @@ class Uninstaller
                                                 'event'     =>      'Restore',
                                                 'stage'     =>      'post',
                                                 'action'    =>      ''),
-                                   
-                                          array('category'  =>      'Cpanel',
-                                                'event'     =>      'Api1::Park::park',
+                                          array(
+                                                'category'  =>      'Whostmgr',
+                                                'event'     =>      'Domain::park',
                                                 'stage'     =>      'post',
-                                                'action'    =>      ''),
-                                          
-                                          array('category'  =>      'Cpanel',
-                                                'event'     =>      'Api1::Park::unpark',
+                                                'blocking'  =>      1
+                                          ),
+                                          array(
+                                                'category'  =>      'Whostmgr',
+                                                'event'     =>      'Domain::unpark',
                                                 'stage'     =>      'pre',
-                                                'action'    =>      ''),
-                                   
+                                                'blocking'  =>      1
+                                          ),
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::AddonDomain::addaddondomain',
                                                 'stage'     =>      'post',
@@ -253,21 +254,17 @@ class Uninstaller
                                                 'event'     =>      'Api2::AddonDomain::deladdondomain',
                                                 'stage'     =>      'pre',
                                                 'action'    =>      ''),
-                                   
-                                          array('category'  =>      'Cpanel',
-                                                'event'     =>      'Api1::SubDomain::addsubdomain',
-                                                'stage'     =>      'post',
-                                                'action'    =>      ''),
-                                   
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::SubDomain::addsubdomain',
                                                 'stage'     =>      'post',
-                                                'action'    =>      ''),
+                                                'action'    =>      '',
+                                                'escalateprivs' =>  1),
                                    
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::SubDomain::delsubdomain',
                                                 'stage'     =>      'pre',
-                                                'action'    =>      ''),                                   
+                                                'action'    =>      '',
+                                                'escalateprivs' =>  1),
                                                                                                         
                                           array('category'  =>      'Cpanel',
                                                 'event'     =>      'Api2::CustInfo::savecontactinfo',
