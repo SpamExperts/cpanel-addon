@@ -17,6 +17,7 @@ class SpamFilter_Config_String extends Zend_Config_Ini
      */
     static public function _parseIniFileContents($iniContents)
     {
+        // TODO: use parse_ini_string() when support for php 5.2 is dropped
         $iniArray = self::parse_ini_string($iniContents, true); // Warnings and errors are suppressed
 
         // Check if there was a error while loading file
@@ -50,6 +51,12 @@ class SpamFilter_Config_String extends Zend_Config_Ini
             {
                 $key    = $match[ 'key' ];
                 $value    = $match[ 'value' ];
+
+                /**
+                 * Handle double quotes
+                 * @see https://trac.spamexperts.com/ticket/27717
+                 */
+                $value = str_replace('\"', "\"", $value);
 
                 # Remove quote
                 if( preg_match( "/^\".*\"$/", $value ) || preg_match( "/^'.*'$/", $value ) )
