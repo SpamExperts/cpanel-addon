@@ -52,6 +52,18 @@ class SpampanelApi
         return $response['result'];
     }
 
+    public function addDomainAlias($alias, $domain)
+    {
+        $this->comment("Adding alias $alias to domain $domain");
+        $response = $this->requestApiUrl('domainalias/add/format/json', ['domain' => $domain, 'alias' => $alias]);
+        $this->checkResponseStatus($response);
+        $response = json_decode($response['output'], true);
+
+        if (! empty($response['messages']['error'])) {
+            throw new RuntimeException("Api error: ".var_export($response, true));
+        }
+    }
+
     public function requestApiUrl($url, array $params = array())
     {
         $url = \PsfConfig::getApiUrl().'/api/'.$url;

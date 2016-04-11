@@ -61,7 +61,7 @@ class ConfigurationSteps extends CommonSteps
         $I->see('Process addon-, parked and subdomains');
         $I->seeElement(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT);
         $I->see('Add addon-, parked and subdomains as an alias instead of a normal domain.');
-        $I->seeElement(ConfigurationPage::ADD_ADDON_CPANEL_OPT);
+        $I->seeElement(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT);
         $I->see('Use existing MX records as routes in the spamfilter.');
         $I->seeElement(ConfigurationPage::USE_EXISTING_MX_OPT);
         $I->see('Do not protect remote domains');

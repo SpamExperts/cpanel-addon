@@ -17,7 +17,11 @@ class DomainListPage
     const DOMAIN_TABLE                   = "//table[@id='domainoverview']";
     const TYPE_COLUMN_FROM_FIRST_ROW     = "//*[@id=\"domainoverview\"]/tbody/tr[1]/td[3]";
 
-    const CHECK_STATUS_LINK         = "//a[contains(.,'Check status')]";
+    const CHECK_STATUS_LINK         = "span.pstatus a";
     const TOGGLE_PROTECTION_LINK    = "//a[contains(.,'Toggle Protection')]";
     const LOGIN_LINK                = "//a[contains(.,'Login')]";
+
+    // text
+    const STATUS_DOMAIN_IS_PRESENT_IN_THE_FILTER = 'This domain is present in the filter.';
+    const STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER = 'This domain is not present in the filter.';
 }

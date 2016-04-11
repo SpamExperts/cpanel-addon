@@ -64,6 +64,11 @@ class SpamFilter_Hooks
     const WRONG_DESTINATION_GIVEN 		= 'WRONG_DESTINATION_GIVEN';
     const DOMAIN_HAS_FEATURE_DISABLED   = 'DOMAIN_HAS_FEATURE_DISABLED';
     const SKIP_EXTRA_ALIAS              = 'SKIP_EXTRA_ALIAS';
+    const SKIP_ADDED_AS_ALIAS_NOT_DOMAIN = 'SKIP_ADDED_AS_ALIAS_NOT_DOMAIN';
+    const SKIP_ADDED_AS_DOMAIN_NOT_ALIAS = 'SKIP_ADDED_AS_DOMAIN_NOT_ALIAS';
+    const SKIP_PROCESS_OF_ADDON_DOMAINS_DISABLED = 'SKIP_PROCESS_OF_ADDON_DOMAINS_DISABLED';
+    const SKIP_OWNER_DOMAIN_NOT_FOUND = "SKIP_OWNER_DOMAIN_NOT_FOUND";
+    const SKIP_OWNER_VALIDATION_FAIL = "SKIP_OWNER_VALIDATION_FAIL";
 
 
     /**
@@ -575,7 +580,7 @@ class SpamFilter_Hooks
             }
 
             $parkedDomains = $this->_panel->getParkedDomains( $username );
-            $this->_logger->debug("[WHM] Domain Removal, " . count($parkedDomains) . " addon domains: " . serialize($parkedDomains) );
+            $this->_logger->debug("[WHM] Domain Removal, " . count($parkedDomains) . " parked domains: " . serialize($parkedDomains) );
             if ( $parkedDomains !== false )
             {
                 foreach ($parkedDomains as $key => $parked)
@@ -583,6 +588,19 @@ class SpamFilter_Hooks
                     Zend_Registry::get('logger')->debug("[WHM] Removing parked domain '{$parked['alias']}'");
                     if (!$silent) echo "Deleting parked domain: {$parked['alias']}..";
                     $this->DelDomain( $parked['alias']/*, $force*/ );
+                    if (!$silent) echo "Done\n";
+                }
+            }
+
+            $subDomains = $this->_panel->getSubDomains( $username );
+            $this->_logger->debug("[WHM] Domain Removal, " . count($subDomains) . " subdomains: " . serialize($subDomains) );
+            if ( $subDomains !== false )
+            {
+                foreach ($subDomains as $key => $subDomain)
+                {
+                    Zend_Registry::get('logger')->debug("[WHM] Removing subdomain '{$subDomain['alias']}'");
+                    if (!$silent) echo "Deleting subdomain: {$subDomain['alias']}..";
+                    $this->DelDomain( $subDomain['alias']/*, $force*/ );
                     if (!$silent) echo "Done\n";
                 }
             }

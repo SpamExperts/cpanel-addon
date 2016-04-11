@@ -138,13 +138,18 @@ function runBulkprotectForDomain(d)
                            }
 	                   });
 					   var reason = '';
-			           if (result.reason_status == 'ok') {
+
+					   if (result.reason_status == 'ok') {
 			               reason = '<font color="green">' + icon_ok + result.reason + '<font>';
 			           } else if (result.reason_status == 'error') {
 			               reason = '<font color="red">' + icon_notok + result.reason + '<font>';
 			           }
+					   console.log("info");
+					   console.log(result);
+					   console.log(reason);
 			           $("#status_info"+key).html(reason);
-	                   $("#pg-percent").css("width", Math.round((100/total)*i)+"%");
+					   console.log("#status_info" + key);
+					   $("#pg-percent").css("width", Math.round((100/total)*i)+"%");
 	                   $("#pg-text-1").html("<?php echo $this->t->_('Protecting account'); ?> " + i + " of " + total);
 
                        $("#pg-text-2").html("<h4 class='alert-title'><?php echo $this->t->_('Estimated time remaining'); ?></h4> " + TimePassed(Math.round(count * (time_elapsed / i))));

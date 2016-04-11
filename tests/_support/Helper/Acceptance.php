@@ -102,6 +102,30 @@ class Acceptance extends \Codeception\Module
         $this->spampanelApi = new \SpampanelApi($scenario);
     }
 
+    public function assertDomainExistsInSpampanel($domain)
+    {
+        $domainExists = $this->makeSpampanelApiRequest()->domainExists($domain);
+        $this->getAsserts()->assertTrue($domainExists);
+    }
+
+    public function assertDomainNotExistsInSpampanel($domain)
+    {
+        $domainExists = $this->makeSpampanelApiRequest()->domainExists($domain);
+        $this->getAsserts()->assertFalse($domainExists);
+    }
+    
+    public function assertIsAliasInSpampanel($alias, $domain)
+    {
+        $aliases = $this->makeSpampanelApiRequest()->getDomainAliases($domain);
+        $this->getAsserts()->assertContains($alias, $aliases);
+    }
+
+    public function assertIsNotAliasInSpampanel($alias, $domain)
+    {
+        $aliases = $this->makeSpampanelApiRequest()->getDomainAliases($domain);
+        $this->getAsserts()->assertNotContains($alias, $aliases);
+    }
+
     /**
      * @return \CpanelApi
      */
@@ -124,6 +148,14 @@ class Acceptance extends \Codeception\Module
     private function getWebDriver()
     {
         return $this->getModule('WebDriver');
+    }
+
+    /**
+     * @return \Codeception\Module\Asserts
+     */
+    private function getAsserts()
+    {
+        return $this->getModule('Asserts');
     }
 
     /**

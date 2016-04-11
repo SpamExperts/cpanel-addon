@@ -761,6 +761,28 @@ class SpamFilter_PanelSupport_Cpanel
         return $destination;
     }
 
+    public function createBulkProtectResponse($domain, $reason, $reasonStatus = "error", $rawResult)
+    {
+        return array(
+            "domain" => $domain,
+            "counts" => array(
+                "ok"      => 0,
+                "failed"  => 0,
+                "normal"  => 0,
+                "parked"  => 0,
+                "addon"   => 0,
+                "subdomain"   => 0,
+                "skipped" => 1,
+                "updated" => 0,
+            ),
+            "reason" => $reason,
+            "reason_status" => $reasonStatus,
+            'rawresult' => $rawResult,
+            "time_start" => $_SERVER['REQUEST_TIME'],
+            "time_execute" => time() - $_SERVER['REQUEST_TIME'],
+        );
+    }
+
     /**
      * Protect all domains on the server according to the configuration
      *
@@ -796,24 +818,7 @@ class SpamFilter_PanelSupport_Cpanel
 
             if (0 < $this->_config->handle_only_localdomains
                 && SpamFilter_Hooks::SKIP_REMOTE == $accountInstance->getErrorCode()) {
-                return array(
-                    "domain" => $domain,
-                    "counts" => array(
-                        "ok"      => 0,
-                        "failed"  => 0,
-                        "normal"  => 0,
-                        "parked"  => 0,
-                        "addon"   => 0,
-                        "subdomain"   => 0,
-                        "skipped" => 1,
-                        "updated" => 0,
-                    ),
-                    "reason" => "Skipped: Domain is remote",
-                    "reason_status" => "error",
-                    'rawresult' => SpamFilter_Hooks::SKIP_REMOTE,
-                    "time_start" => $_SERVER['REQUEST_TIME'],
-                    "time_execute" => time() - $_SERVER['REQUEST_TIME'],
-                );
+                return $this->createBulkProtectResponse($domain, "Skipped: Domain is remote", "error", SpamFilter_Hooks::SKIP_REMOTE);
             }
 
             switch ($params['type']) {

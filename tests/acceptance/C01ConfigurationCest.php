@@ -55,9 +55,22 @@ class C01ConfigurationCest
     public function verifyAutomaticallyAddDomainToPsf(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true
+            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
         ));
         $account = $I->createNewAccount();
+
+        $I->loginAsClient($account['username'], $account['password']);
+        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+        $parkedDomainName = $I->addParkedDomainAsClient($account['domain']);
+        $subDomain = $I->addSubdomainAsClient($account['domain']);
+
+        $I->assertDomainExistsInSpampanel($account['domain']);
+        $I->assertDomainExistsInSpampanel($addonDomainName);
+        $I->assertDomainExistsInSpampanel($parkedDomainName);
+        $I->assertDomainExistsInSpampanel($subDomain);
+
         $I->checkDomainIsPresentInFilter($account['domain']);
     }
 
@@ -86,15 +99,59 @@ class C01ConfigurationCest
     {
         $I->setConfigurationOptions(array(
             ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
             ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true
 
         ));
         $account = $I->createNewAccount();
-        $domainExists = $I->makeSpampanelApiRequest()->domainExists($account['domain']);
-        $I->assertTrue($domainExists);
+
+        $I->loginAsClient($account['username'], $account['password']);
+        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+        $parkedDomainName = $I->addParkedDomainAsClient($account['domain']);
+        $subDomain = $I->addSubdomainAsClient($account['domain']);
+
+        $I->assertDomainExistsInSpampanel($account['domain']);
+        $I->assertDomainExistsInSpampanel($addonDomainName);
+        $I->assertDomainExistsInSpampanel($parkedDomainName);
+        $I->assertDomainExistsInSpampanel($subDomain);
+
         $I->removeAccount($account['username']);
-        $domainExists = $I->makeSpampanelApiRequest()->domainExists($account['domain']);
-        $I->assertFalse($domainExists);
+        $I->assertDomainNotExistsInSpampanel($account['domain']);
+        $I->assertDomainNotExistsInSpampanel($addonDomainName);
+        $I->assertDomainNotExistsInSpampanel($parkedDomainName);
+        $I->assertDomainNotExistsInSpampanel($subDomain);
+    }
+    
+    public function verifyAutmaticallyDeleteSecondaryDomains(ConfigurationSteps $I)
+    {
+        $I->setConfigurationOptions(array(
+            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
+            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true
+
+        ));
+        $account = $I->createNewAccount();
+
+        $I->loginAsClient($account['username'], $account['password']);
+        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+        $parkedDomainName = $I->addParkedDomainAsClient($account['domain']);
+        $subDomain = $I->addSubdomainAsClient($account['domain']);
+
+        $I->assertDomainExistsInSpampanel($account['domain']);
+        $I->assertDomainExistsInSpampanel($addonDomainName);
+        $I->assertDomainExistsInSpampanel($parkedDomainName);
+        $I->assertDomainExistsInSpampanel($subDomain);
+
+        $I->removeAddonDomainAsClient($addonDomainName);
+        $I->assertDomainNotExistsInSpampanel($addonDomainName);
+
+        $I->removeSubdomainAsClient($subDomain);
+        $I->assertDomainNotExistsInSpampanel($subDomain);
+
+        $I->removeParkedDomainAsClient($parkedDomainName);
+        $I->assertDomainNotExistsInSpampanel($parkedDomainName);
     }
 
     /**
@@ -246,6 +303,7 @@ class C01ConfigurationCest
         $I->loginAsRoot();
         $I->searchDomainList($addonDomainName);
         $I->see('addon', DomainListPage::TYPE_COLUMN_FROM_FIRST_ROW);
+        $I->assertDomainExistsInSpampanel($addonDomainName);
     }
 
     /**
@@ -267,6 +325,7 @@ class C01ConfigurationCest
         $I->loginAsRoot();
         $I->searchDomainList($subDomain);
         $I->see('subdomain', DomainListPage::TYPE_COLUMN_FROM_FIRST_ROW);
+        $I->assertDomainExistsInSpampanel($subDomain);
     }
 
     /**
@@ -275,7 +334,8 @@ class C01ConfigurationCest
     public function verifyParkedDomains(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false
         ));
 
         $I->createDefaultPackage();
@@ -288,6 +348,7 @@ class C01ConfigurationCest
         $I->loginAsRoot();
         $I->searchDomainList($parkedDomain);
         $I->see('parked', DomainListPage::TYPE_COLUMN_FROM_FIRST_ROW);
+        $I->assertDomainExistsInSpampanel($parkedDomain);
     }
 
     /**
@@ -321,7 +382,7 @@ class C01ConfigurationCest
     public function verifyAddAddonParkedAndSubdomainsAsAnAliasInsteadOfANormalDomain(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::ADD_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT => true,
             ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
             ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false
         ));
@@ -330,21 +391,13 @@ class C01ConfigurationCest
 
         $I->loginAsClient($account['username'], $account['password']);
         $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+        $I->assertIsAliasInSpampanel($addonDomainName, $account['domain']);
 
-        $aliases = $I->makeSpampanelApiRequest()->getDomainAliases($account['domain']);
-        $I->assertContains($addonDomainName, $aliases);
-        $I->clickHomeMenuLink();
         $parkedDomain = $I->addParkedDomainAsClient($account['domain']);
-        $aliases = $I->makeSpampanelApiRequest()->getDomainAliases($account['domain']);
-        $I->assertContains($parkedDomain, $aliases);
+        $I->assertIsAliasInSpampanel($parkedDomain, $account['domain']);
 
-//        Waiting for #26940
-        $I->pauseExecution();
-        $I->click('#lnkMenu');
         $subDomain = $I->addSubdomainAsClient($account['domain']);
-        $aliases = $I->makeSpampanelApiRequest()->getDomainAliases($account['domain']);
-        $I->pauseExecution();
-        $I->assertContains($subDomain, $aliases);
+        $I->assertIsAliasInSpampanel($subDomain, $account['domain']);
     }
 
     /**

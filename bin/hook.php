@@ -54,6 +54,7 @@ if (!Zend_Registry::isRegistered('general_config')) {
     $configuration = new SpamFilter_Configuration(CFG_FILE);
 }
 $config = Zend_Registry::get('general_config');
+$protectionManager = new SpamFilter_ProtectionManager();
 
 if ($paneltype == "PLESK")
 {
@@ -86,6 +87,9 @@ if ($paneltype == "PLESK")
         $action = translateCPHookNames($dataArray['context']['event'],$dataArray['context']['stage']);
 
         switch($action){
+            case 'predelaccount':
+                $user = $dataArray["data"]["user"];
+                break;
             case 'adddomain':
                                     $domain = $dataArray['data']['domain'];
                                     $mxtype = $dataArray['data']['mxcheck'];
@@ -116,16 +120,22 @@ if ($paneltype == "PLESK")
                                     $domain = $_panel->getMainDomain($dataArray['data']['user']);
                                     $alias = $dataArray['data']['args']['domain'].".".$domain;
                                     break;
-
+            case 'delsubdomain':
             case 'deladdondomain':  
                                     $domain = $_panel->getMainDomain($dataArray['data']['user']);
                                     $alias = $dataArray['data']['args']['domain'];
+                                    $alias = str_replace('_', '.', $alias);
                                     break;
             case 'park':
-            case 'unpark':
                                     $domain = $dataArray['data']['target_domain'];
                                     $alias = $dataArray['data']['new_domain'];
-                                    break;     
+                                    break;
+
+            case 'unpark':
+                                    $domain = $dataArray['data']['parent_domain'];
+                                    $alias = $dataArray['data']['domain'];
+
+                                    break;
             case 'savecontactinfo':
                                     $email = $dataArray['data']['args']['email'];
                                     $domain = $_panel->getMainDomain($dataArray['data']['user']);
@@ -186,7 +196,8 @@ switch( $action )
             } else {
                 if ($config->auto_add_domain) {
                     $response .= "\nAdding '{$domain}' to the Antispam filter...";
-                    $status = $hook->AddDomain($domain);
+                    $status = $protectionManager->protect($domain, null, "domain");
+
                     if (!empty($status['reason'])) {
                         $response .= " {$status['reason']} ";
                     }
@@ -231,15 +242,9 @@ switch( $action )
             return false;
         }
 
-        if ($config->add_extra_alias) {
-            // Add as alias
-            $response .= "\nAdding '{$alias}' as alias of '{$domain}' to the Antispam filter...";
-            $status = $hook->AddAlias($domain, $alias);
-        } else {
-            // Add as normal domain.
-            $response .= "\nAdding '{$alias}' to the Antispam filter...";
-            $status = $hook->AddDomain($alias);
-        }
+        $type = getSecondaryDomainType($action);
+        $response .= "\nAdding secondary domain '{$alias}' to the Antispam filter...";
+        $status = $protectionManager->protect($alias, $domain, $type);
 
         break;
 
@@ -292,6 +297,7 @@ switch( $action )
         break;
 
 	case "unpark":
+    case "delsubdomain":
 	case "deladdondomain":
 		if(empty($alias))
 		{
@@ -300,16 +306,10 @@ switch( $action )
 		}
 		if(!$config->handle_extra_domains) { return false; }// Extra/Addon domains DISABLED in plugin
 		if(!$config->auto_del_domain ) { return false; } // The admin said he did not want to have domains removed from the filter.
-		if($config->add_extra_alias) // Add the domain as ALIAS for existing one
-		{
-			// Deletion of alias
-			$response .= "\nDeleting '{$alias}' (alias from '{$domain}') from the Antispam filter...";
-			$status = $hook->DelAlias( $domain, $alias );
-		} else {
-			// Deletion of normal domain.
-			$response .= "\nDeleting '{$alias}' from the Antispam filter...";
-			$status = $hook->DelDomain( $alias );
-		}
+
+        $type = getSecondaryDomainType($action);
+        $response .= "\nDeleting '{$alias}' (alias from '{$domain}') from the Antispam filter...";
+        $status = $protectionManager->unprotect($alias, $domain, "alias");
 		break;
 
 	case "predelaccount":
@@ -382,7 +382,8 @@ if (isset($status['status'])) {
 
 function translateCPHookNames($event, $stage){
     if($stage == 'pre'){
-    $translate = array( 'Accounts::Remove'                     =>  'deldomain',
+    $translate = array( 'Accounts::Remove'                     =>  'predelaccount',
+                        'Api2::SubDomain::delsubdomain'        =>  'delsubdomain',
                         'Api2::AddonDomain::deladdondomain'    =>  'deladdondomain',
                         'Domain::unpark'                       =>  'unpark',
                  );
@@ -402,4 +403,22 @@ function translateCPHookNames($event, $stage){
 
 function getAliasFromArray($data) {
     return $data['alias'];
+}
+
+function getSecondaryDomainType($action) {
+    if (in_array($action, array("addsubdomain", "delsubdomain"))) {
+        return "subdomain";
+    }
+
+    if (in_array($action, array("unpark", "park"))) {
+        return "parked";
+    }
+
+    if (in_array($action, array("addaddondomain", "deladdondomain"))) {
+        return "addon";
+    }
+
+    Zend_Registry::get('logger')->info("[Hook] Unknown secondary domain type for $action.");
+
+    return null;    
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Pages\DomainListPage;
 use Step\Acceptance\CommonSteps;
 
 class C03DomainListCest
@@ -45,8 +46,8 @@ class C03DomainListCest
         $I->login($account['username'], $account['password']);
         $I->checkDomainList($account['domain']);
 
-        $I->dontSee($secondAccount['domain'], \Pages\DomainListPage::DOMAIN_TABLE);
-        $I->dontSee($secondAccountDomain['domain'], \Pages\DomainListPage::DOMAIN_TABLE);
+        $I->dontSee($secondAccount['domain'], DomainListPage::DOMAIN_TABLE);
+        $I->dontSee($secondAccountDomain['domain'], DomainListPage::DOMAIN_TABLE);
 
         $I->logout();
         $I->loginAsRoot();
@@ -71,17 +72,15 @@ class C03DomainListCest
         $domain = $account['domain'];
 
         $I->checkDomainIsPresentInFilter($domain);
-        $I->click('Toggle Protection');
+        $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
         $I->waitForText("The protection status of $domain has been changed to unprotected", 60);
         $I->checkDomainIsNotPresentInFilter($domain);
-        $domainExists = $I->makeSpampanelApiRequest()->domainExists($domain);
-        $I->assertFalse($domainExists);
+        $I->assertDomainNotExistsInSpampanel($domain);
 
-        $I->click('Toggle Protection');
+        $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
         $I->waitForText("The protection status of $domain has been changed to protected", 60);
         $I->checkDomainIsPresentInFilter($domain);
-        $domainExists = $I->makeSpampanelApiRequest()->domainExists($domain);
-        $I->assertTrue($domainExists);
+        $I->assertDomainExistsInSpampanel($domain);
     }
 
     public function verifyDomainLoginAsRoot(CommonSteps $I)

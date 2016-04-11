@@ -6,6 +6,7 @@ use Pages\ConfigurationPage;
 use Pages\CpanelClientPage;
 use Pages\CpanelWHMPage;
 use Pages\DomainListPage;
+use Pages\ProfessionalSpamFilterPage;
 use Pages\SpampanelPage;
 
 class CommonSteps extends \WebGuy
@@ -259,22 +260,26 @@ class CommonSteps extends \WebGuy
         $this->goToDomainListPage();
         $this->fillField(DomainListPage::SEARCH_FIELD, $domain);
         $this->click(DomainListPage::SEARCH_BTN);
-        $this->waitForText('Page 1 of 1. Total Items: 1');
+        $this->waitForText('Page 1 of 1. Total Items: 1', 60);
         $this->see($domain, DomainListPage::DOMAIN_TABLE);
     }
 
     public function checkDomainIsPresentInFilter($domain)
     {
         $this->searchDomainList($domain);
-        $this->click('Check status');
-        $this->waitForText('This domain is present in the filter.');
+        $this->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_PRESENT_IN_THE_FILTER);
     }
 
     public function checkDomainIsNotPresentInFilter($domain)
     {
         $this->searchDomainList($domain);
+        $this->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER);
+    }
+
+    public function checkProtectionStatusIs($status)
+    {
         $this->click('Check status');
-        $this->waitForText('This domain is not present in the filter.');
+        $this->waitForText($status);
     }
 
     public function loginAsClient($username, $password)
@@ -303,6 +308,38 @@ class CommonSteps extends \WebGuy
         $I->waitForText('The addon domain “'.$addonDomainName.'” has been created.', 30);
 
         return $addonDomainName;
+    }
+
+    public function removeAddonDomainAsClient($addonDomainName)
+    {
+        $I = $this;
+        $I->clickHomeMenuLink();
+        $I->waitForText('Addon Domains');
+        $I->click('Addon Domains');
+        $I->waitForText('Create an Addon Domain');
+        $I->fillField('#searchregex', $addonDomainName);
+        $I->click('#search');
+        $I->click("#lnkRemove_$addonDomainName");
+
+        $I->waitForText("Are you sure you wish to permanently remove the addon domain “".$addonDomainName."”?");
+        $I->click('#btnRemove');
+        $I->waitForText("The addon domain “".$addonDomainName."” has been removed.", 30);
+    }
+
+    public function removeSubdomainAsClient($subdomain)
+    {
+        $I = $this;
+        $I->clickHomeMenuLink();
+        $I->waitForText('Subdomains');
+        $I->click('Subdomains');
+        $I->waitForText('Create a Subdomain');
+        $I->fillField('#searchregex', $subdomain);
+        $I->click('#search');
+        $I->click("#{$subdomain}_lnkRemove");
+
+        $I->waitForText("Are you sure you wish to permanently remove subdomain “".$subdomain."”?");
+        $I->click('#deleteSubdomain');
+        $I->waitForText("The subdomain “".$subdomain."” has been successfully removed.", 30);
     }
 
     public function addSubdomainAsClient($domain, $subDomainPrefix = null)
@@ -339,6 +376,27 @@ class CommonSteps extends \WebGuy
         $I->changeToPaperLanternTheme();
 
         return $parkedDomain;
+    }
+
+    public function removeParkedDomainAsClient($parkedDomain)
+    {
+        $I = $this;
+        $I->clickHomeMenuLink();
+        $I->changeToX3Theme();
+        $I->click('#item_parkeddomains');
+
+        $I->waitForElement("//input[@name='searchregex']");
+        $I->fillField("//input[@name='searchregex']", $parkedDomain);
+        $I->click(".search-panel button");
+
+        // only 1 row
+        $I->dontSeeElement("//*[@id=\"parkeddomaintbl\"]/tbody/tr[2]/td[4]/a[contains(., \"Remove\")]");
+
+        $I->click("//*[@id=\"parkeddomaintbl\"]/tbody/tr[1]/td[4]/a[contains(., \"Remove\")]");
+
+        $I->waitForText("Are you certain that you wish to permanently remove the “".$parkedDomain."” parked domain?", 30);
+        $I->click("Remove Parked Domain");
+        $I->waitForText("cPanel successfully removed the “".$parkedDomain."” parked domain.", 30);
     }
 
     public function loginOnSpampanel($domain)
@@ -491,6 +549,17 @@ class CommonSteps extends \WebGuy
         $this->see('The settings have been saved.');
     }
 
+    /**
+     * Go to configuration page and set given options
+     * 
+     * @param array $options
+     */
+    public function goToConfigurationPageAndSetOptions(array $options)
+    {
+        $this->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
+        $this->setConfigurationOptions($options);
+    }
+    
     public function createDefaultPackage()
     {
         $I = $this;
@@ -541,7 +610,7 @@ class CommonSteps extends \WebGuy
             ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT => true,
             ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT => true,
             ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::ADD_ADDON_CPANEL_OPT => false,
+            ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT => false,
             ConfigurationPage::USE_EXISTING_MX_OPT => true,
             ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => true,
             ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT => false,

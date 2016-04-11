@@ -144,9 +144,8 @@ class AjaxController extends Zend_Controller_Action
                     $domain = $idn->decode($domain);
                 }
 
-                $data = (!empty($user))
-				      ? $this->_panel->bulkProtect(array('domain' => $domain, 'type' => $type, 'owner_user' => $user, 'owner_domain' => $owner_domain))
-				      : $this->_panel->bulkProtect(array('domain' => $domain, 'type' => $type, 'owner_domain' => $owner_domain));
+                $manager = new SpamFilter_ProtectionManager();
+                $data = $manager->protect($domain, $owner_domain, $type, $user);
 
                 break;
 
@@ -175,178 +174,18 @@ class AjaxController extends Zend_Controller_Action
                 break;
 
             case "toggleprotection":
+                $this->_helper->layout()->disableLayout();
+                $this->_helper->viewRenderer->setNoRender(true);
+
                 $domain = mb_strtolower($this->_getParam('domain'), 'UTF-8'); //@TODO: Add a filter to protect the input data (just to be sure)
                 $type = strtolower($this->_getParam('type'));
                 $owner_domain = mb_strtolower($this->_getParam('owner_domain'), 'UTF-8');
                 $owner_user = $this->_getParam('owner_user');
 
-                $config = Zend_Registry::get('general_config');
+                $toggler = new SpamFilter_ProtectionManager();
+                $response = $toggler->toggleProtection($domain, $owner_domain, $type, $owner_user);
 
-                $output = array();
-
-                $this->_helper->layout()->disableLayout();
-                $this->_helper->viewRenderer->setNoRender(true);
-
-                $urlbase = ((false !== stristr($_SERVER['SCRIPT_NAME'], "index.raw")) ? '' : $_SERVER['SCRIPT_NAME']);
-
-                /**
-                 * Do not process with extra-domains in case of it is disabled in settings
-                 * @see https://trac.spamexperts.com/ticket/17730
-                 */
-                if (!empty($owner_domain) && !(0 < $config->handle_extra_domains)) {
-                    $output ['message'] = $this->t->_("Processing of addon- and parked domains is disabled in settings");
-                    $output ['status'] = 'error';
-                    exit(Zend_Json::encode($output));
-                }
-
-                if (!$this->_panel->validateOwnership($domain)) {
-                    $output ['message'] = sprintf($this->t->_("You're not allowed to operate on the domain '%s'"), htmlspecialchars($domain, ENT_QUOTES, 'UTF-8'));
-                    $output ['status'] = 'error';
-                    exit(Zend_Json::encode($output));
-                }
-
-                // Execute action
-                $in_filter = $this->_panel->isInFilter($domain, $owner_domain);
-
-                $hook = new SpamFilter_Hooks;
-
-                /*
-                 * if subdomains, parked and addon  types should be added ass aliases, then don't allow to add them individually
-                 * @see https://trac.spamexperts.com/ticket/26075
-                 */
-
-                if (0 < $config->add_extra_alias && in_array($type, array('subdomain', 'parked', 'addon'))) {
-                    $status['reason_status'] = "Skipped: Addon, parked and subdomains will be treated as an alias instead of a normal domain. Try to add/remove the domain";
-                    $status['status'] = 'error';
-                    $status['rawresult'] = SpamFilter_Hooks::SKIP_EXTRA_ALIAS;
-
-                    $newstatus = $in_filter ? "unprotected": "protected";
-
-                } else {
-                    if (!$in_filter) {
-                        // Add to filter
-                        $status = $this->_panel->bulkProtect(array('domain' => $domain, 'type' => $type, 'owner_domain' => $owner_domain, 'owner_user' => (!empty($owner_user) ? $owner_user : $this->_panel->getDomainUser($domain))));
-                        if (!empty($status['reason_status']) && 'ok' == $status['reason_status']) {
-                            $status['status'] = true;
-                        } else {
-                            $status['status'] = 'error';
-                        }
-                        $newstatus = "protected";
-
-                    } else {
-                        // Remove from filter
-                        if (('parked' == $type || 'addon' == $type || 'subdomain' == $type) && !empty($owner_domain) && $config->add_extra_alias) {
-                            $status = $hook->DelAlias($owner_domain, $domain, true);
-                            $newstatus = "unprotected";
-                        } else {
-                            // Try to find the domain's aliases
-                            // @see https://trac.spamexperts.com/software/ticket/13043
-                            $aliases = array();
-                            if ($config->add_extra_alias) {
-                                $domainOwnerUsername = $this->_panel->getDomainUser($domain);
-                                $addonDomains = $this->_panel->getAddonDomains($domainOwnerUsername, $domain);
-                                $parkedDomains = $this->_panel->getParkedDomains($domainOwnerUsername, $domain);
-                                $subDomains = $this->_panel->getSubDomains($domainOwnerUsername, $domain);
-                                $secondaryDomains = array();
-                                if (is_array($addonDomains) && is_array($parkedDomains)) {
-                                    $secondaryDomains = @array_merge_recursive($addonDomains, $parkedDomains, $subDomains);
-                                } elseif (is_array($addonDomains)) {
-                                    $secondaryDomains = $addonDomains;
-                                } elseif (is_array($parkedDomains)) {
-                                    $secondaryDomains = $parkedDomains;
-                                } elseif (is_array($subDomains)) {
-                                    $secondaryDomains = $subDomains;
-                                }
-
-                                foreach ($secondaryDomains as $data) {
-                                    $aliases[] = $data['alias'];
-                                }
-
-                                $aliases = array_unique($aliases, SORT_REGULAR);
-
-                                unset($secondaryDomains);
-                            }
-
-                            $status = $hook->DelDomain($domain, true, true, $aliases); // force removal, reset DNS zone for manual removes
-
-                            $newstatus = "unprotected";
-                        }
-                    }
-                }
-
-                $idn = new IDNA_Convert;
-                $domain = $idn->decode($domain);
-
-                // Report back the status
-                if (!isset($status['status'])) {
-                    $status['status'] = false;
-                    $status['rawresult'] = SpamFilter_Hooks::SKIP_APIFAIL;
-                }
-
-                if ($status['status'] !== true && isset($status['rawresult'])) {
-                    switch ($status['rawresult']) {
-                        case SpamFilter_Hooks::ALREADYEXISTS_NOT_OWNER:
-                            $reason = $this->t->_(' you are not the owner of it.');
-                            break;
-                        case SpamFilter_Hooks::SKIP_EXTRA_ALIAS:
-                            $reason = $this->t->_(' because subdomain, parked and addon domains will be treated as aliases.');
-                            break;
-
-                        case SpamFilter_Hooks::SKIP_REMOTE:
-                            $reason = $this->t->_(' because domain uses remote exchanger.');
-                            break;
-
-                        case SpamFilter_Hooks::SKIP_DATAINVALID:
-                            $reason = $this->t->_(' because data is invalid.');
-                            break;
-
-                        case SpamFilter_Hooks::SKIP_UNKNOWN:
-                            $reason = $this->t->_(' because unknown error occurred.');
-                            break;
-
-                        case SpamFilter_Hooks::SKIP_APIFAIL:
-                            $reason = $this->t->_(' because API communication failed.');
-                            break;
-
-                        case SpamFilter_Hooks::SKIP_ALREADYEXISTS:
-                            $reason = $this->t->_(' because domain already exists.');
-                            break;
-
-                        case SpamFilter_Hooks::SKIP_INVALID:
-                            $reason = $this->t->_(' because domain is not valid.');
-                            break;
-
-                        case SpamFilter_Hooks::SKIP_NOROOT:
-                            $reason = $this->t->_(' because root domain cannot be added.');
-                            break;
-
-                        case SpamFilter_Hooks::API_REQUEST_FAILED:
-                            $reason = $this->t->_(' because API request has failed.');
-                            break;
-
-                        case SpamFilter_Hooks::DOMAIN_EXISTS:
-                            $reason = $this->t->_(' because domain already exists.');
-                            break;
-
-                        case SpamFilter_Hooks::ALIAS_EXISTS:
-                            $reason = $this->t->_(' because alias already exists.');
-                            break;
-
-                        case SpamFilter_Hooks::DOMAIN_LIMIT_REACHED:
-                            $reason = $this->t->_(' because domain limit reached.');
-                            break;
-
-                        default:
-                            $reason = (!empty($status['additional'])) ? '. ' . ((is_array($status['additional'])) ? implode(', ', $status['additional']) : $status['additional']) : '';
-                            break;
-                    }
-                    $output ['message'] = sprintf($this->t->_('The protection status of %s could not be changed to <strong>%s</strong>%s'), $domain, $newstatus, $reason);
-                    $output ['status'] = 'error';
-                } else {
-                    $output ['message'] = sprintf($this->t->_('The protection status of %s has been changed to <strong>%s</strong>'), $domain, $newstatus);
-                    $output ['status'] = 'success';
-                }
-                exit(Zend_Json::encode($output));
+                exit(Zend_Json::encode($response));
                 break;
         }
 
