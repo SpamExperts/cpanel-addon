@@ -28,6 +28,7 @@ $panel = new SpamFilter_PanelSupport_Cpanel;
 $data = $panel->getDomains(array('username' => $processUsername, 'level' => 'owner'));
 
 $config = Zend_Registry::get('general_config');
+$protectionManager = new SpamFilter_ProtectionManager();
 
 /**
  * In some circumstances the array of domains should be resorted in a special way -
@@ -73,22 +74,7 @@ if (!empty($data) && is_array($data)) {
             $domain = $idn->decode($domain);
         }
 
-        $data = (!empty($user))
-            ? $panel->bulkProtect(
-                array(
-                    'domain' => $domain,
-                    'type' => $type,
-                    'owner_user' => $user,
-                    'owner_domain' => $owner_domain,
-                )
-            )
-            : $panel->bulkProtect(
-                array(
-                    'domain' => $domain,
-                    'type' => $type,
-                    'owner_domain' => $owner_domain,
-                )
-            );
+        $protectResponse = $protectionManager->protect($domain, $owner_domain, $type, $user);
 
         $progress++;
 

@@ -161,7 +161,7 @@ class SpamFilter_ProtectionManager
         return $response;
     }
 
-    public function protect($domain, $ownerDomain, $domainType, $ownerUser = null, $raw = false)
+    public function protect($domain, $ownerDomain, $domainType, $ownerUser = null)
     {
         $this->log("Protecting $domain");
         $isSecondaryDomain = in_array($domainType, array('subdomain', 'parked', 'addon', 'alias'));
