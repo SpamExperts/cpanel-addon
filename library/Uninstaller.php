@@ -3,7 +3,7 @@
 class Uninstaller
 {
     /**
-     * @var AbstractFilesystem
+     * @var Filesystem_AbstractFilesystem
      */
     protected $filesystem;
 
@@ -64,10 +64,11 @@ class Uninstaller
         $this->resetMXs();
         $this->removeAddonFromCpanel();
         $this->removeHooks();
+        $this->unregisterCpanelAppInAppConfig();
         $this->filesystem->removeDirectory($this->paths->config);
         $this->filesystem->removeDirectory($this->paths->destination);
         $this->removeUpdateCronjob();
-        $this->output->write("_n_n***** We're sad to see you go, but ProSpamFilter has now been uninstalled from your system! *****_n_n");
+        $this->output->write("\n\n***** We're sad to see you go, but ProSpamFilter has now been uninstalled from your system! *****\n\n");
     }
 
     private function outputStartMessage()
@@ -268,6 +269,67 @@ class Uninstaller
         );
 
         $panel->manageHooks($hooks);
+    }
+
+    private function unregisterCpanelAppInAppConfig()
+    {
+        $cpanelAppsToUnregister = array();
+        $cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
+
+        foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+            if (is_dir("{$cPanelWebdirsRoot}/{$eachDir}")
+                && !in_array($eachDir, array('.', '..', 'x3.bak'))
+                && !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
+            ) {
+                $cpanelAppsToUnregister[] = "prospamfilter_cpanel_{$eachDir}";
+            }
+        }
+
+        foreach ($cpanelAppsToUnregister as $app) {
+            $isConfigured = trim(shell_exec("/usr/local/cpanel/bin/is_registered_with_appconfig cpanel $app"));
+
+            if ('0' == $isConfigured) {
+                continue;
+            }
+
+            $output = trim(shell_exec("/usr/local/cpanel/bin/unregister_appconfig $app"));
+
+            if (false === stripos($output, "$app unregistered")) {
+                echo "Failed to unregister $app: \n".$output."\n";
+            } else {
+                echo "$app unregistered successfully\n";
+            }
+        }
+
+        shell_exec("/usr/local/cpanel/bin/unregister_appconfig prospamfilter_whm");
+
+        $phpSymlink = '/usr/local/bin/prospamfilter_php';
+
+        if (is_link($phpSymlink)) {
+            unlink($phpSymlink);
+        }
+
+        $cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
+
+        foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+            if (is_dir("{$cPanelWebdirsRoot}/{$eachDir}")
+                && !in_array($eachDir, array('.', '..'))
+                && !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
+            ) {
+                $link = "{$cPanelWebdirsRoot}/{$eachDir}/prospamfilter";
+
+                if (is_link($link)) {
+                    unlink($link);
+                }
+
+            }
+        }
+
+        $file = '/usr/local/cpanel/whostmgr/addonfeatures/prospamfilter';
+
+        if (file_exists($file)) {
+            unlink($file);
+        }
     }
 
     private function removeUpdateCronjob()

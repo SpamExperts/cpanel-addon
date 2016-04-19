@@ -56,6 +56,7 @@ require_once DEST_PATH . DS . 'library' . DS . 'Filesystem' . DS . 'LinuxFilesys
 require_once DEST_PATH . DS . 'library' . DS . 'Filesystem' . DS . 'WindowsFilesystem.php';
 require_once DEST_PATH . DS . 'library' . DS . 'Output' . DS . 'OutputInterface.php';
 require_once DEST_PATH . DS . 'library' . DS . 'Output' . DS . 'ConsoleOutput.php';
+require_once DEST_PATH . DS . 'library' . DS . 'Uninstaller.php';
 
 $paths = new Installer_InstallPaths();
 $paths->base = BASE_PATH;
