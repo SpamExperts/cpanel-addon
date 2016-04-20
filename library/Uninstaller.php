@@ -160,12 +160,12 @@ class Uninstaller
     private function removeAddonFromCpanel()
     {
         // Delink cPanel addon from webdirs.
-        $webDirs = [
+        $webDirs = array(
             "/usr/local/cpanel/base/frontend/x3/prospamfilter/",
             "/usr/local/cpanel/base/frontend/x3mail/prospamfilter/",
             "/usr/local/cpanel/whostmgr/docroot/cgi/psf/",
             "/usr/local/prospamfilter/frontend/cpanel/psf",
-        ];
+        );
 
         foreach ($webDirs as $dir) {
             $this->output->info("Unlinking $dir");
