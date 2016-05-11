@@ -145,7 +145,6 @@ if ($paneltype == "PLESK")
                                     $domain = $dataArray['data']['domain'];
                                     $action = 'savecontactinfo';
                                     break;
-            case 'setalwaysaccept':
             case 'setmxcheck':      $mxtype = $dataArray['data']['args']['mxcheck'];
                                     $domain = $dataArray['data']['args']['domain'];
                                     break;
@@ -347,11 +346,10 @@ switch( $action )
 
 		break;
 
-	case "setalwaysaccept":
 	case "setmxcheck":
-		if( isset($mxcheck) && (!empty($mxcheck)) )
+		if( isset($mxtype) && (!empty($mxtype)) )
 		{
-			$hook->setMailHandling($domain, $mxcheck);
+			$hook->setMailHandling($domain, $mxtype);
 		} else {
 			Zend_Registry::get('logger')->err("[Hook] Unable to set mail handling with missing mxtype.");
 		}
@@ -395,8 +393,7 @@ function translateCPHookNames($event, $stage){
                         'Api2::SubDomain::addsubdomain'        =>  'addsubdomain',
                         'Api2::AddonDomain::addaddondomain'    =>  'addaddondomain',
                         'Api2::CustInfo::savecontactinfo'      =>  'savecontactinfo',
-                        'Api2::Email::setalwaysaccept'         =>  'setalwaysaccept',
-                        'Api2::Email::setmxcheck'              =>  'setmxcheck');        
+                        'Api2::Email::setmxcheck'              =>  'setmxcheck');
     }
     return $translate[$event];
 }

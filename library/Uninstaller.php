@@ -261,10 +261,6 @@ class Uninstaller
                     'stage' => 'post',
                     'action' => ''),
 
-                array('category' => 'Cpanel',
-                    'event' => 'Api2::Email::setalwaysaccept',
-                    'stage' => 'post',
-                    'action' => '')
             )
         );
 

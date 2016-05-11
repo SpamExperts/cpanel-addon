@@ -721,7 +721,14 @@ class SpamFilter_Hooks
         if ( strtolower($mxtype) <> "local" )
         {
             // Domain NOT set to local, we should stop handling it
-            return $this->DelDomain( $domain, true ); // Force it
+            if( $this->_config->provision_dns ) {
+                $this->_logger->info("[Hook] {$domain}'s MX records will be automatically reset, as configured in settings.");
+                return $this->DelDomain($domain, true, true); // Force remove it and reset MX records
+            }
+            else {
+                $this->_logger->info("[Hook] {$domain}'s MX records will NOT be automatically reset, as configured in settings.");
+                return $this->DelDomain($domain, true); // Force remove it and don't change MX records
+            }
         } else {
             // Domain set to local, we should handle it.
             $this->_logger->debug("[Hook] Domain '{$domain}' has been changed to local, making sure it exists in the filtering solution.");

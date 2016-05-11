@@ -104,7 +104,8 @@ class SpamFilter_PanelSupport_Cpanel
 			array('category'  =>    'PkgAcct',
                 'event'     =>      'Restore',
                 'stage'     =>      'post',
-                'action'    =>      ''),
+                'action'    =>      ''
+            ),
             array(
                 'category'  =>      'Cpanel',
                 'event'     =>      'Api2::AddonDomain::addaddondomain',
@@ -122,13 +123,15 @@ class SpamFilter_PanelSupport_Cpanel
                 'event'     =>      'Api2::SubDomain::addsubdomain',
                 'stage'     =>      'post',
                 'action'    =>      '',
-                'escalateprivs' =>  1),
+                'escalateprivs' =>  1
+            ),
             array(
                 'category'  =>    'Cpanel',
                 'event'     =>      'Api2::SubDomain::delsubdomain',
                 'stage'     =>      'pre',
                 'action'    =>      '',
-                'escalateprivs' =>  1),
+                'escalateprivs' =>  1
+            ),
             array(
                 'category'  =>      'Cpanel',
                 'event'     =>      'Api2::CustInfo::savecontactinfo',
@@ -140,12 +143,7 @@ class SpamFilter_PanelSupport_Cpanel
                 'event'     =>      'Api2::Email::setmxcheck',
                 'stage'     =>      'post',
                 'action'    =>      ''
-            ),
-            array(
-                'category'  =>      'Cpanel',
-                'event'     =>      'Api2::Email::setalwaysaccept',
-                'stage'     =>      'post',
-                'action'    =>      '')
+            )
         );
     }
 
