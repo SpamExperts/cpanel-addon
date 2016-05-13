@@ -122,7 +122,59 @@ class C01ConfigurationCest
         $I->assertDomainNotExistsInSpampanel($parkedDomainName);
         $I->assertDomainNotExistsInSpampanel($subDomain);
     }
-    
+// Hook on setting email routing doesn't work
+    public function verifyHookSetEmailRoutingAtClientLevel(ConfigurationSteps $I)
+    {
+        $I->setConfigurationOptions(array(
+            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
+            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true,
+            ConfigurationPage::ADD_REMOVE_DOMAIN => true
+
+        ));
+
+        $spampanelMxRecords = $I->getMxFields();
+
+        $account = $I->createNewAccount();
+        // $I->searchDomainList($account['domain']);
+        // $I->assertDomainExistsInSpampanel($account['domain']);
+
+        // Change email routing and remove account by using Backup Mail Exchanger
+        $I->loginAsClient($account['username'], $account['password']);
+        $destinationRoutes = $I->makeSpampanelApiRequest()->getDomainRoutesNames($account['domain']);
+        $I->accessEmailRoutingInMxEntryPage();
+        $I->ChangeEmailRoutingInMxEntryPageToBackupMailExchanger();
+        $I->logoutAsClient();
+        $I->loginAsRoot();
+        $I->assertDomainNotExistsInSpampanel($account['domain']);
+        $I->seeMxEntriesInCpanelInterface($account['domain'], $destinationRoutes);
+        $I->dontSeeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
+
+        // Change email routing and remove account by using Local Mail Exchanger
+        $I->loginAsClient($account['username'], $account['password']);
+        $I->accessEmailRoutingInMxEntryPage();
+        $I->pauseExecution();
+        $I->ChangeEmailRoutingInMxEntryPageToLocalMailExchanger();
+        $I->logoutAsClient();
+        $I->loginAsRoot();
+        $I->searchDomainList($account['domain']);
+        $I->assertDomainExistsInSpampanel($account['domain']);
+        $I->seeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
+
+        // Change email routing and remove account by using Remote Mail Exchanger
+        $I->loginAsClient($account['username'], $account['password']);
+        $destinationRoutes = $I->makeSpampanelApiRequest()->getDomainRoutesNames($account['domain']);
+        $I->accessEmailRoutingInMxEntryPage();
+        $I->ChangeEmailRoutingInMxEntryPageToRemoteMailExchanger();
+        $I->logoutAsClient();
+        $I->loginAsRoot();
+        $I->searchDomainList($account['domain']);
+        $I->assertDomainNotExistsInSpampanel($account['domain']);
+        $I->seeMxEntriesInCpanelInterface($account['domain'], $destinationRoutes);
+        $I->dontSeeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
+    }
+
     public function verifyAutmaticallyDeleteSecondaryDomains(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(

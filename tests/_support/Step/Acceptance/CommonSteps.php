@@ -286,6 +286,7 @@ class CommonSteps extends \WebGuy
     {
         $I = $this;
         $I->amOnUrl($I->getClientUrl());
+        $I->wait(2);
         $I->fillField('#user', $username);
         $I->fillField('#pass', $password);
         $I->click('Log in');
@@ -528,6 +529,22 @@ class CommonSteps extends \WebGuy
         return $values;
     }
 
+    public function seeMxEntriesInCpanelInterface($domain, array $mxRecords)
+    {
+        $existingMxRecords = $this->getMxEntriesFromCpanelInterface($domain);
+        foreach ($mxRecords as $mxRecord) {
+            $this->assertContains($mxRecord, $existingMxRecords);
+        }
+    }
+
+    public function dontSeeMxEntriesInCpanelInterface($domain, array $mxRecords)
+    {
+        $existingMxRecords = $this->getMxEntriesFromCpanelInterface($domain);
+        foreach ($mxRecords as $mxRecord) {
+            $this->assertNotContains($mxRecord, $existingMxRecords);
+        }
+    }
+
     public function setDefaultConfigurationOptions()
     {
         $this->setConfigurationOptions($this->getDefaultConfigurationOptions());
@@ -551,7 +568,7 @@ class CommonSteps extends \WebGuy
 
     /**
      * Go to configuration page and set given options
-     * 
+     *
      * @param array $options
      */
     public function goToConfigurationPageAndSetOptions(array $options)
@@ -559,7 +576,7 @@ class CommonSteps extends \WebGuy
         $this->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
         $this->setConfigurationOptions($options);
     }
-    
+
     public function createDefaultPackage()
     {
         $I = $this;
@@ -592,6 +609,37 @@ class CommonSteps extends \WebGuy
         $this->click("#lnkDashboard");
         $this->selectOption('#ddlChangeTheme', 'x3');
         $this->waitForText($this->currentBrandname, 30);
+    }
+
+    public function accessEmailRoutingInMxEntryPage()
+    {
+        $this->click(".//*[@id='icon-mx_entry']");
+        $this->waitForText("MX Entry");
+        $this->waitForText("Email Routing");
+    }
+
+    public function changeEmailRoutingInMxEntryPageToLocalMailExchanger()
+    {
+        $this->selectOption(".//*[@id='mxcheck_local']", "local");
+        $this->click("#change_mxcheck_button");
+        $this->waitForElementVisible("//img[@alt='loading']", 30);
+        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
+    }
+
+    public function changeEmailRoutingInMxEntryPageToBackupMailExchanger()
+    {
+        $this->selectOption(".//*[@id='mxcheck_secondary']", "secondary");
+        $this->click("#change_mxcheck_button");
+        $this->waitForElementVisible("//img[@alt='loading']", 30);
+        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
+    }
+
+    public function changeEmailRoutingInMxEntryPageToRemoteMailExchanger()
+    {
+        $this->selectOption(".//*[@id='mxcheck_remote']", "remote");
+        $this->click("#change_mxcheck_button");
+        $this->waitForElementVisible("//img[@alt='loading']", 30);
+        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
     }
 
     public function changeToPaperLanternTheme()

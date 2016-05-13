@@ -38,6 +38,16 @@ class SpampanelApi
         return $response['result'];
     }
 
+    public function getDomainRoutesNames($domain)
+    {
+        $routes = $this->getDomainRoutes($domain);
+
+        return array_map(function ($route) {
+            list($route, $port) = explode('::', $route);
+            return $route;
+        }, $routes);
+    }
+
     public function getDomainAliases($domain)
     {
         $this->comment("Getting $domain aliases");

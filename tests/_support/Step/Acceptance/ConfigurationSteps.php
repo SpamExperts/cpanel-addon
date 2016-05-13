@@ -117,6 +117,17 @@ class ConfigurationSteps extends CommonSteps
         $this->fillField(ConfigurationPage::MX_PRIMARY, $string);
     }
 
+    public function getMxFields()
+    {
+        $mxRecords = [];
+        $mxRecords[] = $this->grabValueFrom(ConfigurationPage::MX_PRIMARY);
+        $mxRecords[] = $this->grabValueFrom(ConfigurationPage::MX_SECONDARY);
+        $mxRecords[] = $this->grabValueFrom(ConfigurationPage::MX_TERTIARY);
+        $mxRecords[] = $this->grabValueFrom(ConfigurationPage::MX_QUATERNARY);
+
+        return array_filter($mxRecords);
+    }
+
     public function setFieldSpfRecord($string)
     {
         $this->fillField(ConfigurationPage::SPF_RECORD, $string);
