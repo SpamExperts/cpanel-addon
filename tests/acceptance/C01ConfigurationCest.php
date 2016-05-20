@@ -515,25 +515,18 @@ class C01ConfigurationCest
 
         // addon domain
         $I->loginAsClient($account['username'], $account['password']);
-        $parkedDomain = $I->addParkedDomainAsClient($account['domain']);
-        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
-        $I->clickHomeMenuLink();
-        $subDomain = $I->addSubdomainAsClient($account['domain']);
-        $I->clickHomeMenuLink();
-        $I->checkDomainListAsClient([$parkedDomain, $addonDomainName, $subDomain]);
 
+        // add alias domain
+        $aliasDomain = $I->addAliasDomainAsClient($account['domain']);
+        $I->clickHomeMenuLink();
+
+        $I->checkDomainListAsClient($aliasDomain);
+        $I->logoutAsClient();
         $I->loginAsRoot();
-        $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
-        $I->setConfigurationOptions(array(
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => false
-        ));
 
-        $I->loginAsClient($account['username'], $account['password']);
-
-        $I->checkDomainListAsClient($account['domain']);
-        $I->dontSeeInDomainTable($parkedDomain);
-        $I->dontSeeInDomainTable($addonDomainName);
-        $I->dontSeeInDomainTable($subDomain);
+        $I->searchDomainList($aliasDomain);
+        $I->see('alias', DomainListPage::TYPE_COLUMN_FROM_FIRST_ROW);
+        $I->assertDomainExistsInSpampanel($aliasDomain);
     }
 
     /**
@@ -551,32 +544,20 @@ class C01ConfigurationCest
         $I->createDefaultPackage();
 
         $account = $I->createNewAccount(['ui' => true]);
+        $I->loginAsClient($account['username'], $account['password']);
 
         // addon domain
-        $I->loginAsClient($account['username'], $account['password']);
-        $parkedDomain = $I->addParkedDomainAsClient($account['domain']);
-        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+        $aliasDomain = $I->addAliasDomainAsClient($account['domain']);
+
+        // add alias domain
         $I->clickHomeMenuLink();
-        $subDomain = $I->addSubdomainAsClient($account['domain']);
-        $I->clickHomeMenuLink();
-        $I->checkDomainListAsClient([$parkedDomain, $addonDomainName, $subDomain]);
+        $I->checkDomainListAsClient($aliasDomain);
 
         $I->login($reseller['username'], $reseller['password']);
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
         $I->setConfigurationOptions(array(
             ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => false
         ));
-
-        $I->loginAsClient($account['username'], $account['password']);
-
-        $I->checkDomainListAsClient($account['domain']);
-        $I->dontSeeInDomainTable($parkedDomain);
-        $I->dontSeeInDomainTable($addonDomainName);
-        $I->dontSeeInDomainTable($subDomain);
-
-//        $I->searchDomainList($addonDomainName);
-//        $I->see('addon', DomainListPage::TYPE_COLUMN_FROM_FIRST_ROW);
-        $I->pauseExecution();
 
     }
 }

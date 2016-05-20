@@ -379,6 +379,21 @@ class CommonSteps extends \WebGuy
         return $parkedDomain;
     }
 
+    public function addAliasDomainAsClient ($domain, $aliasDomain = null)
+    {
+        if (! $aliasDomain) {
+            $aliasDomain = 'alias'.$domain;
+        }
+
+        $I = $this;
+        $I->click('#item_aliases');
+        $I->fillField('#domain', $aliasDomain);
+        $I->click('Add Domain');
+        $I->waitForText('You successfully created the alias, “'.$aliasDomain.'”.');
+
+        return $aliasDomain;
+    }
+
     public function removeParkedDomainAsClient($parkedDomain)
     {
         $I = $this;
@@ -632,6 +647,7 @@ class CommonSteps extends \WebGuy
         $this->click("#change_mxcheck_button");
         $this->waitForElementVisible("//img[@alt='loading']", 30);
         $this->waitForElementNotVisible("//img[@alt='loading']", 30);
+        $this->wait(10);
     }
 
     public function changeEmailRoutingInMxEntryPageToRemoteMailExchanger()
