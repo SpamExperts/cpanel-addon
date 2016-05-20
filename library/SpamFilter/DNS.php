@@ -132,10 +132,12 @@ class SpamFilter_DNS
             if(!empty($records)){
                 $response = $panel->SetupDNS(array(
                         'domain' => $domain,
-                        'records' => $records
+                        'records' => $records,
+                        'unprotect' => true
                 ));
                 return $response;
             }
+
         } else {
             self::DeconfigureDns($domain);
         }

@@ -349,7 +349,7 @@ switch( $action )
 	case "setmxcheck":
 		if( isset($mxtype) && (!empty($mxtype)) )
 		{
-			$hook->setMailHandling($domain, $mxtype);
+            $status = $hook->setMailHandling($domain, $mxtype);
 		} else {
 			Zend_Registry::get('logger')->err("[Hook] Unable to set mail handling with missing mxtype.");
 		}

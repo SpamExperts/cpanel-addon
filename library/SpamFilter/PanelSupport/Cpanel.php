@@ -421,18 +421,20 @@ class SpamFilter_PanelSupport_Cpanel
         }
 
         /**
-         * The domain must be "local" to avoid email processing
+         * The domain must be "local" to avoid email processing, but only when domain is protected
          *
          * @see https://trac.spamexperts.com/ticket/18108
          */
-        $config = Zend_Registry::get('general_config');
-        if (0 < $config->bulk_change_routing) {
-            $this->SwitchMXmode(
-                array(
-                    'domain' => $domain,
-                    'mode'   => 'local',
-                )
-            );
+        if (empty($data['unprotect']) || !($data['unprotect'])) {
+            $config = Zend_Registry::get('general_config');
+            if (0 < $config->bulk_change_routing) {
+                $this->SwitchMXmode(
+                    array(
+                        'domain' => $domain,
+                        'mode' => 'local',
+                    )
+                );
+            }
         }
 
         return true;
