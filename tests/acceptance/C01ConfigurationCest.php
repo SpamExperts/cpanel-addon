@@ -122,7 +122,7 @@ class C01ConfigurationCest
         $I->assertDomainNotExistsInSpampanel($parkedDomainName);
         $I->assertDomainNotExistsInSpampanel($subDomain);
     }
-// Hook on setting email routing doesn't work
+
     public function verifyHookSetEmailRoutingAtClientLevel(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
@@ -131,14 +131,10 @@ class C01ConfigurationCest
             ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
             ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true,
             ConfigurationPage::ADD_REMOVE_DOMAIN => true
-
         ));
 
         $spampanelMxRecords = $I->getMxFields();
-
         $account = $I->createNewAccount();
-        // $I->searchDomainList($account['domain']);
-        // $I->assertDomainExistsInSpampanel($account['domain']);
 
         // Change email routing and remove account by using Backup Mail Exchanger
         $I->loginAsClient($account['username'], $account['password']);
@@ -173,6 +169,32 @@ class C01ConfigurationCest
         $I->assertDomainNotExistsInSpampanel($account['domain']);
         $I->seeMxEntriesInCpanelInterface($account['domain'], $destinationRoutes);
         $I->dontSeeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
+    }
+
+    public function verifyHookSetEmailRoutingWhileUsingBulkprotect(ConfigurationSteps $I)
+    {
+        $I->removeAllAccounts();
+        $I->setConfigurationOptions(array(
+            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => false,
+            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
+            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => true,
+            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true,
+            ConfigurationPage::ADD_REMOVE_DOMAIN => true
+        ));
+
+        $spampanelMxRecords = $I->getMxFields();
+        $account = $I->createNewAccount();
+
+        $I->goToPage(ProfessionalSpamFilterPage::BULKPROTECT_BTN, BulkprotectPage::TITLE);
+        $I->seeLastExecutionInfo();
+        $I->submitBulkprotectForm();
+        $I->seeBulkprotectRanSuccessfully();
+        $I->see('Domain has been added', "{$account['domain']}");
+
+        $I->searchDomainList($account['domain']);
+        $I->assertDomainExistsInSpampanel($account['domain']);
+        $I->seeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
+
     }
 
     public function verifyAutmaticallyDeleteSecondaryDomains(ConfigurationSteps $I)
