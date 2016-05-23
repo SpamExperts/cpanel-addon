@@ -173,28 +173,73 @@ class C01ConfigurationCest
 
     public function verifyHookSetEmailRoutingWhileUsingBulkprotect(ConfigurationSteps $I)
     {
-        $I->removeAllAccounts();
         $I->setConfigurationOptions(array(
             ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => false,
             ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => true,
+            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
             ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true,
             ConfigurationPage::ADD_REMOVE_DOMAIN => true
         ));
 
-        $spampanelMxRecords = $I->getMxFields();
+        $I->removeAllAccounts();
+
         $account = $I->createNewAccount();
 
-        $I->goToPage(ProfessionalSpamFilterPage::BULKPROTECT_BTN, BulkprotectPage::TITLE);
-        $I->seeLastExecutionInfo();
+        // Change email routing to other than Local
+        $I->loginAsClient($account['username'], $account['password']);
+        $I->accessEmailRoutingInMxEntryPage();
+        $I->verifyEmailRoutingInMxEntryPageSetToLocal();
+        $I->ChangeEmailRoutingInMxEntryPageToBackupMailExchanger();
+        $I->verifyEmailRoutingInMxEntryPageSetToBackup();
+        $I->logoutAsClient();
+        $I->loginAsRoot();
+        $I->searchDomainList($account['domain']);
+
+        // Email routing should not change when domain is protected
+        $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
+        $I->waitForText("The protection status of {$account['domain']} has been changed to protected", 60);
+        $I->logout();
+        $I->loginAsClient($account['username'], $account['password']);
+        $I->accessEmailRoutingInMxEntryPage();
+        $I->verifyEmailRoutingInMxEntryPageSetToLocal();
+        $I->logoutAsClient();
+        $I->loginAsRoot();
+        $I->searchDomainList($account['domain']);
+
+        // Email routing should not change when domain is unprotected
+        $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
+        $I->waitForText("The protection status of {$account['domain']} has been changed to unprotected", 60);
+        $I->loginAsClient($account['username'], $account['password']);
+        $I->accessEmailRoutingInMxEntryPage();
+        $I->verifyEmailRoutingInMxEntryPageSetToLocal();
+        $I->logoutAsClient();
+        $I->loginAsRoot();
+        $I->searchDomainList($account['domain']);
+
+        // Email routing should not change when domain is protected again
+        $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
+        $I->waitForText("The protection status of {$account['domain']} has been changed to protected", 60);
+        $I->loginAsClient($account['username'], $account['password']);
+        $I->accessEmailRoutingInMxEntryPage();
+
+        // Email routing is changed manually
+        $I->ChangeEmailRoutingInMxEntryPageToRemoteMailExchanger();
+        $I->verifyEmailRoutingInMxEntryPageSetToRemote();
+        $I->logoutAsClient();
+        $I->loginAsRoot();
+        $I->searchDomainList($account['domain']);
+        $I->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER);
+
+        // Email routing is changed to Local when bulkprotect is ran
+        $I->goToPage(\Pages\ProfessionalSpamFilterPage::BULKPROTECT_BTN, \Pages\BulkprotectPage::TITLE);
+        $I->seeBulkProtectLastExecutionInfo();
         $I->submitBulkprotectForm();
         $I->seeBulkprotectRanSuccessfully();
-        $I->see('Domain has been added', "{$account['domain']}");
-
-        $I->searchDomainList($account['domain']);
-        $I->assertDomainExistsInSpampanel($account['domain']);
-        $I->seeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
-
+        $I->see('Domain has been added', \Pages\BulkprotectPage::TABLE);
+        $I->logout();
+        $I->loginAsClient($account['username'], $account['password']);
+        $I->accessEmailRoutingInMxEntryPage();
+        $I->verifyEmailRoutingInMxEntryPageSetToLocal();
     }
 
     public function verifyAutmaticallyDeleteSecondaryDomains(ConfigurationSteps $I)

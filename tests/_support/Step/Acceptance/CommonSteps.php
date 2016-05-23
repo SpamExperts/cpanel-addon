@@ -633,6 +633,21 @@ class CommonSteps extends \WebGuy
         $this->waitForText("Email Routing");
     }
 
+    public function verifyEmailRoutingInMxEntryPageSetToLocal()
+    {
+        $this->seeOptionIsSelected(".//*[@id='mxcheck_local']", "local");
+    }
+
+    public function verifyEmailRoutingInMxEntryPageSetToBackup()
+    {
+        $this->seeOptionIsSelected(".//*[@id='mxcheck_secondary']", "secondary");
+    }
+
+    public function VerifyEmailRoutingInMxEntryPageSetToRemote()
+    {
+        $this->seeOptionIsSelected(".//*[@id='mxcheck_remote']", "remote");
+    }
+
     public function changeEmailRoutingInMxEntryPageToLocalMailExchanger()
     {
         $this->selectOption(".//*[@id='mxcheck_local']", "local");
@@ -662,6 +677,24 @@ class CommonSteps extends \WebGuy
     {
         $this->selectOption('//select[@name="theme"]', 'paper_lantern');
         $this->waitForText($this->currentBrandname, 30);
+    }
+
+    public function seeBulkProtectLastExecutionInfo()
+    {
+        $this->see('Bulk protect has been executed last at: ');
+    }
+
+    public function submitBulkprotectForm()
+    {
+        $this->click('Execute bulkprotect');
+    }
+
+    public function seeBulkprotectRanSuccessfully()
+    {
+        $this->waitForText("Bulkprotect", 200);
+        $this->waitForElement(".//*[@id='bulkwarning']/div", 200);
+        $this->waitForText("Bulkprotect has finished", 200);
+        $this->see("The bulkprotect process has finished its work. Please see the tables below for the results.");
     }
 
     private function getDefaultConfigurationOptions()
