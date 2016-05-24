@@ -425,7 +425,7 @@ class SpamFilter_PanelSupport_Cpanel
          *
          * @see https://trac.spamexperts.com/ticket/18108
          */
-        if (empty($data['unprotect']) || !($data['unprotect'])) {
+        if (empty($data['unprotect'])) {
             $config = Zend_Registry::get('general_config');
             if (0 < $config->bulk_change_routing) {
                 $this->SwitchMXmode(
