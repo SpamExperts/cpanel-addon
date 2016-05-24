@@ -34,15 +34,15 @@ class C04BulkProtectCest
 
         $I->goToPage(ProfessionalSpamFilterPage::BULKPROTECT_BTN, BulkprotectPage::TITLE);
         $I->verifyPageLayout();
-        $I->seeLastExecutionInfo();
+        $I->seeBulkProtectLastExecutionInfo();
         $I->submitBulkprotectForm();
         $I->seeBulkprotectRanSuccessfully();
-        $I->see('Domain has been added', '#resultdomainstatus');
+        $I->see('Domain has been added', BulkprotectPage::TABLE);
 
         $I->goToPage(ProfessionalSpamFilterPage::BULKPROTECT_BTN, BulkprotectPage::TITLE);
         $I->submitBulkprotectForm();
         $I->seeBulkprotectRanSuccessfully();
-        $I->see('Skipped: Domain already exists', '#resultdomainstatus');
+        $I->see('Skipped: Domain already exists', BulkprotectPage::TABLE);
 
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
         $I->setConfigurationOptions(array(
@@ -51,9 +51,9 @@ class C04BulkProtectCest
         ));
 
         $I->goToPage(ProfessionalSpamFilterPage::BULKPROTECT_BTN, BulkprotectPage::TITLE);
-        $I->seeLastExecutionInfo();
+        $I->seeBulkProtectLastExecutionInfo();
         $I->submitBulkprotectForm();
         $I->seeBulkprotectRanSuccessfully();
-        $I->see('Route & MX have been updated', '#resultdomainstatus');
+        $I->see('Route & MX have been updated', BulkprotectPage::TABLE);
     }
 }
