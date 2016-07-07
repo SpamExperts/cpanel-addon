@@ -179,6 +179,10 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
 
                     $this->_logger->debug("[WHM-BULK] Domain domain '{$this->_domain}' has been skipped because it was added already.");
                 }
+            } elseif ($return['status'] == false && $return['reason'] == SpamFilter_Hooks::DOMAIN_LIMIT_REACHED) {
+                $this->countsUp(self::COUNTS_FAILED);
+                $this->addDomainReason($this->_domain, SpamFilter_Hooks::DOMAIN_LIMIT_REACHED);
+                $this->_logger->debug("[WHM] Domain '{$this->_domain}' has NOT been added because domain limit was reached.");
             } elseif ($return['status'] == false) {
                 $this->countsUp(self::COUNTS_FAILED);
                 $this->_logger->debug("[WHM] Domain '{$this->_domain}' has NOT been added due to an API error ({$return['reason']}).");

@@ -303,7 +303,7 @@ class SpamFilter_ProtectionManager
                 break;
 
             case SpamFilter_Hooks::DOMAIN_LIMIT_REACHED:
-                $reason = $this->translator->_(' because domain limit reached.');
+                $reason = $this->translator->_(' because domain limit was reached.');
                 break;
 
             default:
