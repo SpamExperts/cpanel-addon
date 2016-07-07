@@ -322,6 +322,10 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
 
                 $this->_logger->debug("[WHM-BULK] Parked domain '{$parked}' has been skipped because it was added already.");
             }
+        } elseif ($return['status'] == false && $return['reason'] == SpamFilter_Hooks::DOMAIN_LIMIT_REACHED) {
+            $this->countsUp(self::COUNTS_FAILED);
+            $this->addDomainReason($parked, SpamFilter_Hooks::DOMAIN_LIMIT_REACHED);
+            $this->_logger->debug("[WHM] Parked domain '{$parked}' has NOT been added because domain limit was reached.");
         } elseif ($return['status'] == false) {
             $this->countsUp(self::COUNTS_FAILED);
             $this->_logger->debug("[WHM] Parked domain '{$parked}' has NOT been added due to an API error ({$return['reason']}).");
@@ -459,8 +463,11 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
 
 				$this->_logger->debug("[WHM-BULK] Addon domain '{$addon}' has been skipped because it was added already.");
 			}
-		}
-		elseif ($return['status'] == false )
+        } elseif ($return['status'] == false && $return['reason'] == SpamFilter_Hooks::DOMAIN_LIMIT_REACHED) {
+            $this->countsUp(self::COUNTS_FAILED);
+            $this->addDomainReason($addon, SpamFilter_Hooks::DOMAIN_LIMIT_REACHED);
+            $this->_logger->debug("[WHM] Addon domain '{$addon}' has NOT been added because domain limit was reached.");
+		} elseif ($return['status'] == false )
 		{
 			$this->countsUp(self::COUNTS_FAILED);
 			$this->_logger->debug("[WHM] Addon domain '{$addon}' has NOT been added due to an API error ({$return['reason']}).");
@@ -577,9 +584,11 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
 
 				$this->_logger->debug("[WHM-BULK] Addon domain '{$sub}' has been skipped because it was added already.");
 			}
-		}
-        elseif ($return['status'] == false )
-        {
+        } elseif ($return['status'] == false && $return['reason'] == SpamFilter_Hooks::DOMAIN_LIMIT_REACHED) {
+            $this->countsUp(self::COUNTS_FAILED);
+            $this->addDomainReason($sub, SpamFilter_Hooks::DOMAIN_LIMIT_REACHED);
+            $this->_logger->debug("[WHM] Subdomain domain '{$sub}' has NOT been added because domain limit was reached.");
+		} elseif ($return['status'] == false ) {
             $this->countsUp(self::COUNTS_FAILED);
             $this->_logger->debug("[WHM] Subdomain '{$sub}' has NOT been added due to an API error ({$return['reason']}).");
             $this->addDomainReason($sub, SpamFilter_Hooks::SKIP_APIFAIL);
