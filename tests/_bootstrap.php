@@ -1,50 +1,74 @@
 <?php
 // This is global bootstrap for autoloading
 
+use Symfony\Component\Yaml\Yaml;
+
 class PsfConfig
 {
-    private static $apiUrl;
-    private static $apiHostname;
-    private static $apiUsername;
-    private static $apiPassword;
-    private static $primaryMx;
+    private static $parameters;
 
+    /**
+     * Function used to load environment variable names from acceptance.suite.yml file.
+     *
+     * api_url = environment variable name used to store the AntiSpam API URL
+     * api_hostname = environment variable name used to store the API hostname
+     * api_password = environment variable name used to store the API password
+     * primary_mx = environment variable name used to store the Primary MX
+     */
     public static function load()
     {
-        self::$apiHostname = gethostname();
-        self::$apiUrl = 'http://'.self::$apiHostname;
+        // Obtain the path for the acceptance.suite.yml file
+        $file = realpath(__DIR__ . '/acceptance.suite.yml');
 
-        $conf = parse_ini_file('/etc/spamexperts/spampanel.conf', true);
-
-        self::$apiUsername = $conf['production']['api.username'];
-        self::$apiPassword = $conf['production']['api.password'];
-        self::$primaryMx = 'mx.'.preg_replace('/^server\d+\.(.*)/i', '$1', gethostname());
+        // Parse yml file and store the environment variable names in the parameters variable
+        self::$parameters = Yaml::parse(file_get_contents($file));
     }
 
+    /**
+     * Get the AntiSpam API URL value
+     * @return string api_url environment variable value
+     */
     public static function getApiUrl()
     {
-        return self::$apiUrl;
+        return  getenv(self::$parameters['env']['api_url']);
     }
 
+    /**
+     * Get the API hostname value
+     * @return string api_hostname environment variable value
+     */
     public static function getApiHostname()
     {
-        return self::$apiHostname;
+       return  getenv(self::$parameters['env']['api_hostname']);
     }
 
+    /**
+     * Get the API username value
+     * @return string api_username environment variable value
+     */
     public static function getApiUsername()
     {
-        return self::$apiUsername;
+        return  getenv(self::$parameters['env']['api_username']);
     }
 
+    /**
+     * Get the API password value
+     * @return string api_password environment variable value
+     */
     public static function getApiPassword()
     {
-        return self::$apiPassword;
+        return  getenv(self::$parameters['env']['api_password']);
     }
 
+    /**
+     * Get the Primary MX value
+     * @return string primary_mx environment variable value
+     */
     public static function getPrimaryMX()
     {
-        return self::$primaryMx;
+        return  getenv(self::$parameters['env']['primary_mx']);
     }
 }
+
 
 PsfConfig::load();

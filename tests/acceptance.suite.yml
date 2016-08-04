@@ -16,25 +16,34 @@ modules:
          browser: firefox
          wait: 0
          restart: true
-#         window_size: 1240x768
          clear_cookies: true
 
 env:
+    # Environment variable names used for spam plugin configuration
+    api_url: 'API_URL'
+    api_hostname: 'API_HOSTNAME'
+    api_username: 'API_USERNAME'
+    api_password: 'API_PASSWORD'
+    primary_mx: 'PRIMARY_MX'
+
     edge:
         username: 'EDGE_USERNAME'
         password:  'EDGE_PASSWORD'
         whm_access_hash: 'EDGE_WHM_ACCESS_HASH'
         url: 'EDGE_URL'
+
     current:
         username: 'CURRENT_USERNAME'
         password:  'CURRENT_PASSWORD'
         whm_access_hash: 'CURRENT_WHM_ACCESS_HASH'
         url: 'CURRENT_URL'
+
     stable:
         username: 'STABLE_USERNAME'
         password:  'STABLE_PASSWORD'
         whm_access_hash: 'STABLE_WHM_ACCESS_HASH'
         url: 'STABLE_URL'
+
     release:
         username: 'RELEASE_USERNAME'
         password:  'RELEASE_PASSWORD'

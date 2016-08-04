@@ -27,6 +27,7 @@ class C01ConfigurationCest
     public function checkConfigurationPage(ConfigurationSteps $I)
     {
         $I->verifyPageLayout();
+
         $I->setFieldApiUrl(PsfConfig::getApiUrl());
         $I->setFieldApiHostname(PsfConfig::getApiHostname());
         $I->setFieldApiUsernameIfEmpty(PsfConfig::getApiUsername());

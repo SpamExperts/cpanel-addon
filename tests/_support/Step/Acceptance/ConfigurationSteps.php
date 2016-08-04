@@ -88,12 +88,14 @@ class ConfigurationSteps extends CommonSteps
 
     public function setFieldApiUrl($string)
     {
-        $this->fillField(ConfigurationPage::ANTISPAM_API_URL, $string);
+        if ($string)
+            $this->fillField(ConfigurationPage::ANTISPAM_API_URL, $string);
     }
 
     public function setFieldApiHostname($string)
     {
-        $this->fillField(ConfigurationPage::API_HOSTNAME, $string);
+        if ($string)
+            $this->fillField(ConfigurationPage::API_HOSTNAME, $string);
     }
 
     public function setFieldApiUsernameIfEmpty($string)
@@ -102,19 +104,21 @@ class ConfigurationSteps extends CommonSteps
 
         $value = $I->grabValueFrom(ConfigurationPage::API_USERNAME);
 
-        if (! $value) {
-            $I->fillField(ConfigurationPage::API_USERNAME, $string);
-        }
+        if (!$value)
+            if ($string)
+                $I->fillField(ConfigurationPage::API_USERNAME, $string);
     }
 
     public function setFieldApiPassword($string)
     {
-        $this->fillField(ConfigurationPage::API_PASSWORD, $string);
+        if ($string)
+            $this->fillField(ConfigurationPage::API_PASSWORD, $string);
     }
 
     public function setFieldPrimaryMX($string)
     {
-        $this->fillField(ConfigurationPage::MX_PRIMARY, $string);
+        if ($string)
+            $this->fillField(ConfigurationPage::MX_PRIMARY, $string);
     }
 
     public function getMxFields()
