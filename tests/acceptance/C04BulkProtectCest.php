@@ -1,9 +1,10 @@
 <?php
 
-use Pages\BulkprotectPage;
-use Pages\ConfigurationPage;
-use Pages\ProfessionalSpamFilterPage;
+use Page\BulkprotectPage;
+use Page\ConfigurationPage;
+use Page\ProfessionalSpamFilterPage;
 use Step\Acceptance\BulkProtectSteps;
+use Codeception\Util\Locator;
 
 class C04BulkProtectCest
 {
@@ -27,7 +28,7 @@ class C04BulkProtectCest
         $I->removeAllAccounts();
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => false,
         ));
 
         $accounts = $I->createNewAccounts();
@@ -46,8 +47,8 @@ class C04BulkProtectCest
 
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT => true,
-            ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT_XPATH, ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT_CSS) => true,
         ));
 
         $I->goToPage(ProfessionalSpamFilterPage::BULKPROTECT_BTN, BulkprotectPage::TITLE);

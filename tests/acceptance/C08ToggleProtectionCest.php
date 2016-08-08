@@ -1,8 +1,9 @@
 <?php
 
-use Pages\ConfigurationPage;
-use Pages\DomainListPage;
+use Page\ConfigurationPage;
+use Page\DomainListPage;
 use Step\Acceptance\CommonSteps;
+use Codeception\Util\Locator;
 
 class C08ToggleProtectionCest
 {
@@ -76,9 +77,9 @@ class C08ToggleProtectionCest
     public function testToggleAsAliasAndUntoggleAlias(CommonSteps $I)
     {
         $I->goToConfigurationPageAndSetOptions([
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => true,
         ]);
 
         $account = $I->createNewAccount();
@@ -100,8 +101,8 @@ class C08ToggleProtectionCest
     {
         // setup
         $I->goToConfigurationPageAndSetOptions([
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => false,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
         ]);
 
         $account = $I->createNewAccount();
@@ -122,10 +123,10 @@ class C08ToggleProtectionCest
         $I->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_PRESENT_IN_THE_FILTER);
 
         $I->goToConfigurationPageAndSetOptions([
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => false,
-            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => false,
         ]);
 
         return [
@@ -137,9 +138,9 @@ class C08ToggleProtectionCest
     private function setupErrorAddedAsDomainNotAliasScenario(CommonSteps $I)
     {
         $I->goToConfigurationPageAndSetOptions([
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => false,
         ]);
 
         $account = $I->createNewAccount();
@@ -150,7 +151,7 @@ class C08ToggleProtectionCest
 
         $I->loginAsRoot();
         $I->goToConfigurationPageAndSetOptions([
-            ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT => true,
+            Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => true,
         ]);
 
         return [

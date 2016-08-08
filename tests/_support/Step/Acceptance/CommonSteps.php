@@ -2,89 +2,147 @@
 
 namespace Step\Acceptance;
 
-use Pages\ConfigurationPage;
-use Pages\CpanelClientPage;
-use Pages\CpanelWHMPage;
-use Pages\DomainListPage;
-use Pages\ProfessionalSpamFilterPage;
-use Pages\SpampanelPage;
+use Page\ConfigurationPage;
+use Page\CpanelClientPage;
+use Page\CpanelWHMPage;
+use Page\DomainListPage;
+use Page\ProfessionalSpamFilterPage;
+use Page\SpampanelPage;
+use Page\CpanelWHMLoginPage;
+use Codeception\Util\Locator;
 
 class CommonSteps extends \WebGuy
 {
+    // Current addon name
     protected $currentBrandname = 'Professional Spam Filter';
 
-    private static $accounts = array(); // a new instance is created for cleanup ?!
+    // Used for save created accounts and to cleanup them when finish the test
+    private static $accounts = array();
+
+    // Used to check if logged in as client
     private static $loggedInAsClient = false;
+
+    // Used to save default package name
     private $defaultPackage = 'package1';
 
+    /**
+     * Function used to login as root
+     */
     public function loginAsRoot()
     {
+        // Get root credentials from environment variables
         $user = getenv($this->getEnvParameter('username'));
         $pass = getenv($this->getEnvParameter('password'));
+
+        // Login with those credentials
         $this->login($user, $pass);
+
+        // I am not logged in as client
         self::$loggedInAsClient = false;
     }
 
+    /**
+     * Function used to login, if no credentials provided will login as root
+     * @param string $username - username
+     * @param string $password - password
+     */
     public function login($username = null, $password = null)
     {
-        if (! $username && ! $password) {
+        // If no credentials provided, login as root
+        if (!$username && !$password) {
             $this->loginAsRoot();
             return;
         }
 
-        $I = $this;
-        $I->amOnUrl(getenv($I->getEnvParameter('url'))); // for cases such as logout from client interface
-        $I->wait(2);
-        $I->fillField('#user', $username);
-        $I->fillField('#pass', $password);
-        $I->click('Log in');
-        $I->waitForElement('#topFrame');
-        $I->switchToTopFrame();
-        $I->waitForElement('div.topFrameWrapper div.navigationContainer div.navigation ul.navigationLinks li a.navLink');
-        $I->see('Logout');
-        $I->switchToWindow();
+        // Go to login page
+        $this->amOnUrl(getenv($this->getEnvParameter('url')));
+
+        // Fill the username field
+        $this->waitForElement(Locator::combine(CpanelWHMLoginPage::USERNAME_FIELD_XPATH, CpanelWHMLoginPage::USERNAME_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelWHMLoginPage::USERNAME_FIELD_XPATH, CpanelWHMLoginPage::USERNAME_FIELD_CSS), $username);
+
+        // Fill password field
+        $this->waitForElement(Locator::combine(CpanelWHMLoginPage::PASSWORD_FIELD_XPATH, CpanelWHMLoginPage::PASSWORD_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelWHMLoginPage::PASSWORD_FIELD_XPATH, CpanelWHMLoginPage::PASSWORD_FIELD_CSS), $password);
+
+        // Click the login button
+        $this->click("Log in");
+
+        // Wait for all frames to show
+        $this->waitForElement(Locator::combine(CpanelWHMPage::TOP_FRAME_XPATH, CpanelWHMPage::TOP_FRAME_CSS), 10);
+        $this->waitForElement(Locator::combine(CpanelWHMPage::COMMANDER_FRAME_XPATH, CpanelWHMPage::COMMANDER_FRAME_CSS), 10);
+        $this->waitForElement(Locator::combine(CpanelWHMPage::MAIN_FRAME_XPATH, CpanelWHMPage::MAIN_FRAME_CSS), 10);
     }
 
+    /**
+     * Function used to logout from cPanel if logged in as root
+     */
     public function logout()
     {
+        // Switch to top frame
         $this->switchToTopFrame();
-        $this->click(CpanelWHMPage::LOGOUT);
+
+        // Click logout button
+        $this->click(Locator::combine(CpanelWHMPage::LOGOUT_BTN_XPATH, CpanelWHMPage::LOGOUT_BTN_CSS));
     }
 
+    /**
+     * Function used to logout as client
+     */
+    public function logoutAsClient()
+    {
+        $this->waitForElement(Locator::combine(CpanelClientPage::CLIENT_LOGOUT_BTN_XPATH, CpanelClientPage::CLIENT_LOGOUT_BTN_CSS), 10);
+        $this->click(Locator::combine(CpanelClientPage::CLIENT_LOGOUT_BTN_XPATH, CpanelClientPage::CLIENT_LOGOUT_BTN_CSS));
+
+    }
+
+    /**
+     * Function used to go to certain plugin page
+     * @param $page - page name
+     * @param $title - page title
+     */
     public function goToPage($page, $title)
     {
-        $I = $this;
-        $I->amGoingTo("\n\n --- Go to {$title} page --- \n");
-        $I->switchToWindow();
-        $I->reloadPage();
-        $I->switchToMainFrame();
-        $I->waitForText('Plugins');
-        $I->click('Plugins');
-        $I->waitForText($this->currentBrandname);
-        $I->click($this->currentBrandname);
-        $I->switchToMainFrame();
-        $I->waitForText($this->currentBrandname);
-        $I->see($this->currentBrandname);
-        $I->waitForText('Configuration');
-        $I->click($page);
-        $I->waitForText($title);
+        $this->amGoingTo("\n\n --- Go to {$title} page --- \n");
+        $this->switchToWindow();
+        $this->reloadPage();
+        $this->switchToMainFrame();
+        $this->waitForText('Plugins');
+        $this->click('Plugins');
+        $this->waitForText($this->currentBrandname);
+        $this->click($this->currentBrandname);
+        $this->switchToMainFrame();
+        $this->waitForText($this->currentBrandname);
+        $this->see($this->currentBrandname);
+        $this->waitForText('Configuration');
+        $this->click($page);
+        $this->waitForText($title);
     }
 
+    /**
+     * Function used to go to addon home page
+     */
     public function clickCurrentBrandname()
     {
         $this->click($this->currentBrandname);
     }
 
+    /**
+     * Function used to check if addon is installed
+     */
     public function checkPsfIsPresent()
     {
-        $I = $this;
-        $I->switchToMainFrame();
-        $I->waitForText('Plugins');
-        $I->click('Plugins');
-        $I->waitForText($this->currentBrandname);
-        $I->see($this->currentBrandname);
+        $this->switchToMainFrame();
+        $this->waitForText('Plugins');
+        $this->click('Plugins');
+        $this->waitForText($this->currentBrandname);
+        $this->see($this->currentBrandname);
     }
 
+    /**
+     * Function used to generate random domain name
+     * @return string - domain
+     */
     public function generateRandomDomainName()
     {
         $domain = uniqid("domain") . ".example.com";
@@ -93,14 +151,24 @@ class CommonSteps extends \WebGuy
         return $domain;
     }
 
+    /**
+     * Function used to generate random username
+     * @return string - domain
+     */
     public function generateRandomUserName()
     {
-        $username = 'u'.strrev(uniqid()); // cpanel requires first 8 chars to be unique and not start with a number
+        // cPanel requires first 8 chars to be unique and not start with a number
+        $username = 'u'.strrev(uniqid());
         $this->comment("I generated random username: $username");
 
         return $username;
     }
 
+    /**
+     * Function used to create a list of accounts. By default is creating 2 accounts
+     * @param int $numberOfAccounts - number of accounts to create
+     * @return array - array of accounts
+     */
     public function createNewAccounts($numberOfAccounts = 2)
     {
         $accounts = array();
@@ -114,70 +182,79 @@ class CommonSteps extends \WebGuy
     }
 
     /**
-     * Create a new account. It sets the default package if it exists.
-     * It gives a
-     *
-     * @param array $params
-     * @return array
+     * Function used to create a new account. It sets the default package if exists. Alo is saving the new account in the
+     * global static array $accounts
+     * @param array $params - account details
+     * @return array - array with account details
      */
     public function createNewAccount(array $params = array())
     {
-        if (empty($params['domain'])) {
+        // If no domain is set, generate a random one
+        if (empty($params['domain']))
             $params['domain'] = $this->generateRandomDomainName();
-        }
 
-        if (empty($params['username'])) {
+        // If no username is set, generate a random one
+        if (empty($params['username']))
             $params['username'] = $this->generateRandomUserName();
-        }
 
-        if (empty($params['password'])) {
+        // If no password is set, generate a random one
+        if (empty($params['password']))
             $params['password'] = uniqid();
-        }
 
-        if (empty($params['contactemail'])) {
+        // If no email is set, generate a random one based on username and domain
+        if (empty($params['contactemail']))
             $params['contactemail'] = $params['username'].'@'.$params['domain'];
-        }
 
-        if (empty($params['reseller'])) {
+        // By default the account is not reseller
+        if (empty($params['reseller']))
             $params['reseller'] = false;
-        }
 
-        if (empty($params['ui'])) {
+        // By default ui parameter is false mean that account is created using cPanel API
+        if (empty($params['ui']))
             $params['ui'] = false;
-        }
 
         $params['pkgname'] = $this->defaultPackage;
         $params['reseller'] = (int) $params['reseller'];
-        $I = $this;
 
+        // If i want to create account using the UI
         if ($params['ui']) {
-            $I->searchAndClickCommand("Create a New Account");
-            $I->fillField('#domain', $params['domain']);
-            $I->fillField('#username', $params['username']);
-            $I->fillField('#password', $params['password']);
-            $I->fillField('#password2', $params['password']);
-            $I->fillField('#contactemail', $params['contactemail']);
 
-            if ($params['reseller']) {
-                $I->checkOption("//input[@name='reseller']");
-            }
-            $I->click("//input[@class='btn btn-primary']");
-            $I->waitForText("Account Creation Status: ok (Account Creation Ok)", 200, '#masterContainer');
+            // Go to create new account page
+            $this->searchAndClickCommand("Create a New Account");
 
-            if ($params['reseller']) {
-                $I->grantAllAccessToReseller($params['username']);
-            }
+            // Complete the fields for the new account
+            $this->fillField(Locator::combine(CpanelWHMPage::DOMAIN_FIELD_XPATH, CpanelWHMPage::DOMAIN_FIELD_CSS), $params['domain']);
+            $this->fillField(Locator::combine(CpanelWHMPage::USERNAME_FIELD_XPATH, CpanelWHMPage::USERNAME_FIELD_CSS), $params['username']);
+            $this->fillField(Locator::combine(CpanelWHMPage::PASSWORD_FIELD_XPATH, CpanelWHMPage::PASSWORD_FIELD_CSS), $params['password']);
+            $this->fillField(Locator::combine(CpanelWHMPage::RE_PASSWORD_FIELD_XPATH, CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
+            $this->fillField(Locator::combine(CpanelWHMPage::EMAIL_FIELD_XPATH, CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
+
+            // If i want the account to be a reseller
+            if ($params['reseller'])
+                $this->checkOption(Locator::combine(CpanelWHMPage::MAKE_RESELLER_OPT_XPATH, CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
+
+            // Click the create account button
+            $this->click(Locator::combine(CpanelWHMPage::CREATE_ACCOUNT_BTN_XPATH, CpanelWHMPage::CREATE_ACCOUNT_BTN_CSS));
+
+            // Wait for account creation to finish
+            $this->waitForText("Account Creation Status: ok (Account Creation Ok)", 200, '#masterContainer');
+
+            // If the new account is a reseller grant all access
+            if ($params['reseller'])
+                $this->grantAllAccessToReseller($params['username']);
 
         } else {
-            $I->makeCpanelApiRequest()->addAccount($params);
 
+            // Make a cPanel API request for creating an account
+            $this->makeCpanelApiRequest()->addAccount($params);
+
+            // If the new account is a reseller grant all access
             if ($params['reseller']) {
                 $this->grantAllAccessToReseller($params['username']);
             }
         }
 
-
-
+        // Save the new account details in a array
         $account = array(
             'domain' => $params['domain'],
             'username' => $params['username'],
@@ -186,39 +263,73 @@ class CommonSteps extends \WebGuy
             'reseller' => $params['reseller']
         );
 
+        // Save the created account in the account list
         self::$accounts[] = $account;
 
+        // Return the previous array
         return $account;
     }
 
+    /**
+     * Function used to grant root access to a reseller (all features are enabled)
+     * @param $username - reseller username
+     */
     public function grantAllAccessToReseller($username)
     {
-        $I = $this;
-        $I->searchAndClickCommand('Edit Reseller Nameservers and Privileges');
-        $I->selectOption('res', $username);
-        $I->click(CpanelWHMPage::RESELLER_ACCESS_GRANT_SUBMIT_BTN);
-        $I->checkOption(CpanelWHMPage::RESELLER_ACCESS_ALL_CHECKBOX);
-        $I->click('#masterContainer > form > input.btn-primary');
-        $I->waitForText('Modified reseller '.$username, 10);
+        // Go to edit reseller nameservers and privileges page
+        $this->searchAndClickCommand('Edit Reseller Nameservers and Privileges');
+
+        // Select the desired username from list
+        $this->selectOption(Locator::combine(CpanelWHMPage::RESELLER_LIST_XPATH, CpanelWHMPage::RESELLER_LIST_CSS), $username);
+
+        // Click submit button
+        $this->click(Locator::combine(CpanelWHMPage::RESELLER_SUBMIT_BTN_XPATH, CpanelWHMPage::RESELLER_SUBMIT_BTN_CSS));
+
+        // Check Root Access All features option
+        $this->checkOption(Locator::combine(CpanelWHMPage::RESELLER_ACCESS_ALL_OPT_XPATH, CpanelWHMPage::RESELLER_ACCESS_ALL_OPT_CSS));
+
+        // Click the Save All Settings button
+        $this->click("Save All Settings");
+
+        // Wait for settings to be modified
+        $this->waitForText('Modified reseller '.$username, 10);
     }
 
     /**
-     * Click a commander link after searching for it
+     * Function used to search for a command in the search box and click on it
+     * @param $fullCommand - command name
      */
     public function searchAndClickCommand($fullCommand)
     {
+        // Switch to che command iframe
         $this->switchToCommanderFrame();
-        $this->fillField('#quickJump', $fullCommand);
+
+        // Fill the search box with the desired command name
+        $this->fillField(Locator::combine(CpanelWHMPage::SEARCH_BAR_XPATH, CpanelWHMPage::SEARCH_BAR_CSS), $fullCommand);
+
+        // Click on the searched command from the commander frame
         $this->click($fullCommand);
+
+        // Switch back to main frame
         $this->switchToMainFrame();
     }
 
+    /**
+     * Function used to search for the spam plugin in the search box and click on it
+     */
     public function goToProspamfilterMenu()
     {
+        // Search for the current brand name
         $this->searchAndClickCommand($this->currentBrandname);
+
+        // Wait for plugin to load
+        # TODO can be improved
         $this->waitForText($this->currentBrandname, 10, 'body > div > header > h1');
     }
 
+    /**
+     * Function used to go on the domain list page
+     */
     public function goToDomainListPage()
     {
         $this->goToProspamfilterMenu();
@@ -226,193 +337,346 @@ class CommonSteps extends \WebGuy
         $this->waitForText("List Domains");
     }
 
-    public function switchToMainFrame()
-    {
-        $this->switchToWindow();
-        $this->switchToIFrame('mainFrame');
-    }
-
+    /**
+     * Function used to switch focus to commander frame
+     */
     public function switchToCommanderFrame()
     {
         $this->switchToWindow();
-        $this->switchToIFrame('commander');
+        $this->switchToIFrame(CpanelWHMPage::COMMANDER_FRAME_NAME);
     }
 
+    /**
+     * Function used to switch focus to top frame
+     */
     public function switchToTopFrame()
     {
         $this->switchToWindow();
-        $this->switchToIFrame('topFrame');
+        $this->switchToIFrame(CpanelWHMPage::TOP_FRAME_NAME);
     }
 
+    /**
+     * Function used to switch focus to main frame
+     */
+    public function switchToMainFrame()
+    {
+        $this->switchToWindow();
+        $this->switchToIFrame(CpanelWHMPage::MAIN_FRAME_NAME);
+    }
+
+    /**
+     * Function used to print info messages
+     * @param $message - message to be printed
+     */
     public function will($message)
     {
         $this->comment("\n\n --- {$message} --- \n");
     }
 
+    /**
+     * Function used to check if a domain is in list
+     * @param $domain - domain to check
+     */
     public function checkDomainList($domain)
     {
         $this->goToDomainListPage();
-        $this->see($domain, DomainListPage::DOMAIN_TABLE);
+        $this->see($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
     }
 
+    /**
+     * Function used to search a domain in the domain list
+     * @param $domain - domain to search
+     */
     public function searchDomainList($domain)
     {
         $this->goToDomainListPage();
-        $this->fillField(DomainListPage::SEARCH_FIELD, $domain);
-        $this->click(DomainListPage::SEARCH_BTN);
-        $this->waitForText('Page 1 of 1. Total Items: 1', 60);
-        $this->see($domain, DomainListPage::DOMAIN_TABLE);
+        $this->fillField(Locator::combine(DomainListPage::SEARCH_FIELD_XPATH, DomainListPage::SEARCH_FIELD_CSS), $domain);
+        $this->click(Locator::combine(DomainListPage::SEARCH_BTN_XPATH, DomainListPage::SEARCH_BTN_CSS));
+        $this->see($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
     }
 
+    /**
+     * Function used to check if a domain is preseent in filter
+     * @param $domain - domain to check
+     */
     public function checkDomainIsPresentInFilter($domain)
     {
         $this->searchDomainList($domain);
         $this->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_PRESENT_IN_THE_FILTER);
     }
 
+    /**
+     * Function used to check if a domain is not present in filter
+     * @param $domain - domain to check
+     */
     public function checkDomainIsNotPresentInFilter($domain)
     {
         $this->searchDomainList($domain);
         $this->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER);
     }
 
+    /**
+     * Function used to check if protection status for a domain is the one expected
+     * @param $status - expected status
+     */
     public function checkProtectionStatusIs($status)
     {
-        $this->click('Check status');
+        $this->click('#checkAllDomains');
         $this->waitForText($status);
     }
 
+    /**
+     * Function used to log in as a client
+     * @param $username
+     * @param $password
+     */
     public function loginAsClient($username, $password)
     {
-        $I = $this;
-        $I->amOnUrl($I->getClientUrl());
-        $I->wait(2);
-        $I->fillField('#user', $username);
-        $I->fillField('#pass', $password);
-        $I->click('Log in');
-        $I->wait(2);
-        $I->waitForText('LOGOUT');
+        // Go to client login page
+        $this->amOnUrl($this->getClientUrl());
+
+        // Fill the username field
+        $this->waitForElement(Locator::combine(CpanelWHMLoginPage::USERNAME_FIELD_XPATH, CpanelWHMLoginPage::USERNAME_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelWHMLoginPage::USERNAME_FIELD_XPATH, CpanelWHMLoginPage::USERNAME_FIELD_CSS), $username);
+
+        // Fill the password field
+        $this->waitForElement(Locator::combine(CpanelWHMLoginPage::PASSWORD_FIELD_XPATH, CpanelWHMLoginPage::PASSWORD_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelWHMLoginPage::PASSWORD_FIELD_XPATH, CpanelWHMLoginPage::PASSWORD_FIELD_CSS), $password);
+
+        // Click on the login button
+        $this->click("Log in");
+
+        # TODO Can be improved
+        $this->wait(2);
+        $this->waitForText('LOGOUT');
         self::$loggedInAsClient = true;
     }
 
+    /**
+     * Function used to search and click a command as client
+     * @param $fullCommand - command name
+     */
+    public function searchAndClickCommandAsClient($fullCommand)
+    {
+        // Go back to home page
+        $this->clickHomeMenuLink();
+
+        // Wait for search bar container
+        $this->wait(2);
+        $this->waitForElement(Locator::combine(CpanelClientPage::SEARCH_BAR_CONTAINER_XPATH, CpanelClientPage::SEARCH_BAR_CONTAINER_CSS), 10);
+
+        // Fill the search box with the desired command name
+        $this->waitForElement(Locator::combine(CpanelClientPage::SEARCH_BAR_XPATH, CpanelClientPage::SEARCH_BAR_CSS));
+        $this->fillField(Locator::combine(CpanelClientPage::SEARCH_BAR_XPATH, CpanelClientPage::SEARCH_BAR_CSS), $fullCommand);
+
+        // Click on the searched command from the commander frame
+        $this->waitForText($fullCommand);
+        $this->click($fullCommand);
+    }
+
+    /**
+     * Function used to add a addon domain as client
+     * @param $domain - domain name
+     * @param null $addonDomainName - addon domain name
+     * @return null|string - addon domain name
+     */
     public function addAddonDomainAsClient($domain, $addonDomainName = null)
     {
-        if (! $addonDomainName) {
-            $addonDomainName = 'addon' . $domain;
-        }
+        // If no addon domain name provided generate one based on domain
+        if (!$addonDomainName)
+            $addonDomainName = 'addon'.$domain;
 
-        $I = $this;
-        $I->click('Addon Domains');
-        $I->waitForText('Create an Addon Domain');
-        $I->fillField('#domain', $addonDomainName);
-        $I->click('Add Domain');
-        $I->waitForText('The addon domain “'.$addonDomainName.'” has been created.', 30);
+        // Search for Addon domains option and click on it
+        $this->searchAndClickCommandAsClient("Addon Domains");
+
+        // Wait for Addon domain page to load
+        $this->waitForText('Create an Addon Domain');
+
+        // Fill new domain name field
+        $this->waitForElement(Locator::combine(CpanelClientPage::NEW_DOMAIN_NAME_FIELD_XPATH, CpanelClientPage::NEW_DOMAIN_NAME_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelClientPage::NEW_DOMAIN_NAME_FIELD_XPATH, CpanelClientPage::NEW_DOMAIN_NAME_FIELD_CSS), $addonDomainName);
+
+        // Fill subdomain field
+        $this->waitForElement(Locator::combine(CpanelClientPage::SUBDOMAIN_FIELD_XPATH, CpanelClientPage::SUBDOMAIN_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelClientPage::SUBDOMAIN_FIELD_XPATH, CpanelClientPage::SUBDOMAIN_FIELD_CSS), array_shift(explode(".",$addonDomainName)));
+
+        // Fill document root field
+        $this->waitForElement(Locator::combine(CpanelClientPage::DOCUMENT_ROOT_FIELD_XPATH, CpanelClientPage::DOCUMENT_ROOT_FIELD_CSS));
+        $this->fillField(Locator::combine(CpanelClientPage::DOCUMENT_ROOT_FIELD_XPATH, CpanelClientPage::DOCUMENT_ROOT_FIELD_CSS), "public_html/".$addonDomainName);
+
+        // Click on Add Domain button
+        $this->click('Add Domain');
+
+        // Wait for command to finish
+        $this->waitForText('The addon domain “'.$addonDomainName.'” has been created.', 30);
 
         return $addonDomainName;
     }
 
+    /**
+     * Function used to remove an addon domain as client
+     * @param $addonDomainName - addon domain to be removed
+     */
     public function removeAddonDomainAsClient($addonDomainName)
     {
-        $I = $this;
-        $I->clickHomeMenuLink();
-        $I->waitForText('Addon Domains');
-        $I->click('Addon Domains');
-        $I->waitForText('Create an Addon Domain');
-        $I->fillField('#searchregex', $addonDomainName);
-        $I->click('#search');
-        $I->click("#lnkRemove_$addonDomainName");
+        // Search for Addon Domains option and click on it
+        $this->searchAndClickCommandAsClient('Addon Domains');
 
-        $I->waitForText("Are you sure you wish to permanently remove the addon domain “".$addonDomainName."”?");
-        $I->click('#btnRemove');
-        $I->waitForText("The addon domain “".$addonDomainName."” has been removed.", 30);
+        // Wait for Addon Domains page to load
+        $this->waitForText('Create an Addon Domain');
+
+        // Search for domain to be removed
+        $this->fillField(Locator::combine(CpanelClientPage::ADDON_DOMAIN_SEARCH_BAR_XPATH, CpanelClientPage::ADDON_DOMAIN_SEARCH_BAR_CSS), $addonDomainName);
+
+        // Click the search button
+        $this->click(Locator::combine(CpanelClientPage::ADDON_DOMAIN_SEARCH_BTN_XPATH, CpanelClientPage::ADDON_DOMAIN_SEARCH_BTN_CSS));
+
+        // Click the remove button
+        $this->click("#lnkRemove_$addonDomainName");
+
+        // Wait for removal confirmation
+        $this->waitForText("Are you sure you wish to permanently remove the addon domain “".$addonDomainName."”?");
+
+        // Click the remove button to confirm
+        $this->click(Locator::combine(CpanelClientPage::ADDON_DOMAIN_CONFIRM_REMOVE_BTN_XPATH, CpanelClientPage::ADDON_DOMAIN_CONFIRM_REMOVE_BTN_CSS));
+
+        // Wait for confirmation message
+        $this->waitForText("The addon domain “".$addonDomainName."” has been removed.", 30);
+
     }
 
-    public function removeSubdomainAsClient($subdomain)
-    {
-        $I = $this;
-        $I->clickHomeMenuLink();
-        $I->waitForText('Subdomains');
-        $I->click('Subdomains');
-        $I->waitForText('Create a Subdomain');
-        $I->fillField('#searchregex', $subdomain);
-        $I->click('#search');
-        $I->click("#{$subdomain}_lnkRemove");
-
-        $I->waitForText("Are you sure you wish to permanently remove subdomain “".$subdomain."”?");
-        $I->click('#deleteSubdomain');
-        $I->waitForText("The subdomain “".$subdomain."” has been successfully removed.", 30);
-    }
-
+    /**
+     * Function used to add a sub domain as a client
+     * @param $domain - domain name
+     * @param null $subDomainPrefix - sub domain prefix
+     * @return string - sub domain name
+     */
     public function addSubdomainAsClient($domain, $subDomainPrefix = null)
     {
-        if (! $subDomainPrefix) {
+        // If no sub domain prefix provided use sub
+        if (!$subDomainPrefix)
             $subDomainPrefix = 'sub';
-        }
 
+        // Generate subdomain string based on sub domain prefix and domain
         $subDomain = $subDomainPrefix.'.'.$domain;
-        $I = $this;
-        $I->waitForText('Subdomains', 10);
-        $I->click('Subdomains');
-        $I->fillField('#domain', $subDomainPrefix);
-        $I->selectOption('#rootdomain', $domain);
-        $I->click('Create');
-        $I->waitForText('Success: “'.$subDomain.'” has been created.', 30, '.alert-message');
+
+        // Search for Subdomains option and click it
+        $this->searchAndClickCommandAsClient("Subdomains");
+
+        // Wait for Sumdomain page to load
+        $this->waitForText('Create a Subdomain');
+
+        // Fill domain field
+        $this->waitForElement(Locator::combine(CpanelClientPage::ADD_SUBDOMAIN_FIELD_XPATH, CpanelClientPage::ADD_SUBDOMAIN_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelClientPage::ADD_SUBDOMAIN_FIELD_XPATH, CpanelClientPage::ADD_SUBDOMAIN_FIELD_CSS), $subDomainPrefix);
+
+        // Choose the domain from the drop down
+        $this->waitForElement(Locator::combine(CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_XPATH, CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_CSS), 10);
+        $this->selectOption(Locator::combine(CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_XPATH, CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_CSS), $domain);
+
+        // Click Create button
+        $this->click('Create');
+
+        // Wait for command to finish
+        $this->waitForText('Success: “'.$subDomain.'” has been created.', 30);
 
         return $subDomain;
     }
 
-    public function addParkedDomainAsClient($domain, $parkedDomain = null)
+    /**
+     * Function used to remove a subdomain as client
+     * @param $subdomain - subdomain to be removed
+     */
+    public function removeSubdomainAsClient($subdomain)
     {
-        if (! $parkedDomain) {
-            $parkedDomain = 'parked'.$domain;
-        }
+        // Search for Subdomain option and click on it
+        $this->searchAndClickCommandAsClient('Subdomains');
 
-        $I = $this;
-        $I->changeToX3Theme();
-        $I->click('#item_parkeddomains');
-        $I->fillField('#domain', $parkedDomain);
-        $I->click('Add Domain');
-        $I->waitForText('The system has successfully created the “'.$parkedDomain.'” parked domain.');
-        $I->click(CpanelClientPage::X3_HOME_MENU_LINK);
-        $I->changeToPaperLanternTheme();
+        // Wait for Subdomains page to load
+        $this->waitForText('Create a Subdomain');
 
-        return $parkedDomain;
+        // Search for subdomain to be removed
+        $this->fillField(Locator::combine(CpanelClientPage::SUBDOMAIN_SEARCH_BAR_XPATH, CpanelClientPage::SUBDOMAIN_SEARCH_BAR_CSS), $subdomain);
+
+        // Click the search button
+        $this->click(Locator::combine(CpanelClientPage::SUBDOMAIN_SEARCH_BTN_XPATH, CpanelClientPage::SUBDOMAIN_SEARCH_BTN_CSS));
+
+        // Click the remove button
+        $this->click("#{$subdomain}_lnkRemove");
+
+        // Wait for removal confirmation
+        $this->waitForText("Are you sure you wish to permanently remove subdomain “".$subdomain."”?");
+
+        // Click the remove button to confirm
+        $this->click(Locator::combine(CpanelClientPage::DELETE_SUBDOMAIN_BTN_XPATH, CpanelClientPage::DELETE_SUBDOMAIN_BTN_CSS));
+
+        // Wait for confirmation message
+        $this->waitForText("The subdomain “".$subdomain."” has been successfully removed.", 30);
+
     }
 
+    /**
+     * Function used to add alias domain as client
+     * same thing
+     * @param $domain - domain name
+     * @param null $aliasDomain - alias domain name
+     * @return null|string - alias domain name
+     */
     public function addAliasDomainAsClient ($domain, $aliasDomain = null)
     {
-        if (! $aliasDomain) {
+        // If no alias domain provided, generate one based on domain
+        if (!$aliasDomain)
             $aliasDomain = 'alias'.$domain;
-        }
 
-        $I = $this;
-        $I->click('#item_aliases');
-        $I->fillField('#domain', $aliasDomain);
-        $I->click('Add Domain');
-        $I->waitForText('You successfully created the alias, “'.$aliasDomain.'”.');
+        // Search for Aliases option and click it
+        $this->searchAndClickCommandAsClient("Aliases");
+
+        // Wait for Aliases page to load
+        $this->waitForText('Create a New Alias');
+
+        // Fill domain field
+        $this->waitForElement(Locator::combine(CpanelClientPage::ALIAS_DOMAIN_FIELD_XPATH, CpanelClientPage::ALIAS_DOMAIN_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelClientPage::ALIAS_DOMAIN_FIELD_XPATH, CpanelClientPage::ALIAS_DOMAIN_FIELD_CSS), $aliasDomain);
+
+        // Click Add Domain button
+        $this->click('Add Domain');
+
+        // Wait for command to finish
+        $this->waitForText('You successfully created the alias, “'.$aliasDomain.'”.');
 
         return $aliasDomain;
     }
 
-    public function removeParkedDomainAsClient($parkedDomain)
+    /**
+     * Function used to remove alias domaind as client
+     * @param $aliasDomain - alias domain to be removed
+     */
+    public function removeAliasDomainAsClient($aliasDomain)
     {
-        $I = $this;
-        $I->clickHomeMenuLink();
-        $I->changeToX3Theme();
-        $I->click('#item_parkeddomains');
+        // Search for Aliases option and click on it
+        $this->searchAndClickCommandAsClient('Aliases');
 
-        $I->waitForElement("//input[@name='searchregex']");
-        $I->fillField("//input[@name='searchregex']", $parkedDomain);
-        $I->click(".search-panel button");
+        // Wait for Aliases page to load
+        $this->waitForText('Create a New Alias');
 
-        // only 1 row
-        $I->dontSeeElement("//*[@id=\"parkeddomaintbl\"]/tbody/tr[2]/td[4]/a[contains(., \"Remove\")]");
+        // Search for alias domain to be removed
+        $this->fillField(Locator::combine(CpanelClientPage::ALIAS_DOMAIN_SEARCH_BAR_XPATH, CpanelClientPage::ALIAS_DOMAIN_SEARCH_BAR_CSS), $aliasDomain);
 
-        $I->click("//*[@id=\"parkeddomaintbl\"]/tbody/tr[1]/td[4]/a[contains(., \"Remove\")]");
+        // Click the search button
+        $this->click(Locator::combine(CpanelClientPage::ALIAS_DOMAIN_SEARCH_BTN_XPATH, CpanelClientPage::ALIAS_DOMAIN_SEARCH_BTN_CSS));
 
-        $I->waitForText("Are you certain that you wish to permanently remove the “".$parkedDomain."” parked domain?", 30);
-        $I->click("Remove Parked Domain");
-        $I->waitForText("cPanel successfully removed the “".$parkedDomain."” parked domain.", 30);
+        // Click the remove button
+        $this->click("#del_");
+
+        // Wait for removal confirmation
+        $this->waitForText("Are you sure you want to permanently remove the alias, “".$aliasDomain."”?");
+
+        // Click the remove button to confirm
+        $this->click(Locator::combine(CpanelClientPage::DELETE_ALIAS_BTN_XPATH, CpanelClientPage::DELETE_ALIAS_BTN_XPATH));
+
+        // Wait for confirmation message
+        $this->waitForText("The alias, ".$aliasDomain.", has been successfully removed.", 30);
+
     }
 
     public function loginOnSpampanel($domain)
@@ -438,9 +702,9 @@ class CommonSteps extends \WebGuy
 
     public function logoutFromSpampanel()
     {
-        $this->waitForElementVisible(SpampanelPage::LOGOUT_LINK);
+        $this->waitForElementVisible(SpampanelPage::LOGOUT_LINK, 10);
         $this->click(SpampanelPage::LOGOUT_LINK);
-        $this->waitForElementVisible(SpampanelPage::LOGOUT_CONFIRM_LINK);
+        $this->waitForElementVisible(SpampanelPage::LOGOUT_CONFIRM_LINK, 10);
         $this->click(SpampanelPage::LOGOUT_CONFIRM_LINK);
     }
 
@@ -470,24 +734,16 @@ class CommonSteps extends \WebGuy
         $this->dontSee($domain, '#domainoverview');
     }
 
-    public function logoutAsClient()
-    {
-        $paperLanternLink = $this->getElementsCount(CpanelClientPage::PAPER_LANTERN_LOGOUT_LINK);
-
-        if ($paperLanternLink) {
-            $this->click(CpanelClientPage::PAPER_LANTERN_LOGOUT_LINK);
-        } else {
-            $this->click(CpanelClientPage::X3_LOGOUT_LINK);
-        }
-    }
-
+    /**
+     * Function used to remove all created accounts
+     */
     public function removeCreatedAccounts()
     {
         $this->will("Remove created accounts");
 
         $usernames = array_map(function ($account) {return $account['username'];}, self::$accounts);
 
-        if (! $usernames) {
+        if (!$usernames) {
             $this->comment("No created accounts to remove!");
             return;
         }
@@ -495,11 +751,19 @@ class CommonSteps extends \WebGuy
         $this->removeAccounts($usernames);
     }
 
+    /**
+     * Function used to remove an account
+     * @param $username - username
+     */
     public function removeAccount($username)
     {
         $this->removeAccounts(array($username));
     }
 
+    /**
+     * Function used to remove multiple accounts
+     * @param array $usernames - array of usernames
+     */
     public function removeAccounts(array $usernames)
     {
         $this->will("Terminate accounts: ".implode(', ', $usernames));
@@ -509,6 +773,9 @@ class CommonSteps extends \WebGuy
         }
     }
 
+    /**
+     * Function used to remove all accounts from cPanel
+     */
     public function removeAllAccounts()
     {
         $this->will("Terminate ALL accounts");
@@ -565,6 +832,10 @@ class CommonSteps extends \WebGuy
         $this->setConfigurationOptions($this->getDefaultConfigurationOptions());
     }
 
+    /**
+     * Function used to set plugin configuration options
+     * @param array $options - array of options
+     */
     public function setConfigurationOptions(array $options)
     {
         $options = array_merge($this->getDefaultConfigurationOptions(), $options);
@@ -577,14 +848,14 @@ class CommonSteps extends \WebGuy
             }
         }
 
-        $this->click(ConfigurationPage::SAVE_SETTINGS_BTN);
+        $this->click(Locator::combine(ConfigurationPage::SAVE_SETTINGS_BTN_XPATH, ConfigurationPage::SAVE_SETTINGS_BTN_CSS));
         $this->see('The settings have been saved.');
     }
 
     /**
-     * Go to configuration page and set given options
+     * Function used to go to configuration page and set given options
      *
-     * @param array $options
+     * @param array $options - array of options
      */
     public function goToConfigurationPageAndSetOptions(array $options)
     {
@@ -592,6 +863,9 @@ class CommonSteps extends \WebGuy
         $this->setConfigurationOptions($options);
     }
 
+    /**
+     * Function used to create default package in cPanel
+     */
     public function createDefaultPackage()
     {
         $I = $this;
@@ -613,17 +887,13 @@ class CommonSteps extends \WebGuy
         $I->waitForElementNotVisible('div.mask', 60);
     }
 
+    /**
+     * Function used to click the Home Menu Link on client page
+     */
     public function clickHomeMenuLink()
     {
-        $this->clickOneOf([CpanelClientPage::HOME_MENU_LINK, CpanelClientPage::HOME_MENU_LINK_V52]);
-    }
-
-    public function changeToX3Theme()
-    {
-        $this->clickHomeMenuLink();
-        $this->click("#lnkDashboard");
-        $this->selectOption('#ddlChangeTheme', 'x3');
-        $this->waitForText($this->currentBrandname, 30);
+        $this->waitForElement(Locator::combine(CpanelClientPage::HOME_MENU_LINK_XPATH, CpanelClientPage::HOME_MENU_LINK_CSS), 10);
+        $this->click(Locator::combine(CpanelClientPage::HOME_MENU_LINK_XPATH, CpanelClientPage::HOME_MENU_LINK_CSS));
     }
 
     public function accessEmailRoutingInMxEntryPage()
@@ -673,12 +943,6 @@ class CommonSteps extends \WebGuy
         $this->waitForElementNotVisible("//img[@alt='loading']", 30);
     }
 
-    public function changeToPaperLanternTheme()
-    {
-        $this->selectOption('//select[@name="theme"]', 'paper_lantern');
-        $this->waitForText($this->currentBrandname, 30);
-    }
-
     public function seeBulkProtectLastExecutionInfo()
     {
         $this->see('Bulk protect has been executed last at: ');
@@ -697,37 +961,51 @@ class CommonSteps extends \WebGuy
         $this->see("The bulkprotect process has finished its work. Please see the tables below for the results.");
     }
 
+    /**
+     * Function used to get default configuration options for addon
+     * @return array - array of default configuration options
+     */
     private function getDefaultConfigurationOptions()
     {
         return array(
-            ConfigurationPage::ENABLE_SSL_FOR_API_OPT => false,
-            ConfigurationPage::ENABLE_AUTOMATIC_UPDATES_OPT => true,
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true,
-            ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT => true,
-            ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT => false,
-            ConfigurationPage::USE_EXISTING_MX_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => true,
-            ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT => false,
-            ConfigurationPage::ADD_DOMAIN_DURING_LOGIN_OPT => true,
-            ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT => false,
-            ConfigurationPage::CHANGE_EMAIL_ROUTING_OPT => true,
-            ConfigurationPage::ADD_REMOVE_DOMAIN => false,
-            ConfigurationPage::DISABLE_ADDON_IN_CPANEL => false,
-            ConfigurationPage::USE_IP_AS_DESTINATION_OPT => false,
-            ConfigurationPage::SET_SPF_RECORD => false,
+            Locator::combine(ConfigurationPage::ENABLE_SSL_FOR_API_OPT_XPATH, ConfigurationPage::ENABLE_SSL_FOR_API_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::ENABLE_AUTOMATIC_UPDATES_OPT_XPATH, ConfigurationPage::ENABLE_AUTOMATIC_UPDATES_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH, ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_XPATH, ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::ADD_DOMAIN_DURING_LOGIN_OPT_XPATH, ConfigurationPage::ADD_DOMAIN_DURING_LOGIN_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT_XPATH, ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::CHANGE_EMAIL_ROUTING_OPT_XPATH, ConfigurationPage::CHANGE_EMAIL_ROUTING_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH, ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => false,
+            Locator::combine(ConfigurationPage::DISABLE_ADDON_IN_CPANEL_XPATH, ConfigurationPage::DISABLE_ADDON_IN_CPANEL_CSS) => false,
+            Locator::combine(ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH, ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::SET_SPF_RECORD_XPATH, ConfigurationPage::SET_SPF_RECORD_CSS) => false,
         );
     }
 
+    /**
+     * Function used to get client login url
+     * @return string - client url
+     */
     private function getClientUrl()
     {
+        // Get the default cPanel url
         $url = getenv($this->getEnvParameter('url'));
 
+        // Replace the port in order to obtain client url
         return str_replace('2087', '2083', $url);
     }
 
+    /**
+     * Function used to remove an account from accounts array
+     * @param $username - username to be removed
+     */
     private function removeAccountByUsername($username)
     {
         foreach (self::$accounts as $i => $account) {

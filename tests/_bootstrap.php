@@ -30,7 +30,7 @@ class PsfConfig
      */
     public static function getApiUrl()
     {
-        return  getenv(self::$parameters['env']['api_url']);
+        return getenv(self::$parameters['env']['api_url']);
     }
 
     /**
@@ -39,7 +39,7 @@ class PsfConfig
      */
     public static function getApiHostname()
     {
-       return  getenv(self::$parameters['env']['api_hostname']);
+       return getenv(self::$parameters['env']['api_hostname']);
     }
 
     /**
@@ -48,7 +48,7 @@ class PsfConfig
      */
     public static function getApiUsername()
     {
-        return  getenv(self::$parameters['env']['api_username']);
+        return getenv(self::$parameters['env']['api_username']);
     }
 
     /**
@@ -57,7 +57,7 @@ class PsfConfig
      */
     public static function getApiPassword()
     {
-        return  getenv(self::$parameters['env']['api_password']);
+        return getenv(self::$parameters['env']['api_password']);
     }
 
     /**
@@ -66,7 +66,7 @@ class PsfConfig
      */
     public static function getPrimaryMX()
     {
-        return  getenv(self::$parameters['env']['primary_mx']);
+        return getenv(self::$parameters['env']['primary_mx']);
     }
 }
 

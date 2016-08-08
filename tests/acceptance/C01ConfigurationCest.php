@@ -1,10 +1,10 @@
 <?php
 
-use Pages\CpanelClientPage;
-use Pages\DomainListPage;
-use Pages\ConfigurationPage;
-use Pages\ProfessionalSpamFilterPage;
+use Page\DomainListPage;
+use Page\ConfigurationPage;
+use Page\ProfessionalSpamFilterPage;
 use Step\Acceptance\ConfigurationSteps;
+use Codeception\Util\Locator;
 
 class C01ConfigurationCest
 {
@@ -24,114 +24,274 @@ class C01ConfigurationCest
         $this->_after($I);
     }
 
+    /**
+     * Verify the 'Configuration page' layout and functionality - CHECKED
+     */
     public function checkConfigurationPage(ConfigurationSteps $I)
     {
+        // Verify configuration page layout
         $I->verifyPageLayout();
 
+        // Fill configuration fields
         $I->setFieldApiUrl(PsfConfig::getApiUrl());
         $I->setFieldApiHostname(PsfConfig::getApiHostname());
         $I->setFieldApiUsernameIfEmpty(PsfConfig::getApiUsername());
         $I->setFieldApiPassword(PsfConfig::getApiPassword());
         $I->setFieldPrimaryMX(PsfConfig::getPrimaryMX());
 
+        // Submit settings
         $I->submitSettingForm();
+
+        // Check if configuration was saved
         $I->seeSubmissionIsSuccessful();
     }
 
     /**
-     * Verify "Automatically add domains to the Spamfilter" option works properly when unchecked
+     * Verify "Automatically add domains to the Spamfilter" option works properly when unchecked - CHECKED
      */
     public function verifyNotAutomaticallyAddDomainToPsf(ConfigurationSteps $I)
     {
+        // Set configuration options
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => false
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => false
         ));
+
+        // Create new client account
         $account = $I->createNewAccount();
+
+        // Cgeck if domain is not present in filter
         $I->checkDomainIsNotPresentInFilter($account['domain']);
     }
 
     /**
-     * Verify "Automatically add domains to the Spamfilter" option works properly when checked
+     * Verify "Automatically add domains to the Spamfilter" option works properly when checked - CHECKED
      */
     public function verifyAutomaticallyAddDomainToPsf(ConfigurationSteps $I)
     {
+        // Set configuration options
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
         ));
+
+        // Create new client account
         $account = $I->createNewAccount();
 
+        // Login with the client account
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Add addon domain as client
         $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
-        $parkedDomainName = $I->addParkedDomainAsClient($account['domain']);
+
+        // Add alias domain as client
+        $aliasDomainName = $I->addAliasDomainAsClient($account['domain']);
+
+        // Add sub domain as client
         $subDomain = $I->addSubdomainAsClient($account['domain']);
 
+        // Check if previous created domains exist in spampanel
         $I->assertDomainExistsInSpampanel($account['domain']);
         $I->assertDomainExistsInSpampanel($addonDomainName);
-        $I->assertDomainExistsInSpampanel($parkedDomainName);
+        $I->assertDomainExistsInSpampanel($aliasDomainName);
         $I->assertDomainExistsInSpampanel($subDomain);
 
+        // Login back as root
+        $I->loginAsRoot();
+
+        // Check if domain is present in filter and is protected
         $I->checkDomainIsPresentInFilter($account['domain']);
     }
 
     /**
-     * Verify "Automatically delete domains from the SpamFilter" option works properly when unchecked
+     * Verify "Automatically delete domains from the SpamFilter" option works properly when unchecked - CHECKED
      */
     public function verifyNotAutomaticallyDeleteDomainToPsf(ConfigurationSteps $I)
     {
+        // Set configuration options
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => false
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => false
 
         ));
+
+        // Create a new client account
         $account = $I->createNewAccount();
+
+        // Check if domain exists in spampanel
         $domainExists = $I->makeSpampanelApiRequest()->domainExists($account['domain']);
         $I->assertTrue($domainExists);
+
+        // Remove the client account
         $I->removeAccount($account['username']);
+
+        // Check if domain was removed from spampanel
         $domainExists = $I->makeSpampanelApiRequest()->domainExists($account['domain']);
         $I->assertTrue($domainExists);
     }
 
     /**
-     * Verify "Automatically delete domains from the SpamFilter" option works properly when checked
+     * Verify if client account is removed all the domains created by him will be removed from spampanel - CHECKED
      */
     public function verifyAutomaticallyDeleteDomainToPsf(ConfigurationSteps $I)
     {
+        // Set configuration options
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
-            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true
 
         ));
+
+        // Create a new client account
         $account = $I->createNewAccount();
 
+        // Login with the client account
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Create addon domain as client
         $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
-        $parkedDomainName = $I->addParkedDomainAsClient($account['domain']);
+
+        // Create alias domain as client
+        $aliasDomain = $I->addAliasDomainAsClient($account['domain']);
+
+        // Create sub domain as client
         $subDomain = $I->addSubdomainAsClient($account['domain']);
 
+        // Check if previous created domains exist in spampanel
         $I->assertDomainExistsInSpampanel($account['domain']);
         $I->assertDomainExistsInSpampanel($addonDomainName);
-        $I->assertDomainExistsInSpampanel($parkedDomainName);
+        $I->assertDomainExistsInSpampanel($aliasDomain);
         $I->assertDomainExistsInSpampanel($subDomain);
 
+        // Remove the client account
         $I->removeAccount($account['username']);
+
+        // Check if the previous created  domains were removed from spampanel
         $I->assertDomainNotExistsInSpampanel($account['domain']);
         $I->assertDomainNotExistsInSpampanel($addonDomainName);
-        $I->assertDomainNotExistsInSpampanel($parkedDomainName);
+        $I->assertDomainNotExistsInSpampanel($aliasDomain);
         $I->assertDomainNotExistsInSpampanel($subDomain);
+    }
+
+
+    /**
+     * Verify if domains removed by client are removed from spampanel - CHECKED
+     */
+    public function verifyAutmaticallyDeleteSecondaryDomains(ConfigurationSteps $I)
+    {
+        // Set configuration options
+        $I->setConfigurationOptions(array(
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH,ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true
+
+        ));
+
+        // Create a new client account
+        $account = $I->createNewAccount();
+
+        // Login with the client account
+        $I->loginAsClient($account['username'], $account['password']);
+
+        // Create addon domain as client
+        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+
+        // Create alias domain as client
+        $aliasDomain = $I->addAliasDomainAsClient($account['domain']);
+
+        // Create a subdomain as client
+        $subDomain = $I->addSubdomainAsClient($account['domain']);
+
+        // Check if previous created domains exist in spampanel
+        $I->assertDomainExistsInSpampanel($account['domain']);
+        $I->assertDomainExistsInSpampanel($addonDomainName);
+        $I->assertDomainExistsInSpampanel($aliasDomain);
+        $I->assertDomainExistsInSpampanel($subDomain);
+
+        // Remove the addon domain as client
+        $I->removeAddonDomainAsClient($addonDomainName);
+
+        // Check if the addon domain was removed from spampanel
+        $I->assertDomainNotExistsInSpampanel($addonDomainName);
+
+        // Remove the sub domain as client
+        $I->removeSubdomainAsClient($subDomain);
+
+        // Check if the sub domain was removed from spampanel
+        $I->assertDomainNotExistsInSpampanel($subDomain);
+
+        // Remove alias domain as client
+        $I->removeAliasDomainAsClient($aliasDomain);
+
+        // Check if the alias domain was removed from spampanel
+        $I->assertDomainNotExistsInSpampanel($aliasDomain);
+    }
+
+    /**
+     * Verify "Automatically change the MX records for domains" option works properly when unchecked - CHECKED
+     */
+    public function verifyNotAutomaticallyChangeMxRecords(ConfigurationSteps $I)
+    {
+        // Set configuration options
+        $I->setConfigurationOptions(array(
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS) => false
+        ));
+
+        // Create new client account
+        $account = $I->createNewAccount();
+
+        // Click on Edit MX Entry command
+        $I->searchAndClickCommand('Edit MX Entry');
+
+        // Select the previous created account from list
+        $I->selectOption('domainselect', $account['domain']);
+
+        // Click the Edit button
+        $I->click('Edit');
+
+        // Check if primary MX was not set
+        $I->dontSeeInField('#mxlisttb input', PsfConfig::getPrimaryMX());
+    }
+
+    /**
+     * Verify "Automatically change the MX records for domains" option works properly when checked - CHECKED
+     */
+    public function verifyAutomaticallyChangeMxRecords(ConfigurationSteps $I)
+    {
+        // Set configuration options
+        $I->setConfigurationOptions(array(
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS) => true
+        ));
+
+        // Create new client account
+        $account = $I->createNewAccount();
+
+        // Click on Edit Mx Entry command
+        $I->searchAndClickCommand('Edit MX Entry');
+
+        // Select the previous created account from list
+        $I->selectOption('domainselect', $account['domain']);
+
+        // Click the Edit button
+        $I->click('Edit');
+
+        // Check if the primary MX was set
+        $I->seeInField('#mxlisttb input', PsfConfig::getPrimaryMX());
     }
 
     public function verifyHookSetEmailRoutingAtClientLevel(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
-            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true,
-            ConfigurationPage::ADD_REMOVE_DOMAIN => true
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH, ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => true
         ));
 
         $spampanelMxRecords = $I->getMxFields();
@@ -175,11 +335,11 @@ class C01ConfigurationCest
     public function verifyHookSetEmailRoutingWhileUsingBulkprotect(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => false,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
-            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true,
-            ConfigurationPage::ADD_REMOVE_DOMAIN => true
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH, ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => true
         ));
 
         $I->removeAllAccounts();
@@ -232,82 +392,15 @@ class C01ConfigurationCest
         $I->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER);
 
         // Email routing is changed to Local when bulkprotect is ran
-        $I->goToPage(\Pages\ProfessionalSpamFilterPage::BULKPROTECT_BTN, \Pages\BulkprotectPage::TITLE);
+        $I->goToPage(\Page\ProfessionalSpamFilterPage::BULKPROTECT_BTN, \Page\BulkprotectPage::TITLE);
         $I->seeBulkProtectLastExecutionInfo();
         $I->submitBulkprotectForm();
         $I->seeBulkprotectRanSuccessfully();
-        $I->see('Domain has been added', \Pages\BulkprotectPage::TABLE);
+        $I->see('Domain has been added', \Page\BulkprotectPage::TABLE);
         $I->logout();
         $I->loginAsClient($account['username'], $account['password']);
         $I->accessEmailRoutingInMxEntryPage();
         $I->verifyEmailRoutingInMxEntryPageSetToLocal();
-    }
-
-    public function verifyAutmaticallyDeleteSecondaryDomains(ConfigurationSteps $I)
-    {
-        $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false,
-            ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT => true
-
-        ));
-        $account = $I->createNewAccount();
-
-        $I->loginAsClient($account['username'], $account['password']);
-        $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
-        $parkedDomainName = $I->addParkedDomainAsClient($account['domain']);
-        $subDomain = $I->addSubdomainAsClient($account['domain']);
-
-        $I->assertDomainExistsInSpampanel($account['domain']);
-        $I->assertDomainExistsInSpampanel($addonDomainName);
-        $I->assertDomainExistsInSpampanel($parkedDomainName);
-        $I->assertDomainExistsInSpampanel($subDomain);
-
-        $I->removeAddonDomainAsClient($addonDomainName);
-        $I->assertDomainNotExistsInSpampanel($addonDomainName);
-
-        $I->removeSubdomainAsClient($subDomain);
-        $I->assertDomainNotExistsInSpampanel($subDomain);
-
-        $I->removeParkedDomainAsClient($parkedDomainName);
-        $I->assertDomainNotExistsInSpampanel($parkedDomainName);
-    }
-
-    /**
-     * Verify "Automatically change the MX records for domains" option works properly when unchecked
-     */
-    public function verifyNotAutomaticallyChangeMxRecords(ConfigurationSteps $I)
-    {
-        $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT => false
-        ));
-
-        $account = $I->createNewAccount();
-
-        $I->searchAndClickCommand('Edit MX Entry');
-        $I->selectOption('domainselect', $account['domain']);
-        $I->click('Edit');
-        $I->dontSeeInField('#mxlisttb input', PsfConfig::getPrimaryMX());
-    }
-
-    /**
-     * Verify "Automatically change the MX records for domains" option works properly when checked
-     */
-    public function verifyAutomaticallyChangeMxRecords(ConfigurationSteps $I)
-    {
-        $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true,
-            ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT => true
-        ));
-
-        $account = $I->createNewAccount();
-
-        $I->searchAndClickCommand('Edit MX Entry');
-        $I->selectOption('domainselect', $account['domain']);
-        $I->click('Edit');
-        $I->seeInField('#mxlisttb input', PsfConfig::getPrimaryMX());
     }
 
     /**
@@ -316,7 +409,7 @@ class C01ConfigurationCest
     public function verifyNotConfigureTheEmailAddressForThisDomainOption(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT=> false
+            Locator::combine(ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH, ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS) => false
         ));
 
         $account = $I->createNewAccount();
@@ -334,7 +427,7 @@ class C01ConfigurationCest
     public function verifyConfigureTheEmailAddressForThisDomainOption(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT=> true
+            Locator::combine(ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH, ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS) => true
         ));
 
         $account = $I->createNewAccount();
@@ -351,7 +444,7 @@ class C01ConfigurationCest
     public function verifyUseExistingMXRecordsAsRoutesInTheSpamfilterOption(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::USE_EXISTING_MX_OPT => true
+            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => true
         ));
 
         $account = $I->createNewAccount();
@@ -365,7 +458,7 @@ class C01ConfigurationCest
     public function verifyNotUseExistingMXRecordsAsRoutesInTheSpamfilterOption(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::USE_EXISTING_MX_OPT => false
+            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => false
         ));
 
         $account = $I->createNewAccount();
@@ -379,8 +472,8 @@ class C01ConfigurationCest
     public function verifyUseIPAsDestinationRouteInsteadOfDomainOption(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::USE_EXISTING_MX_OPT => false,
-            ConfigurationPage::USE_IP_AS_DESTINATION_OPT => true
+            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH, ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS) => true
         ));
 
         $account = $I->createNewAccount();
@@ -395,8 +488,8 @@ class C01ConfigurationCest
     public function verifyNotUseIPAsDestinationRouteInsteadOfDomainOption(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::USE_IP_AS_DESTINATION_OPT => false,
-            ConfigurationPage::USE_EXISTING_MX_OPT => true,
+            Locator::combine(ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH, ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS) => false,
+            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => true,
         ));
 
         $account = $I->createNewAccount();
@@ -410,7 +503,7 @@ class C01ConfigurationCest
     public function verifyAddonDomains(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
         ));
 
         $I->createDefaultPackage();
@@ -432,7 +525,7 @@ class C01ConfigurationCest
     public function verifySubDomains(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
         ));
 
         $I->createDefaultPackage();
@@ -454,8 +547,8 @@ class C01ConfigurationCest
     public function verifyParkedDomains(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false
         ));
 
         $I->createDefaultPackage();
@@ -477,7 +570,7 @@ class C01ConfigurationCest
     public function verifyRedirectBackToCpanelUponLogout(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT => true
+            Locator::combine(ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_XPATH, ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_CSS) => true
         ));
 
         $account = $I->createNewAccount();
@@ -502,9 +595,9 @@ class C01ConfigurationCest
     public function verifyAddAddonParkedAndSubdomainsAsAnAliasInsteadOfANormalDomain(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT => true,
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true,
-            ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT => false
+            Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false
         ));
 
         $account = $I->createNewAccount();
@@ -526,7 +619,7 @@ class C01ConfigurationCest
     public function verifyAllRoutesFromSpampanelAreAddedInCpanelOnDomainUnprotect(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT => true
+            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true
         ));
 
         $routeDomain = 'server9.seinternal.com';
@@ -557,7 +650,7 @@ class C01ConfigurationCest
         $spfRecord = 'v=spf1 a:' . PsfConfig::getApiHostname();
         $I->setFieldSpfRecord($spfRecord);
         $I->setConfigurationOptions([
-            ConfigurationPage::SET_SPF_RECORD => true
+            Locator::combine(ConfigurationPage::SET_SPF_RECORD_XPATH, ConfigurationPage::SET_SPF_RECORD_CSS) => true
         ]);
 
         $account = $I->createNewAccount();
@@ -574,7 +667,7 @@ class C01ConfigurationCest
     public function verifyDomainListRefreshForCustomerLevel(ConfigurationSteps $I)
     {
         $I->setConfigurationOptions(array(
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
         ));
 
         $I->createDefaultPackage();
@@ -606,7 +699,7 @@ class C01ConfigurationCest
         $I->login($reseller['username'], $reseller['password']);
 
         $I->setConfigurationOptions(array(
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => true
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
         ));
 
         $I->createDefaultPackage();
@@ -624,7 +717,7 @@ class C01ConfigurationCest
         $I->login($reseller['username'], $reseller['password']);
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
         $I->setConfigurationOptions(array(
-            ConfigurationPage::PROCESS_ADDON_CPANEL_OPT => false
+            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => false
         ));
 
     }

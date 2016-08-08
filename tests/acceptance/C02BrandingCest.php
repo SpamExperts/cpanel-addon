@@ -1,7 +1,7 @@
 <?php
 
-use Pages\BrandingPage;
-use Pages\ProfessionalSpamFilterPage;
+use Page\BrandingPage;
+use Page\ProfessionalSpamFilterPage;
 use Step\Acceptance\BrandingSteps;
 
 class C02BrandingCest

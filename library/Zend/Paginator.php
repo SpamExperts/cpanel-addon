@@ -166,7 +166,7 @@ class Zend_Paginator implements Countable, IteratorAggregate
     protected $_pageRange = null;
 
     /**
-     * Pages
+     * Page
      *
      * @var array
      */
@@ -1087,7 +1087,7 @@ class Zend_Paginator implements Countable, IteratorAggregate
             $pages->next = $currentPageNumber + 1;
         }
 
-        // Pages in range
+        // Page in range
         $scrollingStyle = $this->_loadScrollingStyle($scrollingStyle);
         $pages->pagesInRange     = $scrollingStyle->getPages($this);
         $pages->firstPageInRange = min($pages->pagesInRange);

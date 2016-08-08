@@ -2,7 +2,7 @@
 
 namespace Step\Acceptance;
 
-use Pages\BrandingPage;
+use Page\BrandingPage;
 
 class BrandingSteps extends CommonSteps
 {

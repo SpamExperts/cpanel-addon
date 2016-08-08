@@ -1,6 +1,6 @@
 <?php
 
-namespace Pages;
+namespace Page;
 
 class BulkprotectPage
 {

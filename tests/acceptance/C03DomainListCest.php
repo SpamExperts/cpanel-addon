@@ -1,6 +1,6 @@
 <?php
 
-use Pages\DomainListPage;
+use Page\DomainListPage;
 use Step\Acceptance\CommonSteps;
 
 class C03DomainListCest
