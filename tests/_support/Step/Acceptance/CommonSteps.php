@@ -868,23 +868,42 @@ class CommonSteps extends \WebGuy
      */
     public function createDefaultPackage()
     {
-        $I = $this;
-        $I->searchAndClickCommand('Delete a Package');
+        // Search for delete package option and click on it
+        $this->searchAndClickCommand('Delete a Package');
 
-        $I->wait(2);
-        $count = $I->getElementsCount("//select/option[@value='$this->defaultPackage']");
+        // Check if the default package already exist
+        $this->wait(2);
+        $count = $this->getElementsCount("//select/option[@value='$this->defaultPackage']");
 
         if ($count) {
             $this->comment("Default package already created");
             return;
         }
 
-        $I->searchAndClickCommand('Add a Package');
-        $I->fillField('fieldset > div > div > div.propertyValue > input', $this->defaultPackage);
-        $I->click('#maxpark_unlimited_radio');
-        $I->click('#maxaddon_unlimited_radio');
-        $I->click('Add');
-        $I->waitForElementNotVisible('div.mask', 60);
+        // Search for add a package option and click on it
+        $this->searchAndClickCommand('Add a Package');
+
+        // Switch to main frame
+        $this->switchToMainFrame();
+
+        // Fill the package name field
+        $this->waitForElement(Locator::combine(CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH, CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH, CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), $this->defaultPackage);
+
+        // Switch to main frame
+        $this->switchToMainFrame();
+
+        // Check unlimited parked domains
+        $this->executeJS('document.getElementById("maxpark_unlimited_radio").setAttribute("checked", "true")');
+
+        // Check unlimited addon domains
+        $this->executeJS('document.getElementById("maxaddon_unlimited_radio").setAttribute("checked", "true")');
+
+        // Click the save changes button
+        $this->click('Add');
+
+        // Wait for package creation to finish
+        $this->waitForText("Success!");
     }
 
     /**

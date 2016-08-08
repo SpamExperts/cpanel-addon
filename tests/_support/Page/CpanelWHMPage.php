@@ -59,4 +59,8 @@ class CpanelWHMPage
 
     const RESELLER_ACCESS_ALL_OPT_XPATH = "//*[@id='acl_group_everything']/li/input";
     const RESELLER_ACCESS_ALL_OPT_CSS = "#acl_group_everything > li > input[type='checkbox']";
+
+    // Add a package page
+    const PACKAGE_NAME_FIELD_XPATH = "//*[@id='yui-gen0']/div[1]/fieldset/div/div/div[2]/input";
+    const PACKAGE_NAME_FIELD_CSS = "#yui-gen0 > div:nth-child(1) > fieldset > div > div > div.propertyValue > input";
 }
