@@ -1,51 +1,62 @@
 <?php
 
 namespace Step\Acceptance;
+use Codeception\Util\Locator;
+use Page\MigrationPage;
+
 
 class MigrationSteps extends \WebGuy
 {
     public function goToPage()
     {
-        $I = $this;
-        $I->switchToWindow();
-        $I->reloadPage();
-        $I->switchToIFrame('mainFrame');
-        $I->waitForText('Plugins');
-        $I->click('Plugins');
-        $I->waitForText('Professional Spam Filter');
-        $I->click('Professional Spam Filter');
-        $I->waitForText('Migration');
-        $I->click('html/body/div[1]/div/ul/li[5]/div');
+        $this->switchToWindow();
+        $this->reloadPage();
+        $this->switchToIFrame('mainFrame');
+        $this->waitForText('Plugins');
+        $this->click('Plugins');
+        $this->waitForText('Professional Spam Filter');
+        $this->click('Professional Spam Filter');
+        $this->waitForText(MigrationPage::TITLE);
+        $this->click(MigrationPage::MIGRATE_THUMBNAIL);
     }
 
     public function verifyPageLayout()
     {
-        $this->see("Migration", "//h3[contains(.,'Migration')]");
-        $this->waitForText('On this page you can migrate to a different admin/reseller in the spamfilter.');
-        $this->waitForText('During migration, the domains will be assigned to the new user (given the credentials for the new user are correct) and the configuration of the addon will be switched to the new user.');
+        $this->see(MigrationPage::TITLE, MigrationPage::TITLE_XPATH);
+        $this->waitForText(MigrationPage::DESCRIPTION_A);
+        $this->waitForText(MigrationPage::DESCRIPTION_B);
+
         // 'Current username'
         $this->see('Current username');
-        $this->waitForElement("//input[@data-original-title='Current username']");
+
+        //Fields 
+        $this->waitForElement(Locator::combine(MigrationPage::CURRENT_USERNAME_XPATH, MigrationPage::CURRENT_USERNAME_CSS), 30);
+
         // 'New username'
         $this->see('New username');
-        $this->waitForElement("//input[@data-original-title='New username']");
+        $this->waitForElement(Locator::combine(MigrationPage::NEW_USERNAME_XPATH, MigrationPage::NEW_USERNAME_CSS), 30);
+
         // 'New password'
         $this->see('New password');
-        $this->waitForElement("//input[@data-original-title='New password']");
+        $this->waitForElement(Locator::combine(MigrationPage::NEW_PASSWORD_XPATH, MigrationPage::NEW_PASSWORD_CSS), 30);
         $this->waitForText('I am sure I want to migrate all protected domains on this server to this new user.');
+
         // Confirmation radio button
-        $this->waitForElement("//input[@data-original-title='Confirmation']");
+        $this->waitForElement(Locator::combine(MigrationPage::CONFIRM_INPUT_XPATH, MigrationPage::CONFIRM_INPUT_CSS), 30);
+
         // 'Migrate' button
-        $this->waitForElement("//input[@class='btn btn-primary']");
+        $this->waitForElement(Locator::combine(MigrationPage::MIGRATE_BTN_XPATH, MigrationPage::MIGRATE_BTN_CSS), 30);
     }
 
     public function submitMigrationForm()
     {
-        $this->click('Migrate');
+       //Submit migration
+       $this->click(Locator::combine(MigrationPage::MIGRATE_BTN_XPATH,MigrationPage::MIGRATE_BTN_CSS));
     }
 
     public function seeErrorAfterMigrate()
     {
+        //Verify error message
         $this->see('One or more settings are not correctly set.');
     }
 }
