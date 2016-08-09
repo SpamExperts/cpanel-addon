@@ -176,7 +176,6 @@ class C01ConfigurationCest
         $I->assertDomainNotExistsInSpampanel($subDomain);
     }
 
-
     /**
      * Verify if domains removed by client are removed from spampanel - CHECKED
      */
@@ -621,6 +620,12 @@ class C01ConfigurationCest
         // Creat a new alias domain as client
         $aliasDomain= $I->addAliasDomainAsClient($account['domain']);
 
+        // Check if alias domain exist in plugin domains list
+        $I->checkDomainListAsClient($aliasDomain);
+
+        // Logout from client account
+        $I->logoutAsClient();
+
         // Login as root
         $I->loginAsRoot();
 
@@ -633,59 +638,95 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Redirect back to Cpanel upon logout' option works properly when checked
+     * Verify 'Redirect back to Cpanel upon logout' option works properly when checked - CHECKED
      */
     public function verifyRedirectBackToCpanelUponLogout(ConfigurationSteps $I)
     {
+        // Set plugin configuration options
         $I->setConfigurationOptions(array(
             Locator::combine(ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_XPATH, ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_CSS) => true
         ));
 
+        // Create a new client account
         $account = $I->createNewAccount();
 
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Check plugin domain list as client
         $I->checkDomainListAsClient($account['domain']);
+
+        // Login on spampanel
         $I->loginOnSpampanel($account['domain']);
+
+        // Logout from spampanel
         $I->logoutFromSpampanel();
+
+        // See if cPanel client page redirection works when logout from spampanel
         $I->seeInCurrentAbsoluteUrl($I->getEnvHostname());
 
+        // Logout as client
         $I->logoutAsClient();
+
+        // Login as root
         $I->loginAsRoot();
+
+        // Search the account domain in the domain list
         $I->searchDomainList($account['domain']);
+
+        // Login on spampanel
         $I->loginOnSpampanel($account['domain']);
+
+        // Logout from spampanel
         $I->logoutFromSpampanel();
+
+        // See if cPanel admin page redirection works when logout from spampanel
         $I->seeInCurrentAbsoluteUrl($I->getEnvHostname());
     }
 
     /**
-     * Verify 'Add addon-, parked and subdomains as an alias instead of a normal domain' option works properly when checked
+     * Verify 'Add addon-, parked and subdomains as an alias instead of a normal domain' option works properly when checked - CHECKED
      */
     public function verifyAddAddonParkedAndSubdomainsAsAnAliasInsteadOfANormalDomain(ConfigurationSteps $I)
     {
+        // Set plugin configuration options
         $I->setConfigurationOptions(array(
             Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => true,
             Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
             Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false
         ));
 
+        // Create new client account
         $account = $I->createNewAccount();
 
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Create new addon domain as client
         $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
+
+        // Check if addon domain exist as an alias in spampanel
         $I->assertIsAliasInSpampanel($addonDomainName, $account['domain']);
 
-        $parkedDomain = $I->addParkedDomainAsClient($account['domain']);
+        // Create new alias domain as client
+        $parkedDomain = $I->addAliasDomainAsClient($account['domain']);
+
+        // Check if alias domain exist as an alias in spampanel
         $I->assertIsAliasInSpampanel($parkedDomain, $account['domain']);
 
+        // Create new subdomain as client
         $subDomain = $I->addSubdomainAsClient($account['domain']);
+
+        // Check if subdomain exist as an alias in spampanel
         $I->assertIsAliasInSpampanel($subDomain, $account['domain']);
     }
 
     /**
-     * Verify mx records are restored properly in cpanel when a domain is unprotected
+     * Verify mx records are restored properly in cpanel when a domain is unprotected - CHECKED
      */
     public function verifyAllRoutesFromSpampanelAreAddedInCpanelOnDomainUnprotect(ConfigurationSteps $I)
     {
+        // Set plugin configuration options
         $I->setConfigurationOptions(array(
             Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true
         ));
@@ -694,6 +735,7 @@ class C01ConfigurationCest
         $routes = [$routeDomain, '5.79.73.204', '2001:1af8:4700:a02d:2::1'];
 
         foreach ($routes as $route) {
+            
             $account = $I->createNewAccount();
 
             $I->searchDomainList($account['domain']);
@@ -711,82 +753,77 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Set SPF automatically for domains' option works properly when checked
+     * Verify 'Set SPF automatically for domains' option works properly when checked - CHECKED
      */
     public function verifySetSpfRecord(ConfigurationSteps $I)
     {
+        // Spf record value
         $spfRecord = 'v=spf1 a:' . PsfConfig::getApiHostname();
-        $I->setFieldSpfRecord($spfRecord);
-        $I->setConfigurationOptions([
-            Locator::combine(ConfigurationPage::SET_SPF_RECORD_XPATH, ConfigurationPage::SET_SPF_RECORD_CSS) => true
-        ]);
 
+        // Fill the spf record field with the value previous generated
+        $I->setFieldSpfRecord($spfRecord);
+
+        // Set plugin configuration options
+        $I->setConfigurationOptions(array(
+            Locator::combine(ConfigurationPage::SET_SPF_RECORD_XPATH, ConfigurationPage::SET_SPF_RECORD_CSS) => true
+        ));
+
+        // Create new client account
         $account = $I->createNewAccount();
 
+        // Click on Edit DNS ZOne command
         $I->searchAndClickCommand('Edit DNS Zone');
+
+        // Select client account domain from list
         $I->selectOption('domainselect', $account['domain']);
+
+        // Click the edit button
         $I->click('Edit');
+
+        // Check if the spf record is set
         $I->seeInField('input', '"'.$spfRecord.'"');
     }
 
-     /**
-     * Verify
-     */
-    public function verifyDomainListRefreshForCustomerLevel(ConfigurationSteps $I)
-    {
-        $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
-        ));
-
-        $I->createDefaultPackage();
-
-        $account = $I->createNewAccount();
-
-        // addon domain
-        $I->loginAsClient($account['username'], $account['password']);
-
-        // add alias domain
-        $aliasDomain = $I->addAliasDomainAsClient($account['domain']);
-        $I->clickHomeMenuLink();
-
-        $I->checkDomainListAsClient($aliasDomain);
-        $I->logoutAsClient();
-        $I->loginAsRoot();
-
-        $I->searchDomainList($aliasDomain);
-        $I->see('alias', DomainListPage::TYPE_COLUMN_FROM_FIRST_ROW);
-        $I->assertDomainExistsInSpampanel($aliasDomain);
-    }
-
     /**
-     * Verify
+     * Verify if domain list refresh for reseller level - CHECKED
      */
     public function verifyDomainListRefreshForResellerLevel(ConfigurationSteps $I)
     {
+        // Create a new reseller account
         $reseller = $I->createNewAccount(['reseller' => true]);
+
+        // Login as reseller
         $I->login($reseller['username'], $reseller['password']);
 
+        // Go to configuration page
+        $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
+
+        // Set plugin configuration options
         $I->setConfigurationOptions(array(
             Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
         ));
 
-        $I->createDefaultPackage();
-
+        // Create a new client account from the UI
         $account = $I->createNewAccount(['ui' => true]);
+
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
 
-        // addon domain
+        // Create a new alias domain as client
         $aliasDomain = $I->addAliasDomainAsClient($account['domain']);
 
-        // add alias domain
-        $I->clickHomeMenuLink();
+        // Check if alias domain exist in plugin domain list as client
         $I->checkDomainListAsClient($aliasDomain);
 
+        // Login as reseller
         $I->login($reseller['username'], $reseller['password']);
+
+        // Go to the plugin configuration page
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
+
+        // Restore the plugin configuration options
         $I->setConfigurationOptions(array(
             Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => false
         ));
-
     }
 }

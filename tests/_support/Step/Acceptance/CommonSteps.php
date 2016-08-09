@@ -229,12 +229,15 @@ class CommonSteps extends \WebGuy
             $this->fillField(Locator::combine(CpanelWHMPage::RE_PASSWORD_FIELD_XPATH, CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
             $this->fillField(Locator::combine(CpanelWHMPage::EMAIL_FIELD_XPATH, CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
 
+            // Choose default package for the account
+            $this->selectOption(Locator::combine(CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_XPATH, CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_CSS), "package1");
+
             // If i want the account to be a reseller
             if ($params['reseller'])
                 $this->checkOption(Locator::combine(CpanelWHMPage::MAKE_RESELLER_OPT_XPATH, CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
 
             // Click the create account button
-            $this->click(Locator::combine(CpanelWHMPage::CREATE_ACCOUNT_BTN_XPATH, CpanelWHMPage::CREATE_ACCOUNT_BTN_CSS));
+            $this->click("Create");
 
             // Wait for account creation to finish
             $this->waitForText("Account Creation Status: ok (Account Creation Ok)", 200, '#masterContainer');
@@ -286,7 +289,7 @@ class CommonSteps extends \WebGuy
         $this->click(Locator::combine(CpanelWHMPage::RESELLER_SUBMIT_BTN_XPATH, CpanelWHMPage::RESELLER_SUBMIT_BTN_CSS));
 
         // Check Root Access All features option
-        $this->checkOption(Locator::combine(CpanelWHMPage::RESELLER_ACCESS_ALL_OPT_XPATH, CpanelWHMPage::RESELLER_ACCESS_ALL_OPT_CSS));
+        $this->executeJS("document.getElementById('acl_group_everything').childNodes[1].childNodes[0].checked=true");
 
         // Click the Save All Settings button
         $this->click("Save All Settings");
@@ -648,7 +651,7 @@ class CommonSteps extends \WebGuy
     }
 
     /**
-     * Function used to remove alias domaind as client
+     * Function used to remove alias domain as client
      * @param $aliasDomain - alias domain to be removed
      */
     public function removeAliasDomainAsClient($aliasDomain)
@@ -679,27 +682,50 @@ class CommonSteps extends \WebGuy
 
     }
 
+    /**
+     * Function used to login on spampanel
+     * @param $domain - domain to log in with
+     */
     public function loginOnSpampanel($domain)
     {
-        $I = $this;
-        $href = $I->grabAttributeFrom('//a[contains(text(), "Login")]', 'href');
-        $I->amOnUrl($href);
-        $I->waitForText("Welcome to the $domain control panel", 60);
-        $I->see("Logged in as: $domain");
-        $I->see("Domain User");
+        $href = $this->grabAttributeFrom('//a[contains(text(), "Login")]', 'href');
+        $this->amOnUrl($href);
+        $this->waitForText("Welcome to the $domain control panel", 60);
+        $this->see("Logged in as: $domain");
+        $this->see("Domain User");
     }
 
+    /**
+     * Function used to add a route in spampanel
+     * @param $route - route
+     * @param int $port - port
+     */
     public function addRouteInSpampanel($route, $port = 25)
     {
-        $I = $this;
-        $I->click('Edit route(s)');
-        $I->click('Add a route');
-        $I->fillField('#route_host_new', $route);
-        $I->fillField('#route_port_new', $port);
-        $I->click('#submit_new_route_btn');
-        $I->see('Domain routes updated successfully');
+        // Click edit route(s) button
+        $this->click('Edit route(s)');
+
+        // Click add route button
+        $this->click('Add a route');
+
+        // Fill route host field
+        $this->fillField('#route_host_new', $route);
+
+        // Fill route port field
+        $this->fillField('#route_port_new', $port);
+
+        // Click the submit button
+        $this->click('#submit_new_route_btn');
+
+        // Check if route was succesfuly added
+        $this->see('Domain routes updated successfully');
+
+        # TODO use locators combine
     }
 
+    /**
+     * Function used to logout from spampanel
+     */
     public function logoutFromSpampanel()
     {
         $this->waitForElementVisible(SpampanelPage::LOGOUT_LINK, 10);
@@ -708,27 +734,40 @@ class CommonSteps extends \WebGuy
         $this->click(SpampanelPage::LOGOUT_CONFIRM_LINK);
     }
 
+    /**
+     * Function used to check if a domain exist in plugin domain list if logged in as client
+     * @param $domain - domain to check
+     */
     public function checkDomainListAsClient($domain)
     {
+        // If $domain is an array $domains will be equal to $domain else $domains will become empty array
         $domains = is_array($domain) ? $domain : [];
 
-        $I = $this;
-        $I->waitForText($this->currentBrandname);
-        $I->see($this->currentBrandname);
-        $I->click($this->currentBrandname);
-        $I->waitForText('List Domains');
-        $I->see('This page shows you a list of all domains owned by you.');
+        // Search plugin and click on it
+        $this->searchAndClickCommandAsClient($this->currentBrandname);
 
-        foreach ($domains as $domain) {
-            $I->seeInDomainTable($domain);
-        }
+        // Wait for plugin page to load
+        $this->waitForText('List Domains');
+        $this->see('This page shows you a list of all domains owned by you.');
+
+        // Check that each domain in domains list is present in table
+        foreach ($domains as $domain)
+            $this->seeInDomainTable($domain);
     }
 
+    /**
+     * Function used to see if domain is present in plugin domains table
+     * @param $domain - domain to be checked
+     */
     public function seeInDomainTable($domain)
     {
         $this->see($domain, '#domainoverview');
     }
 
+    /**
+     * Function used to see if domain is not present in plugin domains table
+     * @param $domain - domain to be checked
+     */
     public function dontSeeInDomainTable($domain)
     {
         $this->dontSee($domain, '#domainoverview');
@@ -767,7 +806,11 @@ class CommonSteps extends \WebGuy
     public function removeAccounts(array $usernames)
     {
         $this->will("Terminate accounts: ".implode(', ', $usernames));
+
+        // For each username
         foreach ($usernames as $username) {
+
+            // Remove account from spampanel
             $this->makeCpanelApiRequest()->deleteAccount($username);
             $this->removeAccountByUsername($username);
         }
@@ -838,18 +881,21 @@ class CommonSteps extends \WebGuy
      */
     public function setConfigurationOptions(array $options)
     {
+        // Merge array with options with default configuration options array
         $options = array_merge($this->getDefaultConfigurationOptions(), $options);
 
-        foreach ($options as $option => $check) {
-            if ($check) {
+        // For each option if array check or uncheck option if needed
+        foreach ($options as $option => $check)
+            if ($check)
                 $this->checkOption($option);
-            } else {
+            else
                 $this->uncheckOption($option);
-            }
-        }
 
-        $this->click(Locator::combine(ConfigurationPage::SAVE_SETTINGS_BTN_XPATH, ConfigurationPage::SAVE_SETTINGS_BTN_CSS));
-        $this->see('The settings have been saved.');
+        // Click the save settings button
+        $this->click("Save Settings");
+
+        // Wait for settings to be saved
+        $this->waitForText('The settings have been saved.', 60);
     }
 
     /**
