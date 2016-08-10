@@ -26,6 +26,9 @@ class C02BrandingCest
         $this->_after($I);
     }
 
+    /**
+     * Verify the branding page
+     */
     public function checkBrandingPage(BrandingSteps $I)
     {
         $I->submitBrandingSettingForm();

@@ -20,7 +20,6 @@ class DomainListPage
 
     const CHECK_STATUS_FOR_ALL_DOMAIN    = "//button[@id='checkAllDomains']";
 
-
     const TOOGLE_PROTECTION_FOR_SELECTED = "//button[@id='toggleSelected']";
     const ITEMS_PER_PAGE_INPUT           = "//input[@id='itemsPerPage']";
     const CHANGE_BTN                     = "//button[@id='changeItems']";

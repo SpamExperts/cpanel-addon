@@ -26,7 +26,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify the 'Configuration page' layout and functionality - CHECKED
+     * Verify the 'Configuration page' layout and functionality
      */
     public function checkConfigurationPage(ConfigurationSteps $I)
     {
@@ -48,7 +48,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify "Automatically add domains to the Spamfilter" option works properly when unchecked - CHECKED
+     * Verify "Automatically add domains to the Spamfilter" option works properly when unchecked
      */
     public function verifyNotAutomaticallyAddDomainToPsf(ConfigurationSteps $I)
     {
@@ -65,7 +65,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify "Automatically add domains to the Spamfilter" option works properly when checked - CHECKED
+     * Verify "Automatically add domains to the Spamfilter" option works properly when checked
      */
     public function verifyAutomaticallyAddDomainToPsf(ConfigurationSteps $I)
     {
@@ -105,7 +105,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify "Automatically delete domains from the SpamFilter" option works properly when unchecked - CHECKED
+     * Verify "Automatically delete domains from the SpamFilter" option works properly when unchecked
      */
     public function verifyNotAutomaticallyDeleteDomainToPsf(ConfigurationSteps $I)
     {
@@ -132,7 +132,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify if client account is removed all the domains created by him will be removed from spampanel - CHECKED
+     * Verify if client account is removed all the domains created by him will be removed from spampanel
      */
     public function verifyAutomaticallyDeleteDomainToPsf(ConfigurationSteps $I)
     {
@@ -177,7 +177,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify if domains removed by client are removed from spampanel - CHECKED
+     * Verify if domains removed by client are removed from spampanel
      */
     public function verifyAutmaticallyDeleteSecondaryDomains(ConfigurationSteps $I)
     {
@@ -231,7 +231,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify "Automatically change the MX records for domains" option works properly when unchecked - CHECKED
+     * Verify "Automatically change the MX records for domains" option works properly when unchecked
      */
     public function verifyNotAutomaticallyChangeMxRecords(ConfigurationSteps $I)
     {
@@ -258,7 +258,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify "Automatically change the MX records for domains" option works properly when checked - CHECKED
+     * Verify "Automatically change the MX records for domains" option works properly when checked
      */
     public function verifyAutomaticallyChangeMxRecords(ConfigurationSteps $I)
     {
@@ -284,8 +284,13 @@ class C01ConfigurationCest
         $I->seeInField('#mxlisttb input', PsfConfig::getPrimaryMX());
     }
 
+
+    /**
+     * Verify hook email routing at client level
+     */
     public function verifyHookSetEmailRoutingAtClientLevel(ConfigurationSteps $I)
     {
+        // Set plugin configuration options
         $I->setConfigurationOptions(array(
             Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
             Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
@@ -294,46 +299,100 @@ class C01ConfigurationCest
             Locator::combine(ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH, ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => true
         ));
 
+        // Get MX fields from addon configuration page
         $spampanelMxRecords = $I->getMxFields();
+
+        // Create a new client account
         $account = $I->createNewAccount();
 
-        // Change email routing and remove account by using Backup Mail Exchanger
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Get destination routes from spampanel
         $destinationRoutes = $I->makeSpampanelApiRequest()->getDomainRoutesNames($account['domain']);
+
+        // Go to MX Entry page in order to access Email Routing options
         $I->accessEmailRoutingInMxEntryPage();
-        $I->ChangeEmailRoutingInMxEntryPageToBackupMailExchanger();
+
+        // Change email routing option to Backup Mail Exchanger
+        $I->changeEmailRoutingInMxEntryPageToBackupMailExchanger();
+
+        // Logout from client account
         $I->logoutAsClient();
+
+        // Login as root
         $I->loginAsRoot();
+
+        // Check if domain don't exist in spampanel
         $I->assertDomainNotExistsInSpampanel($account['domain']);
+
+        // Check if spampanel destination routes exist in cPanel interface
         $I->seeMxEntriesInCpanelInterface($account['domain'], $destinationRoutes);
+
+        // Check if MX entries from addon configuration page don't exist in cPanel interface
         $I->dontSeeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
 
-        // Change email routing and remove account by using Local Mail Exchanger
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Go to MX Entry page in order to access Email Routing options
         $I->accessEmailRoutingInMxEntryPage();
-        $I->pauseExecution();
-        $I->ChangeEmailRoutingInMxEntryPageToLocalMailExchanger();
+
+        // Change email routing option to Local Mail Exchanger
+        $I->changeEmailRoutingInMxEntryPageToLocalMailExchanger();
+
+        // Logout from client account
         $I->logoutAsClient();
+
+        // Login as root
         $I->loginAsRoot();
+
+        // Check if domain exist in domain list
         $I->searchDomainList($account['domain']);
+
+        // Check if domain exist in spampanel
         $I->assertDomainExistsInSpampanel($account['domain']);
+
+        // Check if MX entries from addon configuration page exist in cPanel interface
         $I->seeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
 
-        // Change email routing and remove account by using Remote Mail Exchanger
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Get destination routes from spampanel
         $destinationRoutes = $I->makeSpampanelApiRequest()->getDomainRoutesNames($account['domain']);
+
+        // Go to MX Entry page in order to access Email Routing options
         $I->accessEmailRoutingInMxEntryPage();
-        $I->ChangeEmailRoutingInMxEntryPageToRemoteMailExchanger();
+
+        // Change email routing option to Remote Mail Exchanger
+        $I->changeEmailRoutingInMxEntryPageToRemoteMailExchanger();
+
+        // Logout from client account
         $I->logoutAsClient();
+
+        // Login as root
         $I->loginAsRoot();
+
+        // Check if domain exist in domain list
         $I->searchDomainList($account['domain']);
+
+        // Check if domain don;t exist in spampanel
         $I->assertDomainNotExistsInSpampanel($account['domain']);
+
+        // Check if spampanel destination routes exist in cPanel interface
         $I->seeMxEntriesInCpanelInterface($account['domain'], $destinationRoutes);
+
+        // Check if MX entries from addon configuration page don't exist in cPanel interface
         $I->dontSeeMxEntriesInCpanelInterface($account['domain'], $spampanelMxRecords);
     }
 
+    /**
+     * Verify hook email routing when using bulkprotect
+     */
     public function verifyHookSetEmailRoutingWhileUsingBulkprotect(ConfigurationSteps $I)
     {
+        // Set plugin configuration options
         $I->setConfigurationOptions(array(
             Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => false,
             Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
@@ -342,69 +401,158 @@ class C01ConfigurationCest
             Locator::combine(ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH, ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => true
         ));
 
+
+        # Change email routing to other than Local
+
+        // Remove all previous created accounts
         $I->removeAllAccounts();
 
+        // Create new client account
         $account = $I->createNewAccount();
 
-        // Change email routing to other than Local
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Go to MX Entry page in order to access Email Routing options
         $I->accessEmailRoutingInMxEntryPage();
+
+        // Check that Local Mail Exchanger option is selected
         $I->verifyEmailRoutingInMxEntryPageSetToLocal();
-        $I->ChangeEmailRoutingInMxEntryPageToBackupMailExchanger();
+
+        // Change email routing option to Backup Mail Exchanger
+        $I->changeEmailRoutingInMxEntryPageToBackupMailExchanger();
+
+        // Check email routing option is set to Backup Mail Exchanger
         $I->verifyEmailRoutingInMxEntryPageSetToBackup();
+
+        // Logout from client account
         $I->logoutAsClient();
+
+        // Login as root
         $I->loginAsRoot();
+
+        // Check if domain exist in domain list
         $I->searchDomainList($account['domain']);
 
-        // Email routing should not change when domain is protected
+
+        #  Email routing should not change when domain is protected
+
+        // Toggle protection for that domain
         $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
+
+        // Wait for protection status to change
         $I->waitForText("The protection status of {$account['domain']} has been changed to protected", 60);
+
+        // Logout from root account
         $I->logout();
+
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Go to MX Entry page in order to access Email Routing options
         $I->accessEmailRoutingInMxEntryPage();
+
+        // Check that Local Mail Exchanger option is selected
         $I->verifyEmailRoutingInMxEntryPageSetToLocal();
+
+        // Logout from client account
         $I->logoutAsClient();
+
+        // Login as root
         $I->loginAsRoot();
+
+        // Check if domain exist in domain list
         $I->searchDomainList($account['domain']);
 
-        // Email routing should not change when domain is unprotected
+
+        #Email routing should not change when domain is unprotected
+
+        // Toggle protection for that domain
         $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
+
+        // Wait for protection status to change
         $I->waitForText("The protection status of {$account['domain']} has been changed to unprotected", 60);
+
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Go to MX Entry page in order to access Email Routing options
         $I->accessEmailRoutingInMxEntryPage();
+
+        // Check that Local Mail Exchanger option is selected
         $I->verifyEmailRoutingInMxEntryPageSetToLocal();
+
+        // Logout from client account
         $I->logoutAsClient();
+
+        // Login as root
         $I->loginAsRoot();
+
+        // Check if domain exist in domain list
         $I->searchDomainList($account['domain']);
 
-        // Email routing should not change when domain is protected again
+        # Email routing should not change when domain is protected again
+
+        // Toggle protection for that domain
         $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
+
+        // Wait for protection status to change
         $I->waitForText("The protection status of {$account['domain']} has been changed to protected", 60);
+
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Go to MX Entry page in order to access Email Routing options
         $I->accessEmailRoutingInMxEntryPage();
 
-        // Email routing is changed manually
-        $I->ChangeEmailRoutingInMxEntryPageToRemoteMailExchanger();
+        // Change email routing option to Remote Mail Exchanger
+        $I->changeEmailRoutingInMxEntryPageToRemoteMailExchanger();
+
+        // Check that Remote Email Exchanger option is selected
         $I->verifyEmailRoutingInMxEntryPageSetToRemote();
+
+        // Logout from client account
         $I->logoutAsClient();
+
+        // Login as root
         $I->loginAsRoot();
+
+        // Check if domain exist in domain list
         $I->searchDomainList($account['domain']);
+
+        // Check if protection status for that domain is Unprotected
         $I->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER);
 
-        // Email routing is changed to Local when bulkprotect is ran
+        // Go to bulk protect page
         $I->goToPage(\Page\ProfessionalSpamFilterPage::BULKPROTECT_BTN, \Page\BulkprotectPage::TITLE);
+
+        // Check bulk protect last execution info
         $I->seeBulkProtectLastExecutionInfo();
+
+        // Run bulk protect action
         $I->submitBulkprotectForm();
+
+        // Check if bulk protect finished succesfuly
         $I->seeBulkprotectRanSuccessfully();
+
+        // Check if domain has been added in bulk protect table
         $I->see('Domain has been added', \Page\BulkprotectPage::TABLE);
+
+        // Logout from root account
         $I->logout();
+
+        // Login as client
         $I->loginAsClient($account['username'], $account['password']);
+
+        // Go to MX Entry page in order to access Email Routing options
         $I->accessEmailRoutingInMxEntryPage();
+
+        // Check that Local Email Exchanger option is selected
         $I->verifyEmailRoutingInMxEntryPageSetToLocal();
     }
 
     /**
-     * Verify "Configure the email address for this domain" option works properly when unchecked - CHECKED
+     * Verify "Configure the email address for this domain" option works properly when unchecked
      */
     public function verifyNotConfigureTheEmailAddressForThisDomainOption(ConfigurationSteps $I)
     {
@@ -430,7 +578,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify "Configure the email address for this domain" option works properly when checked - CHECKED
+     * Verify "Configure the email address for this domain" option works properly when checked
      */
     public function verifyConfigureTheEmailAddressForThisDomainOption(ConfigurationSteps $I)
     {
@@ -456,7 +604,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Use existing MX records as routes in the spamfilter' option works properly when unchecked - CHECKED
+     * Verify 'Use existing MX records as routes in the spamfilter' option works properly when unchecked
      */
     public function verifyUseExistingMXRecordsAsRoutesInTheSpamfilterOption(ConfigurationSteps $I)
     {
@@ -476,7 +624,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Use existing MX records as routes in the spamfilter' option works properly when checked - CHECKED
+     * Verify 'Use existing MX records as routes in the spamfilter' option works properly when checked
      */
     public function verifyNotUseExistingMXRecordsAsRoutesInTheSpamfilterOption(ConfigurationSteps $I)
     {
@@ -496,7 +644,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Use IP as destination route instead of domain' option works properly when checked - CHECKED
+     * Verify 'Use IP as destination route instead of domain' option works properly when checked
      */
     public function verifyUseIPAsDestinationRouteInsteadOfDomainOption(ConfigurationSteps $I)
     {
@@ -520,7 +668,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Use IP as destination route instead of domain' option works properly when unchecked - CHECKED
+     * Verify 'Use IP as destination route instead of domain' option works properly when unchecked
      */
     public function verifyNotUseIPAsDestinationRouteInsteadOfDomainOption(ConfigurationSteps $I)
     {
@@ -541,7 +689,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Process addon-, parked and subdomains' option works properly for addon domains when checked - CHECKED
+     * Verify 'Process addon-, parked and subdomains' option works properly for addon domains when checked
      */
     public function verifyAddonDomains(ConfigurationSteps $I)
     {
@@ -559,6 +707,12 @@ class C01ConfigurationCest
         // Create new addon domain as client
         $addonDomainName = $I->addAddonDomainAsClient($account['domain']);
 
+        // Check if alias domain exist in plugin domains list
+        $I->checkDomainListAsClient($addonDomainName);
+
+        // Logout from client account
+        $I->logoutAsClient();
+
         // Login as root
         $I->loginAsRoot();
 
@@ -571,7 +725,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Process addon-, parked and subdomains' option works properly for subdomains when checked - CHECKED
+     * Verify 'Process addon-, parked and subdomains' option works properly for subdomains when checked
      */
     public function verifySubDomains(ConfigurationSteps $I)
     {
@@ -589,6 +743,12 @@ class C01ConfigurationCest
         // Create new subdomain as client
         $subDomain = $I->addSubdomainAsClient($account['domain']);
 
+        // Check if sub domain exist in plugin domains list
+        $I->checkDomainListAsClient($subDomain);
+
+        // Logout from client account
+        $I->logoutAsClient();
+
         // Login as root
         $I->loginAsRoot();
 
@@ -601,7 +761,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Process addon-, parked and subdomains' option works properly for parked domains when checked - CHECKED
+     * Verify 'Process addon-, parked and subdomains' option works properly for parked domains when checked
      */
     public function verifyAliasDomains(ConfigurationSteps $I)
     {
@@ -638,7 +798,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Redirect back to Cpanel upon logout' option works properly when checked - CHECKED
+     * Verify 'Redirect back to Cpanel upon logout' option works properly when checked
      */
     public function verifyRedirectBackToCpanelUponLogout(ConfigurationSteps $I)
     {
@@ -685,7 +845,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Add addon-, parked and subdomains as an alias instead of a normal domain' option works properly when checked - CHECKED
+     * Verify 'Add addon-, parked and subdomains as an alias instead of a normal domain' option works properly when checked
      */
     public function verifyAddAddonParkedAndSubdomainsAsAnAliasInsteadOfANormalDomain(ConfigurationSteps $I)
     {
@@ -722,7 +882,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify mx records are restored properly in cpanel when a domain is unprotected - CHECKED
+     * Verify mx records are restored properly in cpanel when a domain is unprotected
      */
     public function verifyAllRoutesFromSpampanelAreAddedInCpanelOnDomainUnprotect(ConfigurationSteps $I)
     {
@@ -731,11 +891,12 @@ class C01ConfigurationCest
             Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true
         ));
 
+        // All routes are the same as route domain
         $routeDomain = 'server9.seinternal.com';
         $routes = [$routeDomain, '5.79.73.204', '2001:1af8:4700:a02d:2::1'];
 
         foreach ($routes as $route) {
-            
+
             $account = $I->createNewAccount();
 
             $I->searchDomainList($account['domain']);
@@ -753,7 +914,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify 'Set SPF automatically for domains' option works properly when checked - CHECKED
+     * Verify 'Set SPF automatically for domains' option works properly when checked
      */
     public function verifySetSpfRecord(ConfigurationSteps $I)
     {
@@ -785,7 +946,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify if domain list refresh for reseller level - CHECKED
+     * Verify if domain list refresh for reseller level
      */
     public function verifyDomainListRefreshForResellerLevel(ConfigurationSteps $I)
     {

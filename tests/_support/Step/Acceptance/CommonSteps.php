@@ -83,7 +83,7 @@ class CommonSteps extends \WebGuy
         $this->switchToTopFrame();
 
         // Click logout button
-        $this->click(Locator::combine(CpanelWHMPage::LOGOUT_BTN_XPATH, CpanelWHMPage::LOGOUT_BTN_CSS));
+        $this->click(CpanelWHMPage::LOGOUT_BTN);
     }
 
     /**
@@ -374,16 +374,6 @@ class CommonSteps extends \WebGuy
     public function will($message)
     {
         $this->comment("\n\n --- {$message} --- \n");
-    }
-
-    /**
-     * Function used to check if a domain is in list
-     * @param $domain - domain to check
-     */
-    public function checkDomainList($domain)
-    {
-        $this->goToDomainListPage();
-        $this->see($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
     }
 
     /**
@@ -702,25 +692,25 @@ class CommonSteps extends \WebGuy
      */
     public function addRouteInSpampanel($route, $port = 25)
     {
-        // Click edit route(s) button
+        // Got to edit route(s) page
+        $this->waitForText('Edit route(s)', 10);
         $this->click('Edit route(s)');
+//        $this->click(SpampanelPage::EDIT_ROUTE_BUTTON);
 
         // Click add route button
         $this->click('Add a route');
 
         // Fill route host field
-        $this->fillField('#route_host_new', $route);
+        $this->fillField(Locator::combine(SpampanelPage::ROUTE_FIELD_XPATH, SpampanelPage::ROUTE_FIELD_CSS), $route);
 
         // Fill route port field
-        $this->fillField('#route_port_new', $port);
+        $this->fillField(Locator::combine(SpampanelPage::PORT_FIELD_XPATH, SpampanelPage::PORT_FIELD_CSS), $port);
 
         // Click the submit button
-        $this->click('#submit_new_route_btn');
+        $this->click('Save');
 
         // Check if route was succesfuly added
-        $this->see('Domain routes updated successfully');
-
-        # TODO use locators combine
+        $this->waitForText('Domain routes updated successfully');
     }
 
     /**
@@ -957,55 +947,96 @@ class CommonSteps extends \WebGuy
      */
     public function clickHomeMenuLink()
     {
+        // Wait for home menu link
         $this->waitForElement(Locator::combine(CpanelClientPage::HOME_MENU_LINK_XPATH, CpanelClientPage::HOME_MENU_LINK_CSS), 10);
+
+        // Click the home menu link
         $this->click(Locator::combine(CpanelClientPage::HOME_MENU_LINK_XPATH, CpanelClientPage::HOME_MENU_LINK_CSS));
     }
 
+    /**
+     * Function used to access MX Entry menu as client in order to change email routing options
+     */
     public function accessEmailRoutingInMxEntryPage()
     {
-        $this->click(".//*[@id='icon-mx_entry']");
+        // Search for MX Entry option and click on it
+        $this->searchAndClickCommandAsClient("MX Entry");
+
+        // Wait for page to load
         $this->waitForText("MX Entry");
         $this->waitForText("Email Routing");
     }
 
+    /**
+     * Function used to check if email routing is set to Local Mail Exchanger option
+     */
     public function verifyEmailRoutingInMxEntryPageSetToLocal()
     {
+        // Verify if Local Mail Exchanger option is checked
         $this->seeOptionIsSelected(".//*[@id='mxcheck_local']", "local");
     }
 
+    /**
+     * Function used to check if email routing is set to Backup Mail Exchanger option
+     */
     public function verifyEmailRoutingInMxEntryPageSetToBackup()
     {
+        // Verify if Backup Mail Exchanger option is checked
         $this->seeOptionIsSelected(".//*[@id='mxcheck_secondary']", "secondary");
     }
 
-    public function VerifyEmailRoutingInMxEntryPageSetToRemote()
+    /**
+     * Function used to check if email routing is set to Remote Mail Exchanger
+     */
+    public function verifyEmailRoutingInMxEntryPageSetToRemote()
     {
+        // Verify if Remote Email Exchanger is checked
         $this->seeOptionIsSelected(".//*[@id='mxcheck_remote']", "remote");
     }
 
+    /**
+     * Function used to change email routing to Local Mail Exchanger
+     */
     public function changeEmailRoutingInMxEntryPageToLocalMailExchanger()
     {
-        $this->selectOption(".//*[@id='mxcheck_local']", "local");
-        $this->click("#change_mxcheck_button");
-        $this->waitForElementVisible("//img[@alt='loading']", 30);
-        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
+        // Select the Local Mail Exchanger option
+        $this->executeJS("document.getElementById('mxcheck_local').checked=true");
+
+        // Click change button
+        $this->executeJS("document.getElementById('change_mxcheck_button').click()");
+
+        // Wait for settings to be saved
+        $this->wait(15);
     }
 
+    /**
+     * Function used to change email routing to Backup Mail Exchanger option
+     */
     public function changeEmailRoutingInMxEntryPageToBackupMailExchanger()
     {
-        $this->selectOption(".//*[@id='mxcheck_secondary']", "secondary");
-        $this->click("#change_mxcheck_button");
-        $this->waitForElementVisible("//img[@alt='loading']", 30);
-        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
-        $this->wait(10);
+        // Select Backup Mail Exchanger option
+        $this->executeJS("document.getElementById('mxcheck_secondary').checked=true");
+
+        // Click change button
+        $this->executeJS("document.getElementById('change_mxcheck_button').click()");
+
+        // Wait for settings to be saved
+        $this->wait(15);
     }
 
+    /**
+     * Function used to change email routing to Remote Mail Exchanger option
+     */
     public function changeEmailRoutingInMxEntryPageToRemoteMailExchanger()
     {
-        $this->selectOption(".//*[@id='mxcheck_remote']", "remote");
-        $this->click("#change_mxcheck_button");
-        $this->waitForElementVisible("//img[@alt='loading']", 30);
-        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
+        // Select Remote Mail Exchanger option
+        $this->executeJS("document.getElementById('mxcheck_remote').checked=true");
+
+        // Click change button
+        $this->executeJS("document.getElementById('change_mxcheck_button').click()");
+
+        // Wait for settings to be saved
+        $this->wait(15);
     }
 
     public function seeBulkProtectLastExecutionInfo()
