@@ -5,21 +5,8 @@ use Codeception\Util\Locator;
 use Page\MigrationPage;
 
 
-class MigrationSteps extends \WebGuy
+class MigrationSteps extends CommonSteps
 {
-    public function goToPage()
-    {
-        $this->switchToWindow();
-        $this->reloadPage();
-        $this->switchToIFrame('mainFrame');
-        $this->waitForText('Plugins');
-        $this->click('Plugins');
-        $this->waitForText('Professional Spam Filter');
-        $this->click('Professional Spam Filter');
-        $this->waitForText(MigrationPage::TITLE);
-        $this->click(MigrationPage::MIGRATE_THUMBNAIL);
-    }
-
     public function verifyPageLayout()
     {
         $this->see(MigrationPage::TITLE, MigrationPage::TITLE_XPATH);

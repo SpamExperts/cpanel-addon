@@ -2,6 +2,8 @@
 
 use Step\Acceptance\CommonSteps;
 use Step\Acceptance\UpdateSteps;
+use Page\ProfessionalSpamFilterPage;
+use Page\UpdatePage;
 
 class C06UpdateCest
 {
@@ -16,7 +18,7 @@ class C06UpdateCest
 
     public function checkUpdatePage(UpdateSteps $I)
     {
-        $I->goToPage();
+        $I->goToPage(ProfessionalSpamFilterPage::UPDATE_BTN, UpdatePage::TITLE);
 
         $I->verifyPageLayout();
         $I->submitUpgradeForm();

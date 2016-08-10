@@ -1,66 +1,56 @@
 <?php
 
 namespace Step\Acceptance;
+use Page\SupportPage;
+use Codeception\Util\Locator;
 
-class SupportSteps extends \WebGuy
+
+class SupportSteps extends CommonSteps
 {
-    public function goToPage()
-    {
-        $I = $this;
-        $I->switchToWindow();
-        $I->reloadPage();
-        $I->switchToIFrame('mainFrame');
-        $I->waitForText('Plugins');
-        $I->click('Plugins');
-        $I->waitForText('Professional Spam Filter');
-        $I->click('Professional Spam Filter');
-        $I->waitForText('Support');
-        $I->click('html/body/div[1]/div/ul/li[7]/div');
-
-    }
-
      public function verifyPageLayout()
     {
-        $this->see("Support", "//h3[contains(.,'Support')]");
+        $this->see(SupportPage::TITLE, SupportPage::TITLE_XPATH);
         // addon information
-        $this->see('Information');
-        $this->see('Controlpanel: Cpanel v');
-        $this->see('PHP version:');
-        $this->see('Addon version:');
-        $this->see('Diagnostics');
-        $this->see('In case you have issues with the addon, you can run a diagnostics on your installation prior to contacting support.');
-        $this->seeElement("//input[@class='btn btn-primary']");
+        $this->see(SupportPage::TEXT_A);
+        $this->see(SupportPage::TEXT_B);
+        $this->see(SupportPage::TEXT_C);
+        $this->see(SupportPage::TEXT_D);
+        $this->see(SupportPage::TEXT_E);
+        $this->see(SupportPage::DESCRIPTION);
+        $this->seeElement(Locator::combine(SupportPage::RUN_DIAGNOSTICS_BTN_XPATH, SupportPage::RUN_DIAGNOSTICS_BTN_CSS));
     }
 
     public function submitDiagnosticForm()
     {
-        $this->click('Run diagnostics');
+        //Submit
+        $this->click(Locator::combine(SupportPage::RUN_DIAGNOSTICS_BTN_XPATH, SupportPage::RUN_DIAGNOSTICS_BTN_CSS));
     }
 
     public function seeDiagnostics()
     {
-        $this->see("PHP version:", "//strong[contains(.,'PHP version:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("PHP extensions:", "//strong[contains(.,'PHP extensions:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Configuration binary:", "//strong[contains(.,'Configuration binary:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Configuration permissions:", "//strong[contains(.,'Configuration permissions:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Panel version:", "//strong[contains(.,'Panel version:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Addon version:", "//strong[contains(.,'Addon version:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Hashes:", "//strong[contains(.,'Hashes:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Hooks:", "//strong[contains(.,'Hooks:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Symlinks:", "//strong[contains(.,'Symlinks:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Controlpanel API:", "//strong[contains(.,'Controlpanel API:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
-        $this->see("Spamfilter API:", "//strong[contains(.,'Spamfilter API:')]");
-        $this->seeElement("//span[contains(.,'OK!')]");
+        //Verify diagnostics result
+        $this->see("PHP version:", SupportPage::PHP_VERSION_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("PHP extensions:", SupportPage::PHP_EXTENSIONS_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Configuration binary:", SupportPage::CONFIGURATION_BINARY_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Configuration permissions:", SupportPage::CONFIGURATION_PERMISSIONS_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Panel version:", SupportPage::PANEL_VERSION_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Addon version:", SupportPage::ADDON_VERSION_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Hashes:", SupportPage::HASHES_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Hooks:", SupportPage::HOOKS_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Symlinks:", SupportPage::SYMLINKS_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Controlpanel API:", SupportPage::CONTROLPANEL_API_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
+        $this->see("Spamfilter API:", SupportPage::SPAMFILTER_API_XPATH);
+        $this->seeElement(SupportPage::DIAGNOSTIC_RESULT_XPATH);
     }
 
 }
