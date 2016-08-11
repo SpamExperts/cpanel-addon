@@ -5,8 +5,9 @@ use Codeception\Util\Locator;
 use Page\MigrationPage;
 
 
-class MigrationSteps extends \WebGuy
+class MigrationSteps extends CommonSteps
 {
+
     /**
      * Function used to go to plugin migration page
      */

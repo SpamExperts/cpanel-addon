@@ -1,42 +1,30 @@
 <?php
 
 namespace Step\Acceptance;
+use Codeception\Util\Locator;
+use Page\UpdatePage;
 
-class UpdateSteps extends \WebGuy
-{
-    public function goToPage()
-    {
-        $I = $this;
-        $I->switchToWindow();
-        $I->reloadPage();
-        $I->switchToIFrame('mainFrame');
-        $I->waitForText('Plugins');
-        $I->click('Plugins');
-        $I->waitForText('Professional Spam Filter');
-        $I->click('Professional Spam Filter');
-        $I->waitForText('Update');
-        $I->click('html/body/div[1]/div/ul/li[6]/div');
-    }
-
+class UpdateSteps extends CommonSteps
+{  
     public function verifyPageLayout()
     {
         // update info
-        $this->see("Update", "//h3[contains(.,'Update')]");
-        $this->waitForText('On this page you can manually update the addon to the latest version.');
-        $this->waitForText('Auto-update is currently enabled. You can modify this in the configuration');
+        $this->see(UpdatePage::TITLE, UpdatePage::TITLE_XPATH);
+        $this->waitForText(UpdatePage::DESCRIPTION_A);
+        $this->waitForText(UpdatePage::DESCRIPTION_B);
         // tier of addon to install
         $this->see('Tier of addon to install');
-        $this->seeelement(".//*[@id='update_type']");
+        $this->seeelement(Locator::combine(UpdatePage::TIER_DROP_DOWN_XPATH, UpdatePage::TIER_DROP_DOWN_CSS));
         // force reinstalling the addon
-        $this->seeElement("//input[@data-original-title='Reinstall addon']");
+        $this->seeElement(Locator::combine(UpdatePage::FORCE_REINSTALL_INPUT_XPATH, UpdatePage::FORCE_REINSTALL_INPUT_CSS));
         $this->see("Force a reinstall even if the system is up to date.");
         // 'Click to upgrade' button
-        $this->waitForElement("//input[@class='btn btn-primary btn btn-primary']");
+        $this->waitForElement(Locator::combine(UpdatePage::CLICK_TO_UPGRADE_BTN_XPATH, UpdatePage::CLICK_TO_UPGRADE_BTN_CSS));
     }
 
     public function submitUpgradeForm()
     {
-        $this->click('Click to upgrade');
+        $this->click(Locator::combine(UpdatePage::CLICK_TO_UPGRADE_BTN_XPATH, UpdatePage::CLICK_TO_UPGRADE_BTN_CSS));
     }
 
     public function seeNoticeAfterUpgrade()

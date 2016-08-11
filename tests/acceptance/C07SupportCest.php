@@ -2,6 +2,9 @@
 
 use Step\Acceptance\CommonSteps;
 use Step\Acceptance\SupportSteps;
+use Page\ProfessionalSpamFilterPage;
+use Page\SupportPage;
+
 
 class C07SupportCest
 {
@@ -16,8 +19,8 @@ class C07SupportCest
 
     public function checkSupportPage(SupportSteps $I)
     {
-        $I->goToPage();
-
+        $I->goToPage(ProfessionalSpamFilterPage::SUPPORT_BTN, SupportPage::TITLE);
+        
         $I->verifyPageLayout();
         $I->submitDiagnosticForm();
         $I->seeDiagnostics();

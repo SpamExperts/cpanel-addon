@@ -2,6 +2,8 @@
 
 use Step\Acceptance\CommonSteps;
 use Step\Acceptance\MigrationSteps;
+use Page\ProfessionalSpamFilterPage;
+use Page\MigrationPage;
 
 class C05MigrationCest
 {
@@ -20,7 +22,7 @@ class C05MigrationCest
     public function checkMigrationPage(MigrationSteps $I)
     {
         // Go to migration page
-        $I->goToPage();
+        $I->goToPage(ProfessionalSpamFilterPage::MIGRATION_BTN, MigrationPage::TITLE);
 
         // Verify migration page layout
         $I->verifyPageLayout();

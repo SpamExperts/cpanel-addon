@@ -1,14 +1,16 @@
 <?php
 
 namespace Step\Acceptance;
+use Codeception\Util\Locator;
+use Page\BulkprotectPage;
 
 class BulkProtectSteps extends CommonSteps
 {
     public function verifyPageLayout()
     {
-        $this->see("Bulkprotect", "//h3[contains(.,'Bulkprotect')]");
-        $this->see('On this page you can add all current domains to the spamfilter. Depending on the settings it may (or may not) execute certain actions.');
-        $this->see('It is generally not required to run this more than once after the installation. Running bulk protect is usually only necessary after the first installation');
+        $this->see(BulkprotectPage::TITLE, Locator::combine(BulkprotectPage::TITLE_XPATH, BulkprotectPage::TITLE_CSS));
+        $this->see(BulkprotectPage::DESCRIPTION_A);
+        $this->see(BulkprotectPage::DESCRIPTION_B);
     }
 
     public function seeBulkprotectRunning()
