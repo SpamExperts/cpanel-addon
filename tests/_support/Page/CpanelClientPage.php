@@ -74,4 +74,14 @@ class CpanelClientPage
     const DELETE_ALIAS_BTN_XPATH = "//*[@id='btnRemove']";
     const DELETE_ALIAS_BTN_CSS = "#btnRemove";
 
+    // MX Entry page
+    const LOCAL_MAIL_EXCHANGER_OPT_XPATH = ".//*[@id='mxcheck_local']";
+    const LOCAL_MAIL_EXCHANGER_OPT_CSS = "#mxcheck_local";
+
+    const BACKUP_EMAIL_EXCHANGER_OPT_XPATH = ".//*[@id='mxcheck_secondary']";
+    const BACKUP_EMAIL_EXCHANGER_OPT_CSS = "#mxcheck_secondary";
+
+    const REMOTE_EMAIL_EXCHANGER_OPT_XPATH = ".//*[@id='mxcheck_remote']";
+    const REMOTE_EMAIL_EXCHANGER_OPT_CSS = "#mxcheck_remote";
+
 }

@@ -5,8 +5,9 @@ namespace Page;
 class CpanelWHMPage
 {
     // Main Page
-    const LOGOUT_BTN_XPATH = "body/div/div[2]/div/ul/li[4]/a";
-    const LOGOUT_BTN_CSS = "body > div > div.navigationContainer > div > ul > li:nth-child(4) > a";
+    const LOGOUT_BTN = "//a[@href='/logout/?locale=en']";
+
+
 
     const ACCOUNT_SUBMIT_BTN = '#submit';
 

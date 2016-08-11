@@ -43,7 +43,7 @@ class SpampanelApi
         $routes = $this->getDomainRoutes($domain);
 
         return array_map(function ($route) {
-            list($route, $port) = explode('::', $route);
+            list($route, $port) = explode(':', $route);
             return $route;
         }, $routes);
     }

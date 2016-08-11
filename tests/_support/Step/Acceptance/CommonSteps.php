@@ -84,7 +84,7 @@ class CommonSteps extends \WebGuy
         $this->switchToTopFrame();
 
         // Click logout button
-        $this->click(Locator::combine(CpanelWHMPage::LOGOUT_BTN_XPATH, CpanelWHMPage::LOGOUT_BTN_CSS));
+        $this->click(CpanelWHMPage::LOGOUT_BTN);
     }
 
     /**
@@ -226,12 +226,15 @@ class CommonSteps extends \WebGuy
             $this->fillField(Locator::combine(CpanelWHMPage::RE_PASSWORD_FIELD_XPATH, CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
             $this->fillField(Locator::combine(CpanelWHMPage::EMAIL_FIELD_XPATH, CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
 
+            // Choose default package for the account
+            $this->selectOption(Locator::combine(CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_XPATH, CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_CSS), "package1");
+
             // If i want the account to be a reseller
             if ($params['reseller'])
                 $this->checkOption(Locator::combine(CpanelWHMPage::MAKE_RESELLER_OPT_XPATH, CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
 
             // Click the create account button
-            $this->click(Locator::combine(CpanelWHMPage::CREATE_ACCOUNT_BTN_XPATH, CpanelWHMPage::CREATE_ACCOUNT_BTN_CSS));
+            $this->click("Create");
 
             // Wait for account creation to finish
             $this->waitForText("Account Creation Status: ok (Account Creation Ok)", 200, '#masterContainer');
@@ -283,7 +286,7 @@ class CommonSteps extends \WebGuy
         $this->click(Locator::combine(CpanelWHMPage::RESELLER_SUBMIT_BTN_XPATH, CpanelWHMPage::RESELLER_SUBMIT_BTN_CSS));
 
         // Check Root Access All features option
-        $this->checkOption(Locator::combine(CpanelWHMPage::RESELLER_ACCESS_ALL_OPT_XPATH, CpanelWHMPage::RESELLER_ACCESS_ALL_OPT_CSS));
+        $this->executeJS("document.getElementById('acl_group_everything').childNodes[1].childNodes[0].checked=true");
 
         // Click the Save All Settings button
         $this->click("Save All Settings");
@@ -368,16 +371,6 @@ class CommonSteps extends \WebGuy
     public function will($message)
     {
         $this->comment("\n\n --- {$message} --- \n");
-    }
-
-    /**
-     * Function used to check if a domain is in list
-     * @param $domain - domain to check
-     */
-    public function checkDomainList($domain)
-    {
-        $this->goToDomainListPage();
-        $this->see($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
     }
 
     /**
@@ -645,7 +638,7 @@ class CommonSteps extends \WebGuy
     }
 
     /**
-     * Function used to remove alias domaind as client
+     * Function used to remove alias domain as client
      * @param $aliasDomain - alias domain to be removed
      */
     public function removeAliasDomainAsClient($aliasDomain)
@@ -676,27 +669,50 @@ class CommonSteps extends \WebGuy
 
     }
 
+    /**
+     * Function used to login on spampanel
+     * @param $domain - domain to log in with
+     */
     public function loginOnSpampanel($domain)
     {
-        $I = $this;
-        $href = $I->grabAttributeFrom('//a[contains(text(), "Login")]', 'href');
-        $I->amOnUrl($href);
-        $I->waitForText("Welcome to the $domain control panel", 60);
-        $I->see("Logged in as: $domain");
-        $I->see("Domain User");
+        $href = $this->grabAttributeFrom('//a[contains(text(), "Login")]', 'href');
+        $this->amOnUrl($href);
+        $this->waitForText("Welcome to the $domain control panel", 60);
+        $this->see("Logged in as: $domain");
+        $this->see("Domain User");
     }
 
+    /**
+     * Function used to add a route in spampanel
+     * @param $route - route
+     * @param int $port - port
+     */
     public function addRouteInSpampanel($route, $port = 25)
     {
-        $I = $this;
-        $I->click('Edit route(s)');
-        $I->click('Add a route');
-        $I->fillField('#route_host_new', $route);
-        $I->fillField('#route_port_new', $port);
-        $I->click('#submit_new_route_btn');
-        $I->see('Domain routes updated successfully');
+        // Got to edit route(s) page
+        $this->waitForText('Edit route(s)', 10);
+        $this->click('Edit route(s)');
+//        $this->click(SpampanelPage::EDIT_ROUTE_BUTTON);
+
+        // Click add route button
+        $this->click('Add a route');
+
+        // Fill route host field
+        $this->fillField(Locator::combine(SpampanelPage::ROUTE_FIELD_XPATH, SpampanelPage::ROUTE_FIELD_CSS), $route);
+
+        // Fill route port field
+        $this->fillField(Locator::combine(SpampanelPage::PORT_FIELD_XPATH, SpampanelPage::PORT_FIELD_CSS), $port);
+
+        // Click the submit button
+        $this->click('Save');
+
+        // Check if route was succesfuly added
+        $this->waitForText('Domain routes updated successfully');
     }
 
+    /**
+     * Function used to logout from spampanel
+     */
     public function logoutFromSpampanel()
     {
         $this->waitForElementVisible(SpampanelPage::LOGOUT_LINK, 10);
@@ -705,27 +721,40 @@ class CommonSteps extends \WebGuy
         $this->click(SpampanelPage::LOGOUT_CONFIRM_LINK);
     }
 
+    /**
+     * Function used to check if a domain exist in plugin domain list if logged in as client
+     * @param $domain - domain to check
+     */
     public function checkDomainListAsClient($domain)
     {
+        // If $domain is an array $domains will be equal to $domain else $domains will become empty array
         $domains = is_array($domain) ? $domain : [];
 
-        $I = $this;
-        $I->waitForText($this->currentBrandname);
-        $I->see($this->currentBrandname);
-        $I->click($this->currentBrandname);
-        $I->waitForText('List Domains');
-        $I->see('This page shows you a list of all domains owned by you.');
+        // Search plugin and click on it
+        $this->searchAndClickCommandAsClient($this->currentBrandname);
 
-        foreach ($domains as $domain) {
-            $I->seeInDomainTable($domain);
-        }
+        // Wait for plugin page to load
+        $this->waitForText('List Domains');
+        $this->see('This page shows you a list of all domains owned by you.');
+
+        // Check that each domain in domains list is present in table
+        foreach ($domains as $domain)
+            $this->seeInDomainTable($domain);
     }
 
+    /**
+     * Function used to see if domain is present in plugin domains table
+     * @param $domain - domain to be checked
+     */
     public function seeInDomainTable($domain)
     {
         $this->see($domain, '#domainoverview');
     }
 
+    /**
+     * Function used to see if domain is not present in plugin domains table
+     * @param $domain - domain to be checked
+     */
     public function dontSeeInDomainTable($domain)
     {
         $this->dontSee($domain, '#domainoverview');
@@ -764,7 +793,11 @@ class CommonSteps extends \WebGuy
     public function removeAccounts(array $usernames)
     {
         $this->will("Terminate accounts: ".implode(', ', $usernames));
+
+        // For each username
         foreach ($usernames as $username) {
+
+            // Remove account from spampanel
             $this->makeCpanelApiRequest()->deleteAccount($username);
             $this->removeAccountByUsername($username);
         }
@@ -835,18 +868,21 @@ class CommonSteps extends \WebGuy
      */
     public function setConfigurationOptions(array $options)
     {
+        // Merge array with options with default configuration options array
         $options = array_merge($this->getDefaultConfigurationOptions(), $options);
 
-        foreach ($options as $option => $check) {
-            if ($check) {
+        // For each option if array check or uncheck option if needed
+        foreach ($options as $option => $check)
+            if ($check)
                 $this->checkOption($option);
-            } else {
+            else
                 $this->uncheckOption($option);
-            }
-        }
 
-        $this->click(Locator::combine(ConfigurationPage::SAVE_SETTINGS_BTN_XPATH, ConfigurationPage::SAVE_SETTINGS_BTN_CSS));
-        $this->see('The settings have been saved.');
+        // Click the save settings button
+        $this->click("Save Settings");
+
+        // Wait for settings to be saved
+        $this->waitForText('The settings have been saved.', 60);
     }
 
     /**
@@ -908,55 +944,96 @@ class CommonSteps extends \WebGuy
      */
     public function clickHomeMenuLink()
     {
+        // Wait for home menu link
         $this->waitForElement(Locator::combine(CpanelClientPage::HOME_MENU_LINK_XPATH, CpanelClientPage::HOME_MENU_LINK_CSS), 10);
+
+        // Click the home menu link
         $this->click(Locator::combine(CpanelClientPage::HOME_MENU_LINK_XPATH, CpanelClientPage::HOME_MENU_LINK_CSS));
     }
 
+    /**
+     * Function used to access MX Entry menu as client in order to change email routing options
+     */
     public function accessEmailRoutingInMxEntryPage()
     {
-        $this->click(".//*[@id='icon-mx_entry']");
+        // Search for MX Entry option and click on it
+        $this->searchAndClickCommandAsClient("MX Entry");
+
+        // Wait for page to load
         $this->waitForText("MX Entry");
         $this->waitForText("Email Routing");
     }
 
+    /**
+     * Function used to check if email routing is set to Local Mail Exchanger option
+     */
     public function verifyEmailRoutingInMxEntryPageSetToLocal()
     {
+        // Verify if Local Mail Exchanger option is checked
         $this->seeOptionIsSelected(".//*[@id='mxcheck_local']", "local");
     }
 
+    /**
+     * Function used to check if email routing is set to Backup Mail Exchanger option
+     */
     public function verifyEmailRoutingInMxEntryPageSetToBackup()
     {
+        // Verify if Backup Mail Exchanger option is checked
         $this->seeOptionIsSelected(".//*[@id='mxcheck_secondary']", "secondary");
     }
 
-    public function VerifyEmailRoutingInMxEntryPageSetToRemote()
+    /**
+     * Function used to check if email routing is set to Remote Mail Exchanger
+     */
+    public function verifyEmailRoutingInMxEntryPageSetToRemote()
     {
+        // Verify if Remote Email Exchanger is checked
         $this->seeOptionIsSelected(".//*[@id='mxcheck_remote']", "remote");
     }
 
+    /**
+     * Function used to change email routing to Local Mail Exchanger
+     */
     public function changeEmailRoutingInMxEntryPageToLocalMailExchanger()
     {
-        $this->selectOption(".//*[@id='mxcheck_local']", "local");
-        $this->click("#change_mxcheck_button");
-        $this->waitForElementVisible("//img[@alt='loading']", 30);
-        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
+        // Select the Local Mail Exchanger option
+        $this->executeJS("document.getElementById('mxcheck_local').checked=true");
+
+        // Click change button
+        $this->executeJS("document.getElementById('change_mxcheck_button').click()");
+
+        // Wait for settings to be saved
+        $this->wait(15);
     }
 
+    /**
+     * Function used to change email routing to Backup Mail Exchanger option
+     */
     public function changeEmailRoutingInMxEntryPageToBackupMailExchanger()
     {
-        $this->selectOption(".//*[@id='mxcheck_secondary']", "secondary");
-        $this->click("#change_mxcheck_button");
-        $this->waitForElementVisible("//img[@alt='loading']", 30);
-        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
-        $this->wait(10);
+        // Select Backup Mail Exchanger option
+        $this->executeJS("document.getElementById('mxcheck_secondary').checked=true");
+
+        // Click change button
+        $this->executeJS("document.getElementById('change_mxcheck_button').click()");
+
+        // Wait for settings to be saved
+        $this->wait(15);
     }
 
+    /**
+     * Function used to change email routing to Remote Mail Exchanger option
+     */
     public function changeEmailRoutingInMxEntryPageToRemoteMailExchanger()
     {
-        $this->selectOption(".//*[@id='mxcheck_remote']", "remote");
-        $this->click("#change_mxcheck_button");
-        $this->waitForElementVisible("//img[@alt='loading']", 30);
-        $this->waitForElementNotVisible("//img[@alt='loading']", 30);
+        // Select Remote Mail Exchanger option
+        $this->executeJS("document.getElementById('mxcheck_remote').checked=true");
+
+        // Click change button
+        $this->executeJS("document.getElementById('change_mxcheck_button').click()");
+
+        // Wait for settings to be saved
+        $this->wait(15);
     }
 
     public function seeBulkProtectLastExecutionInfo()
