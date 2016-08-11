@@ -102,20 +102,25 @@ class CommonSteps extends \WebGuy
      * @param $page - page name
      * @param $title - page title
      */
-    
     public function goToPage($page, $title)
     {
         $this->amGoingTo("\n\n --- Go to {$title} page --- \n");
+        $this->switchToWindow();
         $this->reloadPage();
         $this->switchToMainFrame();
-        $this->waitForElementVisible(Locator::combine(ProfessionalSpamFilterPage::PLUGIN_XPATH,ProfessionalSpamFilterPage::PLUGIN_CSS));
-        $this->click(Locator::combine(ProfessionalSpamFilterPage::PLUGIN_XPATH,ProfessionalSpamFilterPage::PLUGIN_CSS));
-        $this->waitForElementVisible(Locator::combine(ProfessionalSpamFilterPage::PROF_SPAM_FILTER_BTN_XPATH, ProfessionalSpamFilterPage::PROF_SPAM_FILTER_BTN_CSS), 30);
-        $this->click(Locator::combine(ProfessionalSpamFilterPage::PROF_SPAM_FILTER_BTN_XPATH, ProfessionalSpamFilterPage::PROF_SPAM_FILTER_BTN_CSS));
-        $this->waitForText($title);
+        $this->waitForText('Plugins');
+        $this->click('Plugins');
+        $this->waitForText($this->currentBrandname);
+        $this->click($this->currentBrandname);
+        $this->switchToMainFrame();
+        $this->waitForText($this->currentBrandname);
+        $this->see($this->currentBrandname);
+        $this->waitForText('Configuration');
         $this->click($page);
         $this->waitForText($title);
     }
+
+
     /**
      * Function used to go to addon home page
      */

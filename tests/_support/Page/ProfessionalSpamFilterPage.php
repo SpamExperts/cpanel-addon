@@ -12,9 +12,6 @@ class ProfessionalSpamFilterPage
     const UPDATE_BTN           = "//a[@href='?q=admin/update']";
     const SUPPORT_BTN          = "//a[@href='?q=admin/support']";
 
-    const PROF_SPAM_FILTER_BTN_XPATH = "//a[contains(.,'Profesional Spam Filter')]";
-    const PROF_SPAM_FILTER_BTN_CSS   = ".//*[@id='iconSea']/li/a";
-
     const PLUGIN_XPATH = "//span[contains(.,'Plugins')]";
     const PLUGIN_CSS   = ".//*[@id='plugins']/span";
 
