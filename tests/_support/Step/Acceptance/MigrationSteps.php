@@ -9,22 +9,6 @@ class MigrationSteps extends CommonSteps
 {
 
     /**
-     * Function used to go to plugin migration page
-     */
-    public function goToPage()
-    {
-        $this->switchToWindow();
-        $this->reloadPage();
-        $this->switchToIFrame('mainFrame');
-        $this->waitForText('Plugins');
-        $this->click('Plugins');
-        $this->waitForText('Professional Spam Filter');
-        $this->click('Professional Spam Filter');
-        $this->waitForText(MigrationPage::TITLE);
-        $this->click(MigrationPage::MIGRATE_THUMBNAIL);
-    }
-
-    /**
      * Function used to verify plugin migration page layout
      */
     public function verifyPageLayout()

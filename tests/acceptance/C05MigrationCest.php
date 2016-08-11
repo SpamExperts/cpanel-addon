@@ -23,7 +23,7 @@ class C05MigrationCest
     {
         // Go to migration page
         $I->goToPage(ProfessionalSpamFilterPage::MIGRATION_BTN, MigrationPage::TITLE);
-
+        
         // Verify migration page layout
         $I->verifyPageLayout();
 
