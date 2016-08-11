@@ -13,10 +13,8 @@ class DomainListPage
     const SEARCH_BTN_XPATH = "//*[@id='searchSubmit']";
     const SEARCH_BTN_CSS = "#searchSubmit";
 
-
     const RESET_BTN_XPATH = "//*[@id='searchReset']";
     const RESET_BTN_CSS = "#searchReset";
-
 
     const CHECK_STATUS_FOR_ALL_DOMAIN    = "//button[@id='checkAllDomains']";
 
@@ -24,8 +22,9 @@ class DomainListPage
     const ITEMS_PER_PAGE_INPUT           = "//input[@id='itemsPerPage']";
     const CHANGE_BTN                     = "//button[@id='changeItems']";
 
-    const DOMAIN_TABLE_XPATH = "//*[@id='domainoverview']";
-    const DOMAIN_TABLE_CSS = "#domainoverview";
+
+    const DOMAIN_TABLE_XPATH = "//*[@id='domainoverview']/tbody";
+    const DOMAIN_TABLE_CSS = "#domainoverview > tbody";
 
     const TYPE_COLUMN_FROM_FIRST_ROW     = "//*[@id=\"domainoverview\"]/tbody/tr[1]/td[3]";
 

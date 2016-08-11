@@ -8,6 +8,9 @@ use Codeception\Util\Locator;
 
 class C01ConfigurationCest
 {
+    /**
+     * Function called before each test
+     */
     public function _before(ConfigurationSteps $I)
     {
         $I->loginAsRoot();
@@ -15,11 +18,17 @@ class C01ConfigurationCest
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
     }
 
+    /**
+     * Function called after each test
+     */
     public function _after(ConfigurationSteps $I)
     {
         $I->removeCreatedAccounts();
     }
 
+    /**
+     * Function called after a test failed
+     */
     public function _failed(ConfigurationSteps $I)
     {
         $this->_after($I);
@@ -620,7 +629,7 @@ class C01ConfigurationCest
         $routes = $I->makeSpampanelApiRequest()->getDomainRoutes($account['domain']);
 
         // Assert that new account domain exist in routes
-        $I->assertContains($account['domain'].':25', $routes);
+        $I->assertContains($account['domain'].'::25', $routes);
     }
 
     /**
@@ -640,7 +649,7 @@ class C01ConfigurationCest
         $routes = $I->makeSpampanelApiRequest()->getDomainRoutes($account['domain']);
 
         // Assert that the hostname exist in routes
-        $I->assertContains($I->getEnvHostname().':25', $routes);
+        $I->assertContains($I->getEnvHostname().'::25', $routes);
     }
 
     /**
@@ -664,7 +673,7 @@ class C01ConfigurationCest
         $routes = $I->makeSpampanelApiRequest()->getDomainRoutes($account['domain']);
 
         // Assert that the hostname ip exist in routes
-        $I->assertContains($ip.':25', $routes);
+        $I->assertContains($ip.'::25', $routes);
     }
 
     /**
@@ -685,7 +694,7 @@ class C01ConfigurationCest
         $routes = $I->makeSpampanelApiRequest()->getDomainRoutes($account['domain']);
 
         // Assert that the new account domain exist in routes
-        $I->assertContains($account['domain'].':25', $routes);
+        $I->assertContains($account['domain'].'::25', $routes);
     }
 
     /**

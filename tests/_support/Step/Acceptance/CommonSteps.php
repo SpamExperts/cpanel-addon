@@ -132,9 +132,7 @@ class CommonSteps extends \WebGuy
      */
     public function checkPsfIsPresent()
     {
-        $this->switchToMainFrame();
-        $this->waitForText('Plugins');
-        $this->click('Plugins');
+        $this->searchAndClickCommand('Plugins');
         $this->waitForText($this->currentBrandname);
         $this->see($this->currentBrandname);
     }
@@ -226,7 +224,9 @@ class CommonSteps extends \WebGuy
             $this->fillField(Locator::combine(CpanelWHMPage::DOMAIN_FIELD_XPATH, CpanelWHMPage::DOMAIN_FIELD_CSS), $params['domain']);
             $this->fillField(Locator::combine(CpanelWHMPage::USERNAME_FIELD_XPATH, CpanelWHMPage::USERNAME_FIELD_CSS), $params['username']);
             $this->fillField(Locator::combine(CpanelWHMPage::PASSWORD_FIELD_XPATH, CpanelWHMPage::PASSWORD_FIELD_CSS), $params['password']);
+            $this->wait(2);
             $this->fillField(Locator::combine(CpanelWHMPage::RE_PASSWORD_FIELD_XPATH, CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
+            $this->wait(2);
             $this->fillField(Locator::combine(CpanelWHMPage::EMAIL_FIELD_XPATH, CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
 
             // Choose default package for the account
@@ -388,6 +388,14 @@ class CommonSteps extends \WebGuy
         $this->see($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
     }
 
+    public function searchDomainNotinList($domain)
+    {
+        $this->goToDomainListPage();
+        $this->fillField(Locator::combine(DomainListPage::SEARCH_FIELD_XPATH, DomainListPage::SEARCH_FIELD_CSS), $domain);
+        $this->click(Locator::combine(DomainListPage::SEARCH_BTN_XPATH, DomainListPage::SEARCH_BTN_CSS));
+        $this->dontSee($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
+    }
+
     /**
      * Function used to check if a domain is preseent in filter
      * @param $domain - domain to check
@@ -439,7 +447,6 @@ class CommonSteps extends \WebGuy
         // Click on the login button
         $this->click("Log in");
 
-        # TODO Can be improved
         $this->wait(2);
         $this->waitForText('LOGOUT');
         self::$loggedInAsClient = true;
@@ -695,15 +702,16 @@ class CommonSteps extends \WebGuy
         // Got to edit route(s) page
         $this->waitForText('Edit route(s)', 10);
         $this->click('Edit route(s)');
-//        $this->click(SpampanelPage::EDIT_ROUTE_BUTTON);
 
         // Click add route button
         $this->click('Add a route');
 
         // Fill route host field
+        $this->waitForElement(Locator::combine(SpampanelPage::ROUTE_FIELD_XPATH, SpampanelPage::ROUTE_FIELD_CSS));
         $this->fillField(Locator::combine(SpampanelPage::ROUTE_FIELD_XPATH, SpampanelPage::ROUTE_FIELD_CSS), $route);
 
         // Fill route port field
+        $this->waitForElement(Locator::combine(SpampanelPage::PORT_FIELD_XPATH, SpampanelPage::PORT_FIELD_CSS));
         $this->fillField(Locator::combine(SpampanelPage::PORT_FIELD_XPATH, SpampanelPage::PORT_FIELD_CSS), $port);
 
         // Click the submit button

@@ -7,8 +7,6 @@ class CpanelWHMPage
     // Main Page
     const LOGOUT_BTN = "//a[@href='/logout/?locale=en']";
 
-
-
     const ACCOUNT_SUBMIT_BTN = '#submit';
 
     const SEARCH_BAR_XPATH = "//input[@id='quickJump']";

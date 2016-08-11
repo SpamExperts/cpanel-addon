@@ -6,17 +6,26 @@ use Codeception\Util\Locator;
 
 class C03DomainListCest
 {
+    /**
+     * Function called before each test
+     */
     public function _before(CommonSteps $I)
     {
         $I->loginAsRoot();
         $I->createDefaultPackage();
     }
 
+    /**
+     * Function called after each test
+     */
     public function _after(CommonSteps $I)
     {
         $I->removeCreatedAccounts();
     }
 
+    /**
+     * Function called after a test failed
+     */
     public function _failed(CommonSteps $I)
     {
         $this->_after($I);
@@ -70,8 +79,8 @@ class C03DomainListCest
         $I->searchDomainList($account['domain']);
 
         // Check to see if the other accounts related domains are not present in plugin domain list
-        $I->searchDomainList($secondAccount['domain']);
-        $I->searchDomainList($secondAccountDomain['domain']);
+        $I->searchDomainNotinList($secondAccount['domain']);
+        $I->searchDomainNotinList($secondAccountDomain['domain']);
     }
 
     /**
