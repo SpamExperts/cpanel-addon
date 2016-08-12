@@ -38,7 +38,3 @@ env:
           WebDriver:
             browser: chrome
     firefox:
-      modules:
-        config:
-          WebDriver:
-            browser:  firefox
