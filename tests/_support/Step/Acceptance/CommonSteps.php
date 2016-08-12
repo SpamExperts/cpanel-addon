@@ -145,7 +145,7 @@ class CommonSteps extends \WebGuy
      */
     public function generateRandomDomainName()
     {
-        $domain = uniqid("domain") . ".example.com";
+        $domain = uniqid("domain") . ".example.net";
         $this->comment("I generated random domain: $domain");
 
         return $domain;

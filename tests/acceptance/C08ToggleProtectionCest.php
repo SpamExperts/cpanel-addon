@@ -25,7 +25,6 @@ class C08ToggleProtectionCest
     public function testToggleProtectionErrorAddedAsAliasNotDomain(CommonSteps $I)
     {
         $setup = $this->setupErrorAddedAsAliasNotDomainScenario($I);
-        $I->pauseExecution();
         $addonDomainName = $setup['addon_domain_name'];
 
         // Test
