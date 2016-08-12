@@ -26,26 +26,19 @@ env:
     api_password: 'API_PASSWORD'
     primary_mx: 'PRIMARY_MX'
 
-    edge:
-        username: 'EDGE_USERNAME'
-        password:  'EDGE_PASSWORD'
-        whm_access_hash: 'EDGE_WHM_ACCESS_HASH'
-        url: 'EDGE_URL'
+    # Environment variables used for cpanel
+    username: 'CPANEL_USERNAME'
+    password: 'CPANEL_PASSWORD'
+    whm_access_hash: 'CPANEL_WHM_ACCESS_HASH'
+    url: 'CPANEL_URL'
 
-    current:
-        username: 'CURRENT_USERNAME'
-        password:  'CURRENT_PASSWORD'
-        whm_access_hash: 'CURRENT_WHM_ACCESS_HASH'
-        url: 'CURRENT_URL'
-
-    stable:
-        username: 'STABLE_USERNAME'
-        password:  'STABLE_PASSWORD'
-        whm_access_hash: 'STABLE_WHM_ACCESS_HASH'
-        url: 'STABLE_URL'
-
-    release:
-        username: 'RELEASE_USERNAME'
-        password:  'RELEASE_PASSWORD'
-        whm_access_hash: 'RELEASE_WHM_ACCESS_HASH'
-        url: 'RELEASE_URL'
+    chrome:
+      modules:
+        config:
+          WebDriver:
+            browser: chrome
+    firefox:
+      modules:
+        config:
+          WebDriver:
+            browser:  firefox
