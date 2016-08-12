@@ -27,10 +27,10 @@ env:
     primary_mx: 'PRIMARY_MX'
 
     # Environment variables used for cpanel
-    username: 'CPANEL_USERNAME'
-    password: 'CPANEL_PASSWORD'
+    username: 'ADDON_USERNAME'
+    password: 'ADDON_PASSWORD'
     whm_access_hash: 'CPANEL_WHM_ACCESS_HASH'
-    url: 'CPANEL_URL'
+    url: 'ADDON_URL'
 
     chrome:
       modules:
