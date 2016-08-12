@@ -186,7 +186,7 @@ class C01ConfigurationCest
     }
 
     /**
-     * Verify if domains removed by client are removed from spampanel
+     * Verify if domains removed by client are removed from spampanel - FAILED
      */
     public function verifyAutmaticallyDeleteSecondaryDomains(ConfigurationSteps $I)
     {

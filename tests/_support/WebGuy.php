@@ -31,11 +31,8 @@ class WebGuy extends \Codeception\Actor
 
     public function getEnvParameter($name, $default = null)
     {
-        $env = $this->scenario->current('env');
-
-        if (isset($this->parameters['env'][$env][$name])) {
-            return $this->parameters['env'][$env][$name];
-        }
+        if (isset($this->parameters['env'][$name]))
+            return $this->parameters['env'][$name];
 
         return $default;
     }

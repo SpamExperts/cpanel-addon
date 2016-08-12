@@ -74,12 +74,11 @@ class Acceptance extends \Codeception\Module
     {
         $webDriver = $this->getWebDriver();
 
-        $env = $scenario->current('env');
         $parameters = $this->getParsedParameters();
 
-        if (isset($parameters['env'][$env]['url'])) {
+        if (isset($parameters['env']['url'])) {
             $webDriver->_setConfig([
-                'url' => getenv($parameters['env'][$env]['url'])
+                'url' => getenv($parameters['env']['url'])
             ]);
         }
         codecept_debug($webDriver->_getConfig()['url']);
@@ -88,11 +87,10 @@ class Acceptance extends \Codeception\Module
     public function setupCpanelApi(Scenario $scenario)
     {
         $parameters = $this->getParsedParameters();
-        $env = $scenario->current('env');
 
-        $url = getenv($parameters['env'][$env]['url']);
-        $whmUsername = getenv($parameters['env'][$env]['username']);
-        $whmAcessHash = getenv($parameters['env'][$env]['whm_access_hash']);
+        $url = getenv($parameters['env']['url']);
+        $whmUsername = getenv($parameters['env']['username']);
+        $whmAcessHash = getenv($parameters['env']['whm_access_hash']);
 
         $this->cpanelApi = new \CpanelApi($scenario, $url, $whmUsername, $whmAcessHash);
     }
