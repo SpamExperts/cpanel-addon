@@ -329,7 +329,6 @@ class CommonSteps extends \WebGuy
         $this->searchAndClickCommand($this->currentBrandname);
 
         // Wait for plugin to load
-        # TODO can be improved
         $this->waitForText($this->currentBrandname, 10, 'body > div > header > h1');
     }
    
@@ -415,7 +414,7 @@ class CommonSteps extends \WebGuy
      */
     public function checkProtectionStatusIs($status)
     {
-        $this->click('#checkAllDomains');
+        $this->click(Locator::combine(DomainListPage::CHECK_ALL_DOMAINS_BTN_XPATH, DomainListPage::CHECK_ALL_DOMAINS_BTN_CSS));
         $this->waitForText($status);
     }
 
@@ -752,7 +751,7 @@ class CommonSteps extends \WebGuy
      */
     public function seeInDomainTable($domain)
     {
-        $this->see($domain, '#domainoverview');
+        $this->see($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
     }
 
     /**
@@ -761,7 +760,7 @@ class CommonSteps extends \WebGuy
      */
     public function dontSeeInDomainTable($domain)
     {
-        $this->dontSee($domain, '#domainoverview');
+        $this->dontSee($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
     }
 
     /**

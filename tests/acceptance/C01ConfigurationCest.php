@@ -9,27 +9,25 @@ use Codeception\Util\Locator;
 
 class C01ConfigurationCest
 {
-    /**
-     * Function called before each test
-     */
     public function _before(ConfigurationSteps $I)
     {
+        // Login as root
         $I->loginAsRoot();
+
+        // Create a default package if no one exists
         $I->createDefaultPackage();
+
+        // Go to plugin configuration page
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
     }
 
-    /**
-     * Function called after each test
-     */
+
     public function _after(ConfigurationSteps $I)
     {
+        // Remove all created accounts
         $I->removeCreatedAccounts();
     }
 
-    /**
-     * Function called after a test failed
-     */
     public function _failed(ConfigurationSteps $I)
     {
         $this->_after($I);
