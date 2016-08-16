@@ -10,6 +10,7 @@ use Page\ProfessionalSpamFilterPage;
 use Page\SpampanelPage;
 use Page\CpanelWHMLoginPage;
 use Page\BulkprotectPage;
+use Page\TerminateAccountsPage;
 use Codeception\Util\Locator;
 
 class CommonSteps extends \WebGuy
@@ -331,17 +332,7 @@ class CommonSteps extends \WebGuy
         # TODO can be improved
         $this->waitForText($this->currentBrandname, 10, 'body > div > header > h1');
     }
-
-    /**
-     * Function used to go on the domain list page
-     */
-    public function goToDomainListPage()
-    {
-        $this->goToProspamfilterMenu();
-        $this->click("//h4[contains(.,'Domain List')]");
-        $this->waitForText("List Domains");
-    }
-
+   
     /**
      * Function used to switch focus to commander frame
      */
@@ -825,8 +816,8 @@ class CommonSteps extends \WebGuy
         $this->searchAndClickCommand('Terminate Multiple Accounts');
         $selector = "//input[@type='checkbox'][contains(@name, 'acct')]";
         $this->checkAllBoxes($selector);
-        $this->fillField('//*[@id="masterContainer"]/form/input[@name="verify"]', "I understand this will irrevocably remove all the accounts that have been checked");
-        $this->click("Destroy Selected Accounts");
+        $this->fillField(Locator::combine(TerminateAccountsPage::DESTROY_ACCOUNTS_INPUT_XPATH, TerminateAccountsPage::DESTROY_ACCOUNTS_INPUT_CSS), "I understand this will irrevocably remove all the accounts that have been checked");
+        $this->click(Locator::combine(TerminateAccountsPage::DESTROY_ACCOUNTS_BTTN_XPATH, TerminateAccountsPage::DESTROY_ACCOUNTS_BTTN_CSS));
         $this->waitForElementNotVisible('#waitpanel_mask', 240);
     }
 

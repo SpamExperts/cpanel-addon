@@ -2,6 +2,7 @@
 
 use Page\DomainListPage;
 use Page\ConfigurationPage;
+use Page\TerminateAccountsPage;
 use Page\ProfessionalSpamFilterPage;
 use Step\Acceptance\ConfigurationSteps;
 use Codeception\Util\Locator;

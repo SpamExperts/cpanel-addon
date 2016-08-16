@@ -2,6 +2,7 @@
 
 use Page\BulkprotectPage;
 use Page\ConfigurationPage;
+use Page\TerminateAccountsPage;
 use Page\ProfessionalSpamFilterPage;
 use Step\Acceptance\BulkProtectSteps;
 use Codeception\Util\Locator;
