@@ -3,6 +3,7 @@
 namespace Step\Acceptance;
 
 use Page\BrandingPage;
+use Codeception\Util\Locator;
 
 class BrandingSteps extends CommonSteps
 {
@@ -23,24 +24,27 @@ class BrandingSteps extends CommonSteps
         $this->waitForElement("//input[@data-original-title='Brandicon']");
     }
 
+    /**
+     * Function used to submit the branding page form
+     */
     public function submitBrandingSettingForm()
     {
-        $this->click('Save Branding Settings');
+        $this->click(Locator::combine(BrandingPage::SAVE_BRANDING_BTN_XPATH, BrandingPage::SAVE_BRANDING_BTN_CSS));
     }
 
-    public function seeSettingsSavedSuccessfully()
+    public function seeSettingsSavedSuccessfully($name)
     {
-        $this->see("No new icon uploaded, using the current one.");
-        $this->see("The branding settings have been saved.");
-        $this->see("Brandname is set to 'Professional Spam Filter'.");
+        $this->waitForText("No new icon uploaded, using the current one.", 60);
+        $this->waitForText("The branding settings have been saved.", 60);
+        $this->waitForText("Brandname is set to '".$name."'.", 60);
     }
 
     public function setupBrandname($name)
     {
-        $this->fillField(BrandingPage::BRANDNAME_INPUT, $name);
+        $this->fillField(Locator::combine(BrandingPage::BRANDNAME_FIELD_XPATH, BrandingPage::BRANDNAME_FIELD_CSS), $name);
         $this->submitBrandingSettingForm();
-        $this->see("The branding settings have been saved.");
-        $this->see("Brandname is set to '$name'.");
+        $this->waitForText("The branding settings have been saved.", 60);
+        $this->waitForText("Brandname is set to '$name'.", 60);
         $this->currentBrandname = $name;
     }
 

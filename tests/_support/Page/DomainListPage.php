@@ -32,6 +32,9 @@ class DomainListPage
     const TOGGLE_PROTECTION_LINK    = "//a[contains(.,'Toggle Protection')]";
     const LOGIN_LINK                = "//a[contains(.,'Login')]";
 
+    const CHECK_ALL_DOMAINS_BTN_XPATH = "//*[@id='checkAllDomains']";
+    const CHECK_ALL_DOMAINS_BTN_CSS = "#checkAllDomains";
+
     // Status messages
     const STATUS_DOMAIN_IS_PRESENT_IN_THE_FILTER = 'This domain is present in the filter.';
     const STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER = 'This domain is not present in the filter.';
