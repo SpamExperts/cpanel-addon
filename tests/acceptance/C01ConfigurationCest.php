@@ -898,24 +898,41 @@ class C01ConfigurationCest
             Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true
         ));
 
-        // All routes are the same as route domain
+        // All routes are the same as route domain (name, ipv4 IP, ipv6 IP)
         $routeDomain = 'server9.seinternal.com';
         $routes = [$routeDomain, '5.79.73.204', '2001:1af8:4700:a02d:2::1'];
 
+        // For each route in the list of routes
         foreach ($routes as $route) {
 
+            // Create a client account
             $account = $I->createNewAccount();
 
+            // Check if the domain associated with client account is present in domain list
             $I->searchDomainList($account['domain']);
+
+            // Login on spampanel using the client account
             $I->loginOnSpampanel($account['domain']);
+
+            // Add the route in spampanel
             $I->addRouteInSpampanel($route);
 
+            // Login as root
             $I->loginAsRoot();
+
+            // Check if domain associated with the client account is present in domain list
             $I->searchDomainList($account['domain']);
+
+            // Toggle protection for that domain
             $I->click(DomainListPage::TOGGLE_PROTECTION_LINK);
+
+            // Wait for status to change to unprotected
             $I->waitForText("The protection status of {$account['domain']} has been changed to unprotected", 60);
 
+            // Get the MX entries from cPanel
             $values = $I->getMxEntriesFromCpanelInterface($account['domain']);
+
+            // See if the previous added route is present in the MX entries
             $I->assertContains($routeDomain, $values);
         }
     }

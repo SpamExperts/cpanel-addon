@@ -11,6 +11,10 @@ class Acceptance extends \Codeception\Module
     private $parameters;
     private $spampanelApi;
 
+    /**
+     * Function used to check all the boxes from a page
+     * @param $selector - array of checkbox locators
+     */
     public function checkAllBoxes($selector)
     {
         $webDriver = $this->getWebDriver();
@@ -21,11 +25,21 @@ class Acceptance extends \Codeception\Module
         }
     }
 
+    /**
+     * Function used to count number of elements from a page
+     * @param $selector - selector of the element
+     * @return int - count of elements
+     */
     public function getElementsCount($selector)
     {
         return count($this->getWebDriver()->_findElements($selector));
     }
 
+    /**
+     * Function used to click one of the elements from the array given as parameter
+     * @param array $selectors - array of selectors
+     * @throws \Exception
+     */
     public function clickOneOf(array $selectors)
     {
         foreach ($selectors as $selector) {
@@ -125,7 +139,7 @@ class Acceptance extends \Codeception\Module
     }
 
     /**
-     * @return \CpanelApi
+     * Function used to make a cPanel API request
      */
     public function makeCpanelApiRequest()
     {
@@ -133,7 +147,7 @@ class Acceptance extends \Codeception\Module
     }
 
     /**
-     * @return \SpampanelApi
+     * Function used to make a spampanel API request
      */
     public function makeSpampanelApiRequest()
     {
@@ -141,7 +155,7 @@ class Acceptance extends \Codeception\Module
     }
 
     /**
-     * @return \Codeception\Module\WebDriver
+     * Function used to obtain the Web Driver
      */
     private function getWebDriver()
     {
@@ -149,7 +163,7 @@ class Acceptance extends \Codeception\Module
     }
 
     /**
-     * @return \Codeception\Module\Asserts
+     * Function used to obtain the asserts
      */
     private function getAsserts()
     {
@@ -157,7 +171,8 @@ class Acceptance extends \Codeception\Module
     }
 
     /**
-     * @return array
+     * Function used to parse YML file
+     * @return array - array with parameters of the yml file
      */
     private function getParsedParameters()
     {

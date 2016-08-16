@@ -11,7 +11,10 @@ class C03DomainListCest
      */
     public function _before(CommonSteps $I)
     {
+        // Login as root
         $I->loginAsRoot();
+
+        // Create a default package
         $I->createDefaultPackage();
     }
 
@@ -20,6 +23,7 @@ class C03DomainListCest
      */
     public function _after(CommonSteps $I)
     {
+        // Remove all created accounts
         $I->removeCreatedAccounts();
     }
 

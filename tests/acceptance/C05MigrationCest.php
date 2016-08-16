@@ -9,11 +9,8 @@ class C05MigrationCest
 {
     public function _before(CommonSteps $I)
     {
+        // Login as root
         $I->login();
-    }
-
-    public function _after(CommonSteps $I)
-    {
     }
 
     /**
@@ -33,7 +30,7 @@ class C05MigrationCest
         // Check the error message after the submission
         $I->seeErrorAfterMigrate();
 
-        // still need to add actual new account
+        //TODO still need to add actual new account
 
     }
 }

@@ -1048,16 +1048,27 @@ class CommonSteps extends \WebGuy
         $this->wait(15);
     }
 
+    /**
+     * Function used to see bulk protect last execution information
+     */
     public function seeBulkProtectLastExecutionInfo()
     {
+        // Check the last execution message
         $this->see('Bulk protect has been executed last at: ');
     }
 
+    /**
+     * Function used to submit bulk protect execution form
+     */
     public function submitBulkprotectForm()
     {
+        // Click the execute bulkprotect button
         $this->click(Locator::combine(BulkprotectPage::EXECUTE_BULKPROTECT_BTN_XPATH, BulkprotectPage::EXECUTE_BULKPROTECT_BTN_CSS));
     }
 
+    /**
+     * Function used to check if bulk protect operation has run succesfuly
+     */
     public function seeBulkprotectRanSuccessfully()
     {
         $this->waitForText("Bulkprotect", 200);

@@ -9,21 +9,27 @@ class C06UpdateCest
 {
     public function _before(CommonSteps $I)
     {
+        // Login as root
         $I->login();
     }
 
-    public function _after(CommonSteps $I)
-    {
-    }
-
+    /**
+     * Verify update page layout and functionality
+     */
     public function checkUpdatePage(UpdateSteps $I)
     {
+        // Go to the update page
         $I->goToPage(ProfessionalSpamFilterPage::UPDATE_BTN, UpdatePage::TITLE);
 
+        // Verify the page layout
         $I->verifyPageLayout();
+
+        // Start the update operation
         $I->submitUpgradeForm();
+
+        // Check the operation result
         $I->seeNoticeAfterUpgrade();
 
-        // still need to perform proper upgrade
+        // TODO still need to perform proper upgrade
     }
 }

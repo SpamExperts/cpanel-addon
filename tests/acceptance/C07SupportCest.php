@@ -10,19 +10,26 @@ class C07SupportCest
 {
     public function _before(CommonSteps $I)
     {
+        // Login as root
         $I->login();
     }
 
-    public function _after(CommonSteps $I)
-    {
-    }
 
+    /**
+     * Verify support page layout and functionality
+     */
     public function checkSupportPage(SupportSteps $I)
     {
+        // Go to the support page
         $I->goToPage(ProfessionalSpamFilterPage::SUPPORT_BTN, SupportPage::TITLE);
-        
+
+        // Verify the page layout
         $I->verifyPageLayout();
+
+        // Run diagnostics
         $I->submitDiagnosticForm();
+
+        // See diagnostics result
         $I->seeDiagnostics();
     }
 }

@@ -7,6 +7,9 @@ use Codeception\Util\Locator;
 
 class BrandingSteps extends CommonSteps
 {
+    /**
+     * Function used to verify the branding page layout
+     */
     public function verifyPageLayout()
     {
         // verify current branding info
@@ -29,9 +32,14 @@ class BrandingSteps extends CommonSteps
      */
     public function submitBrandingSettingForm()
     {
+        // Click the Save branding settings button
         $this->click(Locator::combine(BrandingPage::SAVE_BRANDING_BTN_XPATH, BrandingPage::SAVE_BRANDING_BTN_CSS));
     }
 
+    /**
+     * Function used to check if the new brand was saved
+     * @param $name - brand expected
+     */
     public function seeSettingsSavedSuccessfully($name)
     {
         $this->waitForText("No new icon uploaded, using the current one.", 60);
@@ -39,6 +47,10 @@ class BrandingSteps extends CommonSteps
         $this->waitForText("Brandname is set to '".$name."'.", 60);
     }
 
+    /**
+     * Function used to change the current brand name
+     * @param $name - new brand
+     */
     public function setupBrandname($name)
     {
         $this->fillField(Locator::combine(BrandingPage::BRANDNAME_FIELD_XPATH, BrandingPage::BRANDNAME_FIELD_CSS), $name);
@@ -48,12 +60,13 @@ class BrandingSteps extends CommonSteps
         $this->currentBrandname = $name;
     }
 
+    /**
+     * Function used to restore the original brand name
+     */
     public function setupOriginalBrandname()
     {
-        if ($this->currentBrandname == BrandingPage::ORIGINAL_BRANDNAME) {
-            return;
-        }
-
-        $this->setupBrandname(BrandingPage::ORIGINAL_BRANDNAME);
+        // If the brand is changed, change it back to the original brand name
+        if ($this->currentBrandname != BrandingPage::ORIGINAL_BRANDNAME)
+            $this->setupBrandname(BrandingPage::ORIGINAL_BRANDNAME);
     }
 }

@@ -2707,7 +2707,8 @@ trait WebGuyActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     *
+     * Function used to check all the boxes from a page
+     * @param $selector - array of checkbox locators
      * @see \Helper\Acceptance::checkAllBoxes()
      */
     public function checkAllBoxes($selector) {
@@ -2718,7 +2719,9 @@ trait WebGuyActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     *
+     * Function used to count number of elements from a page
+     * @param $selector - selector of the element
+     * @return int - count of elements
      * @see \Helper\Acceptance::getElementsCount()
      */
     public function getElementsCount($selector) {
@@ -2729,7 +2732,9 @@ trait WebGuyActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     *
+     * Function used to click one of the elements from the array given as parameter
+     * @param array $selectors - array of selectors
+     * @throws \Exception
      * @see \Helper\Acceptance::clickOneOf()
      */
     public function clickOneOf($selectors) {
@@ -2870,7 +2875,7 @@ trait WebGuyActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     * @return \CpanelApi
+     * Function used to make a cPanel API request
      * @see \Helper\Acceptance::makeCpanelApiRequest()
      */
     public function makeCpanelApiRequest() {
@@ -2881,7 +2886,7 @@ trait WebGuyActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     * @return \SpampanelApi
+     * Function used to make a spampanel API request
      * @see \Helper\Acceptance::makeSpampanelApiRequest()
      */
     public function makeSpampanelApiRequest() {

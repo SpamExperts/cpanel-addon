@@ -10,12 +10,16 @@ class C08ToggleProtectionCest
 {
     public function _before(ToggleProtectionSteps $I)
     {
+        // Login as root
         $I->loginAsRoot();
+
+        // Create a default package
         $I->createDefaultPackage();
     }
 
     public function _after(ToggleProtectionSteps $I)
     {
+        // Remove all created accounts
         $I->removeCreatedAccounts();
     }
 
