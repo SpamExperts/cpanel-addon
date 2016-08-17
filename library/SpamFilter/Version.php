@@ -102,8 +102,13 @@ class SpamFilter_Version
             if (SpamFilter_Core::isTesting()) {
                 $tier = "testing";
             }
-            $url = "http://download.seinternal.com/integration/?act=getUpdate&" .
-                   "panel={$paneltype}&tier={$tier}&curver={$version}";
+
+            if (SpamFilter_Core::isRestrictedToFrozenTier()) {
+                $tier = "frozen";
+            }
+
+            $basepath = "http://download.seinternal.com/integration";
+            $url = "{$basepath}/?act=getUpdate&panel={$paneltype}&tier={$tier}&curver={$version}";
 
             /** @noinspection PhpUndefinedClassInspection */
             $json_data = SpamFilter_HTTP::getContent($url);

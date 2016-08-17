@@ -316,6 +316,16 @@ class AdminController extends Zend_Controller_Action
     {
         $this->view->headTitle()->append("Update");
 
+        if (SpamFilter_Core::isRestrictedToFrozenTier()) {
+            $this->_flashMessenger->addMessage(array(
+                'message' => sprintf(
+                    $this->t->_('You are running an old PHP version (%s) no longer actively supported by this addon so only the \'frozen\' update tier is available, for critical bugfixes. It is highly recommended to upgrade to a newer PHP version (>=%s) to have access to all the latest features.'),
+                    phpversion(), SpamFilter_Core::PHP5_RECOMMENDED_VERSION
+                ),
+                'status' => 'notice'
+            ));
+        }
+
         if (!$this->_acl->isAllowed('update')) {
             $this->_flashMessenger->addMessage(
                 array('message' => $this->t->_('You do not have permission to this part of the system.'), 'status' => 'error')
