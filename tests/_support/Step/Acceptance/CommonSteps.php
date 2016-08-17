@@ -338,6 +338,7 @@ class CommonSteps extends \WebGuy
     public function switchToCommanderFrame()
     {
         $this->switchToWindow();
+        $this->waitForElement(Locator::combine(CpanelWHMPage::COMMANDER_FRAME_XPATH, CpanelWHMPage::COMMANDER_FRAME_CSS), 30);
         $this->switchToIFrame(CpanelWHMPage::COMMANDER_FRAME_NAME);
     }
 
@@ -347,6 +348,7 @@ class CommonSteps extends \WebGuy
     public function switchToTopFrame()
     {
         $this->switchToWindow();
+        $this->waitForElement(Locator::combine(CpanelWHMPage::TOP_FRAME_XPATH, CpanelWHMPage::TOP_FRAME_CSS), 30);
         $this->switchToIFrame(CpanelWHMPage::TOP_FRAME_NAME);
     }
 
@@ -356,6 +358,7 @@ class CommonSteps extends \WebGuy
     public function switchToMainFrame()
     {
         $this->switchToWindow();
+        $this->waitForElement(Locator::combine(CpanelWHMPage::MAIN_FRAME_XPATH, CpanelWHMPage::MAIN_FRAME_CSS), 30);
         $this->switchToIFrame(CpanelWHMPage::MAIN_FRAME_NAME);
     }
 
@@ -882,7 +885,7 @@ class CommonSteps extends \WebGuy
                 $this->uncheckOption($option);
 
         // Click the save settings button
-        $this->click("Save Settings");
+        $this->click(Locator::combine(ConfigurationPage::SAVE_SETTINGS_BTN_XPATH, ConfigurationPage::SAVE_SETTINGS_BTN_CSS));
 
         // Wait for settings to be saved
         $this->waitForText('The settings have been saved.', 60);
