@@ -331,7 +331,7 @@ class CommonSteps extends \WebGuy
         // Wait for plugin to load
         $this->waitForText($this->currentBrandname, 10, 'body > div > header > h1');
     }
-   
+
     /**
      * Function used to switch focus to commander frame
      */
@@ -882,7 +882,7 @@ class CommonSteps extends \WebGuy
                 $this->uncheckOption($option);
 
         // Click the save settings button
-        $this->click("Save Settings");
+        $this->executeJS("document.getElementById('submit').click()");
 
         // Wait for settings to be saved
         $this->waitForText('The settings have been saved.', 60);
