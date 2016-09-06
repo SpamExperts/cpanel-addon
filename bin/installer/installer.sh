@@ -14,6 +14,9 @@ if [ -z "$path_wget" ]; then
     exit 1
 fi
 
+REQUIRED_VERSION=5.2.1
+RECOMMENDED_VERSION=5.4
+
 function version {
     echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
 }
@@ -26,21 +29,25 @@ function check_php_version {
         echo "$1: invalid PHP binary"
         exit 1
     fi
-    REQUIRED_VERSION=5.2.1
     PHPVERSION=`echo "$version_info" | head -n1 | awk {'print $2'} | sed -e 's/-/\n/g' | head -n1`
     if [ -z "$PHPVERSION" ]; then
         echo "$1: PHP version empty"
         exit 1
     fi
 
-    # Check the PHP version against the recommended
-    if [ $(version $PHPVERSION) -ge $(version $REQUIRED_VERSION) ]
-    then
+    # First check the PHP version against the recommended one
+    if [ $(version $PHPVERSION) -ge $(version $RECOMMENDED_VERSION) ]; then
         OPENSSL_SUPPORT=`echo "<?php echo (in_array('https', stream_get_wrappers()) ? 'Y' : 'N');" | $1 -q`
-        if [ 'Y' == "$OPENSSL_SUPPORT" ]
-        then
+        if [ 'Y' == "$OPENSSL_SUPPORT" ]; then
             echo "$1"
             exit 0
+        fi
+    # Then check against the minimum required version
+    elif [ $(version $PHPVERSION) -ge $(version $REQUIRED_VERSION) ]; then
+        OPENSSL_SUPPORT=`echo "<?php echo (in_array('https', stream_get_wrappers()) ? 'Y' : 'N');" | $1 -q`
+        if [ 'Y' == "$OPENSSL_SUPPORT" ]; then
+            echo "$1"
+            exit 255
         fi
     fi
 
@@ -49,17 +56,18 @@ function check_php_version {
 }
 
 function find_php {
-    # We need to find a suitable PHP binary
-    phpLocations=( "/usr/local/cpanel/3rdparty/bin/php-cgi" "/var/cpanel/3rdparty/bin/php-cgi" `which php5 2>/dev/null` `which php 2>/dev/null` "/usr/local/bin/prospamfilter_php" )
+    # We need to find and check cPanel's PHP binary, if it exists
+    phpLocations=( "/usr/local/cpanel/3rdparty/bin/php-cgi" "/var/cpanel/3rdparty/bin/php-cgi" )
     for loc in "${phpLocations[@]}"
     do :
         if [ -e "$loc" ]; then
             PHP_BINARY="$loc"
             $(check_php_version "$PHP_BINARY" > /dev/null 2>&1)
-            if [[ $? -eq 0 ]]; then
-                # Found it, we're done
+            status=$?
+            if [[ $status -eq 0 ]] || [[ $status -eq 255 ]]; then
+                # Found either the recommended version or the minimum required one, so forward the info
                 echo "$PHP_BINARY"
-                exit 0
+                exit $status
             fi
         fi
     done
@@ -68,40 +76,64 @@ function find_php {
     exit 1
 }
 
-php_binary=`find_php`
+BYPASS=false
+while getopts :f FLAG; do
+    case $FLAG in
+        f)  # set "BYPASS" to true
+            BYPASS=true
+            ;;
+    esac
+done
 
-# Request the path to a VALID PHP binary if auto-detect failed
-if [[ -z "$php_binary" || ! -e "$php_binary" || -d "$php_binary" ]]; then
-    echo ""
-    echo -e "\033[31mUnable to detect your PHP binary. Please enter the path to your PHP5 (at least v5.2.1) binary followed by [ENTER]:\033[0m"
-    echo ""
-    read PHP_CUSTOM
+shift $((OPTIND-1))
 
-    while [[ true ]]; do
-        if [[ -z "$PHP_CUSTOM" || ! -e "$PHP_CUSTOM" || -d "$PHP_CUSTOM" ]]; then
-            echo -e "\033[31mPlease enter a valid path to the PHP5 binary:\033[0m"
-            read PHP_CUSTOM
-        else
-            $(check_php_version "$PHP_CUSTOM" > /dev/null 2>&1)
-            if [[ $? -eq 0 ]]; then
-                # Valid PHP_CUSTOM path provided
-                break
-            else
-                echo -e "\033[31mThe provided PHP binary ($PHP_CUSTOM) does not meet the minimum requirements. Please enter the path to a valid one:\033[0m"
+if [ "$BYPASS" == false ]; then
+    php_binary=`find_php`
+    status=$?
+    if [[ $status -eq 0 ]]; then
+        # Found the recommended version, can use current versions
+        frozen=false
+    elif [[ $status -eq 255 ]]; then
+        # Found the minimum required version, stuck on the 'frozen' tier
+        frozen=true
+    fi
+
+    # Request the path to a VALID PHP binary if auto-detect failed
+    if [[ -z "$php_binary" || ! -e "$php_binary" || -d "$php_binary" ]]; then
+        echo ""
+        echo -e "\033[31mUnable to detect your cPanel's PHP binary. Please specify that path manually (must be at least PHP5 $REQUIRED_VERSION), followed by [ENTER]:\033[0m"
+        echo ""
+        read PHP_CUSTOM
+
+        while [[ true ]]; do
+            if [[ -z "$PHP_CUSTOM" || ! -e "$PHP_CUSTOM" || -d "$PHP_CUSTOM" ]]; then
+                echo -e "\033[31mPlease enter a valid path to the PHP5 binary:\033[0m"
                 read PHP_CUSTOM
+            else
+                $(check_php_version "$PHP_CUSTOM" > /dev/null 2>&1)
+                status=$?
+                if [[ $status -eq 0 ]]; then
+                    frozen=false
+                    break
+                elif [[ $status -eq 255 ]]; then
+                    frozen=true
+                    break
+                else
+                    echo -e "\033[31mThe provided PHP binary ($PHP_CUSTOM) does not meet the minimum requirements. Please enter the path to a valid one:\033[0m"
+                    read PHP_CUSTOM
+                fi
+
             fi
+        done
 
-        fi
-    done
+        php_binary=$PHP_CUSTOM
+    fi
 
-    php_binary=$PHP_CUSTOM
+    path_php="$php_binary"
 fi
 
-path_php="$php_binary"
-
 ## Lets check paneltype
-if [ -d "/usr/local/cpanel/" ];
-then
+if [ -d "/usr/local/cpanel/" ]; then
     echo "Installing ProSpamFilter for cPanel.."
     paneltype="cpanel"
 else
@@ -111,20 +143,28 @@ fi
 
 random=`cat /dev/urandom | tr -dc A-Za-z0-9 | head -c5 | md5sum | awk {'print $1'}`
 
-# check for branch
-if [ -n "$1" ]
-then
-    if [ "trunk" == "$1" ] || [ "master" == "$1" ]
-    then
-        CHECKURL="http://download.seinternal.com/integration/?act=getversion&panel=$paneltype&tier=testing&rand=$random"
-        filepart="_testing.tar.gz"
-    else
-        CHECKURL="http://download.seinternal.com/integration/?act=getversion&panel=$paneltype&tier=testing&rand=$random&branch=$1"
-        filepart="_testing_$1.tar.gz"
-    fi
+# set base path for the url that checks the current version
+basepath="http://download.seinternal.com/integration"
+
+# check if it's restricted to the 'frozen' tier or not
+if [ "$frozen" == true ] || [ "frozen" == "$1" ]; then
+    CHECKURL="$basepath/?act=getversion&panel=$paneltype&tier=frozen&rand=$random"
+    filepart="_frozen.tar.gz"
+    echo -e "\033[33mYou are running an old PHP version no longer actively supported by this addon so only the 'frozen' update tier is available, for critical bugfixes. It is highly recommended to upgrade to a newer PHP version (>=$RECOMMENDED_VERSION) to have access to all the latest features.\033[0m"
 else
-    CHECKURL="http://download.seinternal.com/integration/?act=getversion&panel=$paneltype&tier=stable&rand=$random"
-    filepart="_stable.tar.gz"
+    # check for branch
+    if [ -n "$1" ]; then
+        if [ "trunk" == "$1" ] || [ "master" == "$1" ]; then
+            CHECKURL="$basepath/?act=getversion&panel=$paneltype&tier=testing&rand=$random"
+            filepart="_testing.tar.gz"
+        else
+            CHECKURL="$basepath/?act=getversion&panel=$paneltype&tier=testing&rand=$random&branch=$1"
+            filepart="_testing_$1.tar.gz"
+        fi
+    else
+        CHECKURL="$basepath/?act=getversion&panel=$paneltype&tier=stable&rand=$random"
+        filepart="_stable.tar.gz"
+    fi
 fi
 
 version=`$path_wget -q -O - "$CHECKURL" | sed -e 's/[{}]/''/g' | awk -v RS=',"' -F: '/^data/ {print $3}' |  sed s/\"//g`
@@ -134,7 +174,8 @@ if [ -z "$version" ]; then
     exit 1
 fi
 
-basepath="http://download.seinternal.com/integration/files/$paneltype"
+# update basepath for download files
+basepath="$basepath/files/$paneltype"
 package="v$version"
 fullfile="$package$filepart"
 srcpath="/usr/src/prospamfilter"

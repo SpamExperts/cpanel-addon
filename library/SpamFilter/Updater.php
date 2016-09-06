@@ -92,7 +92,7 @@ class SpamFilter_Updater
             throw new RuntimeException("The 'system' function is disabled. Unable to continue the update process.");
         }
 
-        $version   = trim(SpamFilter_Version::getUsedVersion());
+        $version   = trim(SpamFilter_Version::getCurrentVersion());
         $paneltype = strtolower(SpamFilter_Core::getPanelType());
         $tier      = strtolower($tier);
 
@@ -101,6 +101,10 @@ class SpamFilter_Updater
         $path = "/usr/src/prospamfilter/";
         if (SpamFilter_Core::isTesting()) {
             $tier = "testing";
+        }
+
+        if (SpamFilter_Core::isRestrictedToFrozenTier()) {
+            $tier = "frozen";
         }
 
         $logger->info("[Update] Going to update the {$paneltype} addon to v{$version} in tier {$tier}");
@@ -116,8 +120,9 @@ class SpamFilter_Updater
             }
         }
         $updateLogFile = '/tmp/' . uniqid($updateLogFilePrefix) . '.log';
-        $cmd = 'nohup nice -n 10 /usr/local/prospamfilter/bin/installer/installer.sh'
-            . (($tier <> "stable") ? ' trunk' : '') . ' > ' . $updateLogFile . ' 2>&1 & echo $!';
+        $cmd = 'nohup nice -n 10 /usr/local/prospamfilter/bin/installer/installer.sh -f'
+            . ( $tier == "frozen" ? ' frozen' :
+                ( ($tier <> "stable") ? ' trunk' : '') ) . ' > ' . $updateLogFile . ' 2>&1 & echo $!';
         $pid = shell_exec($cmd);
 
         $logger->info("[Update] The installer.sh has been executed with the PID=$pid");

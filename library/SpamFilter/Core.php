@@ -45,6 +45,8 @@
 class SpamFilter_Core
 {
     const PHP5_BINARY_SYMLINK = '/usr/local/bin/prospamfilter_php';
+    const PHP5_REQUIRED_VERSION = '5.2.1';
+    const PHP5_RECOMMENDED_VERSION = '5.4';
 
     /**
      * getBitType
@@ -61,20 +63,20 @@ class SpamFilter_Core
         return (int)(8 * PHP_INT_SIZE);
     }
 
-	/**
-	 * getConfigBinary
-	 * Return the full path to the getconfig binary
-	 *
+    /**
+     * getConfigBinary
+     * Return the full path to the getconfig binary
+     *
      * @param int $bits Optional override of specific byte-type binary
-	 *
-	 * @return string Path to the getconfig binary
-	 *
-	 * @access public
-	 * @static
-	 * @see getBitType()
-	 */
-	public static function getConfigBinary( $bits = null )
-	{
+     *
+     * @return string Path to the getconfig binary
+     *
+     * @access public
+     * @static
+     * @see getBitType()
+     */
+    public static function getConfigBinary( $bits = null )
+    {
             if(self::isWindows()){
                 $binary = 'getconfig.exe';
                 return trim( BASE_PATH . DS ."bin". DS . $binary);
@@ -95,99 +97,99 @@ class SpamFilter_Core
             return trim( BASE_PATH . "/bin/{$binary}" );
         }
 
-	/**
-	 * isCpanel
-	 * Returns whether the used panel is cPanel
-	 *
-	 *
-	 * @return bool Whether it is cPanel or not
-	 *
-	 * @access public
-	 * @static
-	 * @see getPanelType()
-	 */
-	public static function isCpanel()
-	{
-		$type = strtoupper( self::getPanelType() );
+    /**
+     * isCpanel
+     * Returns whether the used panel is cPanel
+     *
+     *
+     * @return bool Whether it is cPanel or not
+     *
+     * @access public
+     * @static
+     * @see getPanelType()
+     */
+    public static function isCpanel()
+    {
+        $type = strtoupper( self::getPanelType() );
 
-		return ($type == "CPANEL") ? true : false;
-	}
+        return ($type == "CPANEL") ? true : false;
+    }
 
-	/**
-	 * getPanelType
-	 * Returns the panel type
-	 *
-	 *
-	 * @return string Type of panel in use (uppercased)
-	 *
-	 * @access public
-	 * @static
-	 */
-	public static function getPanelType()
-	{
+    /**
+     * getPanelType
+     * Returns the panel type
+     *
+     *
+     * @return string Type of panel in use (uppercased)
+     *
+     * @access public
+     * @static
+     */
+    public static function getPanelType()
+    {
         if (file_exists('/usr/local/cpanel/')) {
-			Zend_Registry::get('logger')->debug("[Core] Panel is determined to be cPanel (or WHM).");
+            Zend_Registry::get('logger')->debug("[Core] Panel is determined to be cPanel (or WHM).");
 
-			return 'CPANEL';
-		}
+            return 'CPANEL';
+        }
                 
-		Zend_Registry::get('logger')->err("[Core] Paneltype cannot be determined.");
+        Zend_Registry::get('logger')->err("[Core] Paneltype cannot be determined.");
 
-		return 'UNKNOWN';
-	}
+        return 'UNKNOWN';
+    }
 
-	/**
-	 * initLogging
-	 * Initializes logging system
-	 *
+    /**
+     * initLogging
+     * Initializes logging system
+     *
      * @param bool $logging Enable logging or not
      * @param bool $debug   Enable debug-level logging
-	 *
-	 * @return Spamfilter_Logger object
-	 *
-	 * @access public
-	 * @static
-	 */
-	public static function initLogging( $logging = false, $debug = false )
-	{
-		// check if we want $debug
+     *
+     * @return Spamfilter_Logger object
+     *
+     * @access public
+     * @static
+     */
+    public static function initLogging( $logging = false, $debug = false )
+    {
+        // check if we want $debug
         if ($logging) {
-			// Syslog it.
-			$writer = new Zend_Log_Writer_Syslog(
-							array(
-								'application' => 'ProSpamFilter'
-								)
-							);
-		} else {
-			// Use dummy writer
-			$writer = new Zend_Log_Writer_Null();
-		}
+            // Syslog it.
+            $writer = new Zend_Log_Writer_Syslog(
+                            array(
+                                'application' => 'ProSpamFilter'
+                                )
+                            );
+        } else {
+            // Use dummy writer
+            $writer = new Zend_Log_Writer_Null();
+        }
 
         if ($debug) {
-			// Receive DEBUG messages and below
-			$writer->addFilter(new Zend_Log_Filter_Priority( Zend_Log::DEBUG ));
-		} else {
-			// Receive UP TO the DEBUG level of messages.
-			$writer->addFilter(new Zend_Log_Filter_Priority( Zend_Log::CRIT ));
-		}
+            // Receive DEBUG messages and below
+            $writer->addFilter(new Zend_Log_Filter_Priority( Zend_Log::DEBUG ));
+        } else {
+            // Receive UP TO the DEBUG level of messages.
+            $writer->addFilter(new Zend_Log_Filter_Priority( Zend_Log::CRIT ));
+        }
 
-		#$logger = new Zend_Log($writer);
-		$logger = new SpamFilter_Logger( $writer ); //<-- Custom logging function
+        #$logger = new Zend_Log($writer);
+        $logger = new SpamFilter_Logger( $writer ); //<-- Custom logging function
 
-		Zend_Registry::set('logger', $logger);
+        Zend_Registry::set('logger', $logger);
 
-		return $logger;
-	}
+        return $logger;
+    }
 
-	public static function initConfig( $configFile )
-	{
-		$conf = new SpamFilter_Configuration( $configFile );
+    public static function initConfig( $configFile )
+    {
+        $conf = new SpamFilter_Configuration( $configFile );
 
-		return $conf;
-	}
+        return $conf;
+    }
 
     final static public function getUsername()
-	{
+    {
         /** @var $logger SpamFilter_Logger */
         /** @noinspection PhpUndefinedClassInspection */
         $logger = Zend_Registry::get('logger');
@@ -195,26 +197,26 @@ class SpamFilter_Core
         if (isset($_ENV['REMOTE_USER']) && (!empty($_ENV['REMOTE_USER']))) {
             $logger->debug("[Core] Returning username ({$_ENV['REMOTE_USER']}) retrieved from env as remote_user");
 
-			return $_ENV['REMOTE_USER'];
-		} elseif (isset($_SERVER['REMOTE_USER']) && (!empty($_SERVER['REMOTE_USER']))) {
+            return $_ENV['REMOTE_USER'];
+        } elseif (isset($_SERVER['REMOTE_USER']) && (!empty($_SERVER['REMOTE_USER']))) {
             $logger->debug("[Core] Returning username ({$_SERVER['REMOTE_USER']}) retrieved from $_SERVER (REMOTE_USER)");
 
-			return $_SERVER['REMOTE_USER'];
+            return $_SERVER['REMOTE_USER'];
 
         /** @see https://trac.spamexperts.com/ticket/19646 */
         } elseif (!empty($_SERVER['USER']) && 'psaadm' != $_SERVER['USER']) {
             $logger->debug("[Core] Returning username ({$_SERVER['USER']}) retrieved from \$_SERVER['user']");
 
-			return $_SERVER['USER'];
+            return $_SERVER['USER'];
         } elseif (isset($_SERVER['USERNAME']) && (!empty($_SERVER['USERNAME']))) {
             $logger->debug("[Core] Returning username ({$_SERVER['USERNAME']}) retrieved from $_SERVER (username)");
 
-			return $_SERVER['USERNAME'];
+            return $_SERVER['USERNAME'];
         } elseif (isset($GLOBALS['session']->_login) && (!empty($GLOBALS['session']->_login))) {
             $logger->debug("[Core] Returning username ({$GLOBALS['session']->_login}) retrieved from GLOBALS (Plesk)");
 
-			return $GLOBALS['session']->_login;
-		} elseif ('cli' == PHP_SAPI && self::isCpanel()) {
+            return $GLOBALS['session']->_login;
+        } elseif ('cli' == PHP_SAPI && self::isCpanel()) {
             $logger->debug("[Core] Returning username (root) as all CLI scripts in cPanel are executed for the 'root' user");
 
             return 'root';
@@ -226,8 +228,8 @@ class SpamFilter_Core
 
         $logger->err("[Core] Unable to retrieve the username.");
 
-		return false;
-	}
+        return false;
+    }
 
     final static public function getDomainsCacheId()
     {
@@ -242,117 +244,117 @@ class SpamFilter_Core
 
     final static public function invalidateDomainsCaches()
     {
-		self::clearCacheWithPrefix('alldomains_');
-		self::clearCacheWithPrefix('user_domains_');
-		SpamFilter_Panel_Cache::clear('collectiondomains');
+        self::clearCacheWithPrefix('alldomains_');
+        self::clearCacheWithPrefix('user_domains_');
+        SpamFilter_Panel_Cache::clear('collectiondomains');
     }
 
-	final static private function clearCacheWithPrefix($prefix = null)
-	{
-		foreach (SpamFilter_Panel_Cache::listMatches("$prefix") as $cacheId) {
-			SpamFilter_Panel_Cache::clear($cacheId, false);
-		}
-	}
+    final static private function clearCacheWithPrefix($prefix = null)
+    {
+        foreach (SpamFilter_Panel_Cache::listMatches("$prefix") as $cacheId) {
+            SpamFilter_Panel_Cache::clear($cacheId, false);
+        }
+    }
 
-	/**
-	 * Checks whether the requirements are met
-	 *
+    /**
+     * Checks whether the requirements are met
+     *
      * @param bool          $fullCheck Execute a full check or just a brief one (defaults to full)     *
      * @param array         $options
-	 *
-	 * @return array Statuscode and error messages.
-	 *
-	 * @access public
-	 * @static
-	 * @see  PanelApiTest()
-	 * @see  isCpanel()
-	 */
-	public static function selfCheck( $fullCheck = true, $options = array() )
-	{
-		$rv = array();
-		$rv['status'] = true;
-		$rv['reason'] = array();
-		$rv['critital'] = false;
+     *
+     * @return array Statuscode and error messages.
+     *
+     * @access public
+     * @static
+     * @see  PanelApiTest()
+     * @see  isCpanel()
+     */
+    public static function selfCheck( $fullCheck = true, $options = array() )
+    {
+        $rv = array();
+        $rv['status'] = true;
+        $rv['reason'] = array();
+        $rv['critital'] = false;
 
-		$obligatoryExtensions = array(
-			'OpenSSL' 		=>	 	'openssl_open',		//Optionally used in API communication
-			'Fopen'  		=> 		'fopen',		//Used in branding regeneration
-			'Curl'   		=> 		'curl_init',		//Used in API communication (software + spampanel API)
-			'Shell_Exec'  		=> 		'shell_exec',		//used in install/upgrade/branding regeneration
-			'system'		=> 		'system',		//used in install/upgrade/branding regeneration
-			'chown'			=>		'chown'			//used in install/upgrade
-		);
+        $obligatoryExtensions = array(
+            'OpenSSL' 		=>	 	'openssl_open',		//Optionally used in API communication
+            'Fopen'  		=> 		'fopen',		//Used in branding regeneration
+            'Curl'   		=> 		'curl_init',		//Used in API communication (software + spampanel API)
+            'Shell_Exec'  		=> 		'shell_exec',		//used in install/upgrade/branding regeneration
+            'system'		=> 		'system',		//used in install/upgrade/branding regeneration
+            'chown'			=>		'chown'			//used in install/upgrade
+        );
 
-		// Check all available PHP functions and return false if we don't have it (which is a problem!)
+        // Check all available PHP functions and return false if we don't have it (which is a problem!)
         foreach ($obligatoryExtensions as $ext => $functionToCheck) {
             if (!function_exists($functionToCheck)) {
-		    	Zend_Registry::get('logger')->emerg("Addon is missing support for {$functionToCheck}");
+                Zend_Registry::get('logger')->emerg("Addon is missing support for {$functionToCheck}");
                 if ($functionToCheck == "openssl_open") {
                     array_push(
                         $rv['reason'],
                         "Missing {$ext} support for PHP. This simply means you cannot use SSL between cPanel and the spamfilter or between the addon and cPanel."
                     );
-		    	} else {
+                } else {
                     if ($functionToCheck <> "openssl_open") {
-						// Everything, except OpenSSL is mandatory.
-						array_push($rv['reason'], "Missing required PHP Module or function: {$ext}. ");
-						$rv['critital'] = true; // We cannot work without these addons.
-					} else {
-						array_push($rv['reason'], "Missing optional PHP Module or function: {$ext}. ");
-					}
-				}
-			#return false;
-		    }
-		}
+                        // Everything, except OpenSSL is mandatory.
+                        array_push($rv['reason'], "Missing required PHP Module or function: {$ext}. ");
+                        $rv['critital'] = true; // We cannot work without these addons.
+                    } else {
+                        array_push($rv['reason'], "Missing optional PHP Module or function: {$ext}. ");
+                    }
+                }
+            #return false;
+            }
+        }
 
-		// Ok, apparently we have all required functions. Now lets check some other info.
+        // Ok, apparently we have all required functions. Now lets check some other info.
         if (version_compare(PHP_VERSION, '5.0.0', '<')) {
-			// This plugin is built for PHP5 (due to OOP), so it shouldn't work when PHP4 is being used.
+            // This plugin is built for PHP5 (due to OOP), so it shouldn't work when PHP4 is being used.
             Zend_Registry::get('logger')->emerg(
                 "PHP version '" . PHP_VERSION . "' is being used instead of required 5.0.0"
             );
-		    	array_push($rv['reason'], "PHP Version < 5.0.0");
-				$rv['critital'] = true; // This is critical enough to be a problem. PHP5 is required, at the very least verson 5.0.0.
-			#return false;
-		}
+                array_push($rv['reason'], "PHP Version < 5.0.0");
+                $rv['critital'] = true; // This is critical enough to be a problem. PHP5 is required, at the very least verson 5.0.0.
+            #return false;
+        }
 
         if ($fullCheck) {
-			if( self::isCpanel() ) //the configuration binary is only being used by cPanel.
-			{
-				$configBinary = self::getConfigBinary();
-				// Check if the configuration binary is there.
+            if( self::isCpanel() ) //the configuration binary is only being used by cPanel.
+            {
+                $configBinary = self::getConfigBinary();
+                // Check if the configuration binary is there.
                 if (!file_exists($configBinary)) {
-					// File does not exist!
-						Zend_Registry::get('logger')->emerg("Configuration binary is missing!");
-						array_push($rv['reason'], "Configuration binary missing and should exist at '{$configBinary}'");
-					#return false;
-				} else {
-					// Check if the permissions for the apipass binary are in place.
-					$perms = fileperms( $configBinary );
-					$perms = substr(sprintf('%o', $perms), -4);
+                    // File does not exist!
+                        Zend_Registry::get('logger')->emerg("Configuration binary is missing!");
+                        array_push($rv['reason'], "Configuration binary missing and should exist at '{$configBinary}'");
+                    #return false;
+                } else {
+                    // Check if the permissions for the apipass binary are in place.
+                    $perms = fileperms( $configBinary );
+                    $perms = substr(sprintf('%o', $perms), -4);
                     if ($perms != 6755) {
-						//$rv['reason'][] = "APIPass binary has incorrect permissions ({$perms}) instead of 6755. Unable to fix this automatically. Please execute: 'chmod 6755 {$configBinary}' via SSH to fix this.";
-						// Permissions are not correct
-							$rv = trim( shell_exec( "chown root:root {$configBinary} && chmod +s {$configBinary} && echo \"OK\" || echo \"NOTOK\"") );
-							if ($rv != "OK")
-							{
-								Zend_Registry::get('logger')->emerg("APIPass permissions are not correct ({$perms}). Please chmod it at with +s!");
-								array_push($rv['reason'], "APIPass binary has incorrect permissions ({$perms}) instead of 6755. Unable to fix this automatically. Please execute: 'chmod +s {$configBinary}' via SSH to fix this.");
-							} else {
-								Zend_Registry::get('logger')->info("Fixed the permissions of APIPass, they were '{$perms}' but now changed to '+s'.");
-							}
-					}
-				}
-			}
+                        //$rv['reason'][] = "APIPass binary has incorrect permissions ({$perms}) instead of 6755. Unable to fix this automatically. Please execute: 'chmod 6755 {$configBinary}' via SSH to fix this.";
+                        // Permissions are not correct
+                            $rv = trim( shell_exec( "chown root:root {$configBinary} && chmod +s {$configBinary} && echo \"OK\" || echo \"NOTOK\"") );
+                            if ($rv != "OK")
+                            {
+                                Zend_Registry::get('logger')->emerg("APIPass permissions are not correct ({$perms}). Please chmod it at with +s!");
+                                array_push($rv['reason'], "APIPass binary has incorrect permissions ({$perms}) instead of 6755. Unable to fix this automatically. Please execute: 'chmod +s {$configBinary}' via SSH to fix this.");
+                            } else {
+                                Zend_Registry::get('logger')->info("Fixed the permissions of APIPass, they were '{$perms}' but now changed to '+s'.");
+                            }
+                    }
+                }
+            }
 
-			// Security check, only for cPanel (now) since that doesnt lock users in their homedirs.
+            // Security check, only for cPanel (now) since that doesnt lock users in their homedirs.
             if (self::isCpanel()) {
-				$apipasspath = CFG_PATH . "/settings.conf";
+                $apipasspath = CFG_PATH . "/settings.conf";
                 if (file_exists($apipasspath)) {
-					$perms = (int)file_perms( $apipasspath );
+                    $perms = (int)file_perms( $apipasspath );
                     if (!empty($perms)) {
-						// Check for the 3rd bit (meant for 'Other')
-						$sub_perm = substr( $perms, -1 );
+                        // Check for the 3rd bit (meant for 'Other')
+                        $sub_perm = substr( $perms, -1 );
                         if ($sub_perm > 0) {
                             if (is_array($rv['reason'])) {
                                 try {
@@ -361,176 +363,176 @@ class SpamFilter_Core
                                         (string)"The settingsfile is world-readable. Please make sure the file is chmod 660, unless you did this on purpose."
                                     );
                                 } catch (Exception $e) {
-									Zend_Registry::get('logger')->debug("Caught settingsfile error-error.");
-								}
-							}
-						}
-					}
-				}
-			}
+                                    Zend_Registry::get('logger')->debug("Caught settingsfile error-error.");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-			// Version check of the control panel used.
+            // Version check of the control panel used.
             /** @var $panel SpamFilter_PanelSupport_Cpanel */
-			$panel = new SpamFilter_PanelSupport( null, $options );
+            $panel = new SpamFilter_PanelSupport( null, $options );
             if ($panel) {
-				$minVerCheck = $panel->minVerCheck();
+                $minVerCheck = $panel->minVerCheck();
                 if ($minVerCheck) {
-					try {
-						$version = $panel->getVersion();
+                    try {
+                        $version = $panel->getVersion();
                         if (!empty($version)) {
                             @array_push(
                                 $rv['reason'], "Your controlpanel is running an unsupported version. ({$version})"
                             );
-					}
+                    }
                     } catch (Exception $e) {
-						Zend_Registry::get('logger')->err("Error while running version check (reporting error)");
-					}
-				}
-			}
+                        Zend_Registry::get('logger')->err("Error while running version check (reporting error)");
+                    }
+                }
+            }
 
-		} // end fullCheck
+        } // end fullCheck
 
-		// All checks succeeded, very good!
+        // All checks succeeded, very good!
         if (count($rv['reason']) > 0) {
-		    	$rv['status'] = false;
-		}
+                $rv['status'] = false;
+        }
 
-		return $rv;
-	}
+        return $rv;
+    }
 
-	/**
-	 * PanelApiTest
-	 * Tests whether the panel provided API is available
-	 * Actually redirects the request to the specific panel driver.
-	 *
-	 *
-	 * @return bool Status of controlpanel API
-	 *
-	 * @access public
-	 * @static
-	 */
-	public static function PanelApiTest()
-	{
-		// Check if we can communicate with the "foreign" API as well.
+    /**
+     * PanelApiTest
+     * Tests whether the panel provided API is available
+     * Actually redirects the request to the specific panel driver.
+     *
+     *
+     * @return bool Status of controlpanel API
+     *
+     * @access public
+     * @static
+     */
+    public static function PanelApiTest()
+    {
+        // Check if we can communicate with the "foreign" API as well.
 
         /** @var $panel SpamFilter_PanelSupport_Cpanel */
-		$panel = new SpamFilter_PanelSupport( );
+        $panel = new SpamFilter_PanelSupport( );
         if (!$panel) {
-			Zend_Registry::get('logger')->err("[PanelApiTest] Not possible to check without panel driver");
+            Zend_Registry::get('logger')->err("[PanelApiTest] Not possible to check without panel driver");
 
-			return false; // cannot check
-		}
+            return false; // cannot check
+        }
 
-		$status = $panel->apiAvailable();
-		Zend_Registry::get('logger')->err("[PanelApiTest] Status: {$status}");
+        $status = $panel->apiAvailable();
+        Zend_Registry::get('logger')->err("[PanelApiTest] Status: {$status}");
 
-		return $status;
-	}
+        return $status;
+    }
 
-	/**
-	 * ApiTest
-	 * Tests whether our API is available
-	 *
-	 *
-	 * @return bool Status of API
-	 *
-	 * @access public
-	 * @static
-	 * @see ApiVersion()
-	 */
-	public static function ApiTest()
-	{
-		$check = self::ApiVersion();
+    /**
+     * ApiTest
+     * Tests whether our API is available
+     *
+     *
+     * @return bool Status of API
+     *
+     * @access public
+     * @static
+     * @see ApiVersion()
+     */
+    public static function ApiTest()
+    {
+        $check = self::ApiVersion();
         if (!empty($check)) {
-			return true;
-		}
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * ApiVersion
-	 * Returns the version of the API
-	 *
-	 *
-	 * @return string API version
-	 *
-	 * @access public
-	 * @static
-	 * @see getApi()
-	 */
-	public static function ApiVersion()
-	{
-		$api = new SpamFilter_ResellerAPI();
+    /**
+     * ApiVersion
+     * Returns the version of the API
+     *
+     *
+     * @return string API version
+     *
+     * @access public
+     * @static
+     * @see getApi()
+     */
+    public static function ApiVersion()
+    {
+        $api = new SpamFilter_ResellerAPI();
 
-		return $api->version()->get( array() ) ;
-	}
+        return $api->version()->get( array() ) ;
+    }
 
-	/**
-	 * isTesting
-	 * Returns whether testing mode is enabled (only applies on updates)
-	 *
-	 *
-	 * @return bool Whether testing is enabled or disabled.
-	 *
-	 * @access public
-	 * @static
-	 */
-	public static function isTesting()
-	{
+    /**
+     * isTesting
+     * Returns whether testing mode is enabled (only applies on updates)
+     *
+     *
+     * @return bool Whether testing is enabled or disabled.
+     *
+     * @access public
+     * @static
+     */
+    public static function isTesting()
+    {
         if (file_exists(CFG_PATH . "/testing")) {
-			// Manual override
-			return true;
-		}
+            // Manual override
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * GetServerName
-	 * Returns the FQDN servername, used in routes if required.
-	 *
-	 *
-	 * @return string Hostname of the server
-	 *
-	 * @access public
-	 * @static
-	 */
-	public static function GetServerName()
-	{
-		// Use servername (only works when being called from WEB, not CLI)
+    /**
+     * GetServerName
+     * Returns the FQDN servername, used in routes if required.
+     *
+     *
+     * @return string Hostname of the server
+     *
+     * @access public
+     * @static
+     */
+    public static function GetServerName()
+    {
+        // Use servername (only works when being called from WEB, not CLI)
         if (!empty($_SERVER['SERVER_NAME'])) {
-			return trim( $_SERVER['SERVER_NAME'] );
-		}
+            return trim( $_SERVER['SERVER_NAME'] );
+        }
 
-		// Fallback to a generic method which should provide us what we need.
-		$hostname = trim(shell_exec('hostname -f'));
+        // Fallback to a generic method which should provide us what we need.
+        $hostname = trim(shell_exec('hostname -f'));
         if (!empty($hostname)) {
-			return $hostname;
-		}
+            return $hostname;
+        }
 
-		// Third fallback option, just in case we need that.
-		$hostname = php_uname('n');
+        // Third fallback option, just in case we need that.
+        $hostname = php_uname('n');
         if (!empty($hostname)) {
-			return trim($hostname);
-		}
+            return trim($hostname);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * validateDomain
-	 * Validates whether the provided domain is correct or not
-	 *
+    /**
+     * validateDomain
+     * Validates whether the provided domain is correct or not
+     *
      * @param string $domain Domainname to validate
-	 *
-	 * @return bool
-	 *
-	 * @access public
-	 * @static
-	 */
-	public static function validateDomain($domain)
-	{
+     *
+     * @return bool
+     *
+     * @access public
+     * @static
+     */
+    public static function validateDomain($domain)
+    {
         if (!is_scalar($domain)) {
             return false;
         }
@@ -547,7 +549,7 @@ class SpamFilter_Core
         }
 
         return preg_match('~^[A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+$~i', $domain);
-	}
+    }
 
     /**
      * timePassed
@@ -742,4 +744,20 @@ class SpamFilter_Core
     {
         return stripos(PHP_OS, 'win') === 0;
     }
+
+    /**
+     * This method checks the PHP version the addon is running on
+     * to determine if it is the recommended one or higher
+     * and thus has access to the normal 'stable' and 'testing' tiers,
+     * or a lower one that has to be restricted to the 'frozen' tier
+     *
+     * @static
+     * @access public
+     * @return bool
+     */
+    public static function isRestrictedToFrozenTier()
+    {
+        return (-1 === version_compare(phpversion(), self::PHP5_RECOMMENDED_VERSION));
+    }
+
 }
