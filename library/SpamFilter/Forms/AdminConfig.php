@@ -50,7 +50,7 @@ class SpamFilter_Forms_AdminConfig extends Twitter_Form
        		      	  ->setValue( $config->apiuser )
 				  ->setAttrib('class', 'span3')
 				  ->setAttrib('title', $translate->_('API username'))
-		          ->setAttrib('data-content', $translate->_("This is the name of the user that is being used to communicate with the spamfilter.") . "<span class='label label-warning'>" . $translate->_('You can only change this at the migration page.') . "</label>");
+		          ->setAttrib('data-content', $translate->_("This is the name of the user that is being used to communicate with the spamfilter.") . " <span class='label label-warning label-wrap'>" . $translate->_('You can only change this at the migration page.') . "</span>");
 		          //->setDescription("This is the reseller user to log in with. We recommend you to create a separate user, but you can use your admin credentials too.");
 
 		if( isset($config->apiuser) && !empty($config->apiuser))
