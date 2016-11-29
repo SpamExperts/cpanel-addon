@@ -163,6 +163,18 @@ class DomainController extends Zend_Controller_Action
             );
 
             return false;
+        } else {
+            $panel = new SpamFilter_Panelsupport();
+            if (!$panel->resellerHasFeatureEnabled(SpamFilter_Core::getUsername())) {
+                $this->_flashMessenger->addMessage(
+                    array(
+                        'message' => $this->t->_('This featured is not available for your account'),
+                        'status' => 'info',
+                    )
+                );
+
+                return false;
+            }
         }
 
         // Proceed
