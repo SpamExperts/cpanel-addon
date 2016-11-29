@@ -280,14 +280,18 @@ class Installer_Installer
     private function checkOldConfigurationFile()
     {
         // Before cleanup we must check there is no an old cpanelplugin file
-        if (strstr(file_get_contents('/usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin'), 'name:prospamfilter3') === FALSE) {
-            return;
+        if (file_exists("/usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin")) {
+            if (strstr(file_get_contents('/usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin'), 'name:prospamfilter3') === FALSE) {
+                return;
+            }
+
+            // And unregister plugin with no valid name
+            $this->output->info("Old configuration file found. Unregistering old plugin.");
+            shell_exec("/usr/local/cpanel/bin/unregister_cpanelplugin /usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin");
+            $this->output->ok("Done.");
         }
 
-        // And unregister plugin with no valid name
-        $this->output->info("Old configuration file found. Unregistering old plugin.");
-        shell_exec("/usr/local/cpanel/bin/unregister_cpanelplugin /usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin");
-        $this->output->ok("Done.");
+        return;
     }
 
     private function cleanupOldPluginDynamicUi()

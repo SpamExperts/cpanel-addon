@@ -2724,11 +2724,11 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function isHookExists(array $hooks, $category, $event, $stage, $file)
     {
-//        var_dump($hooks);
-
-        foreach ($hooks[$category][$event] as $record) {
-            if (strpos($record['hook'], $file) !== FALSE && $record['stage'] == $stage) {
-                return true;
+        if (!empty($hooks[$category][$event])) {
+            foreach ($hooks[$category][$event] as $record) {
+                if (strpos($record['hook'], $file) !== FALSE && $record['stage'] == $stage) {
+                    return true;
+                }
             }
         }
 
