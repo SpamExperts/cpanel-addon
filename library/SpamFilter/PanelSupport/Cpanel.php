@@ -2646,6 +2646,27 @@ class SpamFilter_PanelSupport_Cpanel
     }
 
     /**
+     * Returns package name assigned to domain
+     *
+     * @param $domain - domain
+     *
+     * @return string - package name
+     *
+     * @access public
+     */
+    public function getUserPackages($user) {
+        $args['user'] = $user;
+        try {
+            $response = $this->_api->getWhm()->makeQuery('accountsummary', $args);
+            $arr = $response->getResponse('array');
+        } catch (Exception $e) {
+            $this->_logger->crit("Exception caught in " . __METHOD__ . " method : " . $e->getMessage());
+        }
+
+        return $arr['acct'][0]['plan'];
+    }
+
+    /**
      * Returns name of feature list assigned to package
      *
      * @param $package - package
@@ -2693,7 +2714,30 @@ class SpamFilter_PanelSupport_Cpanel
         }
         return $arr['data']['features']['prospamfilter'] == 1 ? true : false;
     }
-    
+
+
+    /**
+     * Check if domain has enabled feature
+     *
+     * @param $domain - domain
+     *
+     * @return boolean
+     *
+     * @access public
+     */
+    public function resellerHasFeatureEnabled($user) {
+        $package = $this->getUserPackages($user);
+        $args['featurelist'] = $this->getFeatureList($package);
+        $args['api.version'] = '1';
+        try {
+            $response = $this->_api->getWhm()->makeQuery('read_featurelist', $args);
+            $arr = $response->getResponse('array');
+        } catch (Exception $e) {
+            $this->_logger->crit("Exception caught in " . __METHOD__ . " method : " . $e->getMessage());
+        }
+
+        return $arr['data']['features']['prospamfilter'] == 1 ? true : false;
+    }
     
      /**
      * Gather all Installed Hooks
