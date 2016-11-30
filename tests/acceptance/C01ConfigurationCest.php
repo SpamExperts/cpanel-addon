@@ -62,7 +62,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => false
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => false
         ));
 
         // Create new client account
@@ -79,9 +82,18 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS
+            ) => false,
         ));
 
         // Create new client account
@@ -119,8 +131,14 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => false
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS
+            ) => false
 
         ));
 
@@ -146,10 +164,22 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS
+            ) => false,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS
+            ) => true
 
         ));
 
@@ -191,10 +221,22 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH,ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS
+            ) => false,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS
+            ) => true
 
         ));
 
@@ -245,8 +287,14 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS) => false
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                 ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH,
+                 ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS
+            ) => false
         ));
 
         // Create new client account
@@ -272,8 +320,14 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS
+            ) => true
         ));
 
         // Create new client account
@@ -300,11 +354,26 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH, ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => true
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS
+            ) => false,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH,
+                ConfigurationPage::ADD_REMOVE_DOMAIN_CSS
+            ) => true
         ));
 
         // Get MX fields from addon configuration page
@@ -402,11 +471,26 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH, ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => true
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => false,
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS
+            ) => false,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH,
+                ConfigurationPage::ADD_REMOVE_DOMAIN_CSS
+            ) => true
         ));
 
 
@@ -566,7 +650,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH, ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS) => false
+            Locator::combine(
+                ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH,
+                ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS
+            ) => false
         ));
 
         // Create new client account
@@ -592,7 +679,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH, ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH,
+                ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS
+            ) => true
         ));
 
         // Create new client account
@@ -618,7 +708,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::USE_EXISTING_MX_OPT_XPATH,
+                ConfigurationPage::USE_EXISTING_MX_OPT_CSS
+            ) => true
         ));
 
         // Create new client account
@@ -638,7 +731,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => false
+            Locator::combine(
+                ConfigurationPage::USE_EXISTING_MX_OPT_XPATH,
+                ConfigurationPage::USE_EXISTING_MX_OPT_CSS
+            ) => false
         ));
 
         // Create new client account
@@ -658,8 +754,14 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH, ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::USE_EXISTING_MX_OPT_XPATH,
+                ConfigurationPage::USE_EXISTING_MX_OPT_CSS
+            ) => false,
+            Locator::combine(
+                ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH,
+                ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS
+            ) => true
         ));
 
         // Create new client account
@@ -682,8 +784,14 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH, ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH,
+                ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS
+            ) => false,
+            Locator::combine(
+                ConfigurationPage::USE_EXISTING_MX_OPT_XPATH,
+                ConfigurationPage::USE_EXISTING_MX_OPT_CSS
+            ) => true,
         ));
 
         // Create new client account
@@ -703,7 +811,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true
         ));
 
         // Create new client account
@@ -739,7 +850,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true
         ));
 
         // Create new client account
@@ -775,8 +889,14 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS
+            ) => false
         ));
 
         // Create new client account
@@ -812,7 +932,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_XPATH, ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_XPATH,
+                ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_CSS
+            ) => true
         ));
 
         // Create a new client account
@@ -859,9 +982,18 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => false
+            Locator::combine(
+                ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH,
+                ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true,
+            Locator::combine(
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS
+            ) => false
         ));
 
         // Create new client account
@@ -896,7 +1028,10 @@ class C01ConfigurationCest
     {
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS
+            ) => true
         ));
 
         // All routes are the same as route domain (name, ipv4 IP, ipv6 IP)
@@ -951,7 +1086,10 @@ class C01ConfigurationCest
 
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::SET_SPF_RECORD_XPATH, ConfigurationPage::SET_SPF_RECORD_CSS) => true
+            Locator::combine(
+                ConfigurationPage::SET_SPF_RECORD_XPATH,
+                ConfigurationPage::SET_SPF_RECORD_CSS
+            ) => true
         ));
 
         // Create new client account
@@ -986,7 +1124,10 @@ class C01ConfigurationCest
 
         // Set plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => true
         ));
 
         // Create a new client account from the UI
@@ -1009,7 +1150,10 @@ class C01ConfigurationCest
 
         // Restore the plugin configuration options
         $I->setConfigurationOptions(array(
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => false
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS
+            ) => false
         ));
     }
 }
