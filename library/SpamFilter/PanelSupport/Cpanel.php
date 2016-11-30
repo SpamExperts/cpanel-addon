@@ -2717,9 +2717,9 @@ class SpamFilter_PanelSupport_Cpanel
 
 
     /**
-     * Check if domain has enabled feature
+     * Check if reseller has enabled feature
      *
-     * @param $domain - domain
+     * @param $user
      *
      * @return boolean
      *
