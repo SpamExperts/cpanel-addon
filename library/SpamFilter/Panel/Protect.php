@@ -223,7 +223,7 @@ class SpamFilter_Panel_Protect
 			case SpamFilter_Hooks::DOMAIN_ADDED:
 				$this->_result['reason'] = "Domain has been added";
 				$this->_result['reason_status'] = "ok";
-                                $this->_result['rawresult'] = SpamFilter_Hooks::DOMAIN_ADDED;                               
+                                $this->_result['rawresult'] = SpamFilter_Hooks::DOMAIN_ADDED;
 				break;
 
 			case SpamFilter_Hooks::NO_SUCH_DOMAIN:
@@ -231,6 +231,12 @@ class SpamFilter_Panel_Protect
 				$this->_result['reason_status'] = "error";
                                 $this->_result['rawresult'] = SpamFilter_Hooks::NO_SUCH_DOMAIN;
 				break;
+
+            case SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED:
+                $this->_result['reason'] = "Skipped: Domain has feature disabled";
+                $this->_result['reason_status'] = "error";
+                $this->_result['rawresult'] = SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED;
+                break;
 
 			case SpamFilter_Hooks::API_USER_INACTIVE:
 				$this->_result['reason'] = "Skipped: API user is inactive";

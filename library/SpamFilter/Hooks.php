@@ -166,7 +166,7 @@ class SpamFilter_Hooks
 
             return $response;
         }
-                
+
         // Check if this domain is remote
         $configAddOnlyLocalDomains = (0 < $this->_config->handle_only_localdomains);
         $isRemoteDomain = $this->_panel->IsRemoteDomain(array('domain' => $domain));
@@ -413,7 +413,7 @@ class SpamFilter_Hooks
                 return $response;
             }
             $this->_logger->info("[Hook] Domain deleted: '{$domain}'");
-                
+
             $response['status'] = true;
 
             SpamFilter_Panel_Cache::clear('collectiondomains');
@@ -445,6 +445,18 @@ class SpamFilter_Hooks
     public function AddAlias($domain, $alias, $force = false, $apiRef = null)
     {
         $this->_logger->debug("[Hook] Add Alias domain: '{$alias}' and link to '{$domain}'");
+
+        $this->_logger->debug("[Hook] Checking if alias can be added during feature list permissions '{$alias}', domain: '{$domain}', force: {$force}");
+
+        if (!$this->_panel->hasFeatureEnabled($domain)) {
+            $this->_logger->debug("[Hook] NOT ADDING Alias: '{$alias}' due to be disabled on featurelist");
+            $response['status'] = false;
+            $response['reason'] = SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED;
+            $response['counts'] = SpamFilter_Panel_Protect::COUNTS_FAILED;
+
+            return $response;
+        }
+
         // Add domain as alias
         if($this->_config->handle_extra_domains || $force)
         {
@@ -454,7 +466,7 @@ class SpamFilter_Hooks
                         'alias' => $alias,
                     );
             $response = $this->_api->domainalias()->add( $domainData );
-                        
+
                         SpamFilter_Panel_Cache::clear(strtolower('user_domains_' . md5(SpamFilter_Core::getUsername())));
             if(!is_array($response))
             {
@@ -638,8 +650,8 @@ class SpamFilter_Hooks
          *  @see https://trac.spamexperts.com/ticket/22936
          */
         if (0 < $this->_config->use_ip_address_as_destination_routes) {
-            if (strstr($destination, ',')) {    
-                foreach (explode(',', $destination) as $dest) {               
+            if (strstr($destination, ',')) {
+                foreach (explode(',', $destination) as $dest) {
                     $dest = gethostbyname($dest);
                 }
                 $newDestination[] = $dest;
@@ -655,7 +667,7 @@ class SpamFilter_Hooks
                 $newDestination = array($destination);
             }
         }
-                  
+
         // Change the destination for the domain
         $data = array(
             'domain' => $domain,

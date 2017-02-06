@@ -67,7 +67,7 @@ class SpamFilter_ProtectionManager
             $response = $this->protect($domain, $ownerDomain, $domainType, $ownerUser);
             $response = $this->formatToggleProtectionResponse($response, "protected", $domain);
         }
-        
+
         return $response;
     }
 
@@ -75,7 +75,7 @@ class SpamFilter_ProtectionManager
      * @param string $domain
      * @param string $ownerDomain
      * @param string $domainType
-     * 
+     *
      * @return array(boolean status , string rawresult, string reason
      */
     public function unprotect($domain, $ownerDomain, $domainType)
@@ -146,7 +146,7 @@ class SpamFilter_ProtectionManager
 
         $this->log("Unprotect response:");
         $this->log($response);
-        
+
         return $response;
     }
 
@@ -306,6 +306,10 @@ class SpamFilter_ProtectionManager
                 $reason = $this->translator->_(' because domain limit was reached.');
                 break;
 
+            case SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED:
+                $reason = $this->translator->_(' because this feature is disabled for this domain\'s package. To enable it, you need to update the feature list of the package assigned to this domain.');
+                break;
+
             default:
                 $reason = $hookAdditionalInfo ? '. ' . $hookAdditionalInfo : '';
                 break;
@@ -336,13 +340,13 @@ class SpamFilter_ProtectionManager
         if (! SpamFilter_Domain::exists($domain)) {
             return false;
         }
-        
+
         $apiResponse = $this->api->domainalias()->list(array('domain' => $domain));
 
         if (! isset($apiResponse['reason'])) {
             return in_array($alias, $apiResponse);
         }
-        
+
         throw new Exception("Could not determine if alias");
     }
 
