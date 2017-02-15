@@ -4,8 +4,8 @@ namespace Page;
 
 class CpanelClientPage
 {
-    const HOME_MENU_LINK_XPATH = "//*[@id='jump-lnkMenu']";
-    const HOME_MENU_LINK_CSS = '#lnkMenu';
+    const HOME_MENU_LINK_XPATH = "//a[@id='lnkHeaderHome']";
+    const HOME_MENU_LINK_CSS = '#lnkHeaderHome';
 
     const HOME_MENU_LINK_V52 = '#lnkHeaderHome';
 

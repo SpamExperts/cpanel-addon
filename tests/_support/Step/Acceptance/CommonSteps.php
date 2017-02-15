@@ -27,6 +27,9 @@ class CommonSteps extends \WebGuy
     // Used to save default package name
     private $defaultPackage = 'package1';
 
+    // Used to save custom Package name
+    private $customPackage = 'package2';
+
     /**
      * Function used to login as root
      */
@@ -183,7 +186,7 @@ class CommonSteps extends \WebGuy
     }
 
     /**
-     * Function used to create a new account. It sets the default package if exists. Alo is saving the new account in the
+     * Function used to create a new account. It sets the default package if exists. Also is saving the new account in the
      * global static array $accounts
      * @param array $params - account details
      * @return array - array with account details
@@ -234,7 +237,6 @@ class CommonSteps extends \WebGuy
 
             // Choose default package for the account
             $this->selectOption(Locator::combine(CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_XPATH, CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_CSS), "package1");
-
             // If i want the account to be a reseller
             if ($params['reseller'])
                 $this->checkOption(Locator::combine(CpanelWHMPage::MAKE_RESELLER_OPT_XPATH, CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
@@ -267,6 +269,99 @@ class CommonSteps extends \WebGuy
             'password' => $params['password'],
             'email' => $params['contactemail'],
             'reseller' => $params['reseller']
+        );
+
+        // Save the created account in the account list
+        self::$accounts[] = $account;
+
+        // Return the previous array
+        return $account;
+    }
+
+    /**
+     * Function used to create a new account. It uses the custom package. Also is saving the new account in the
+     * global static array $accounts
+     * @param array $params - account details
+     * @return array - array with account details
+     */
+    public function createNewAccountWithoutSE(array $params = array())
+    {
+        // If no domain is set, generate a random one
+        if (empty($params['domain']))
+            $params['domain'] = $this->generateRandomDomainName();
+
+        // If no username is set, generate a random one
+        if (empty($params['username']))
+            $params['username'] = $this->generateRandomUserName();
+
+        // If no password is set, generate a random one
+        if (empty($params['password']))
+            $params['password'] = uniqid();
+
+        // If no email is set, generate a random one based on username and domain
+        if (empty($params['contactemail']))
+            $params['contactemail'] = $params['username'].'@'.$params['domain'];
+
+        // By default the account is not reseller
+        if (empty($params['reseller']))
+            $params['reseller'] = false;
+
+        // By default ui parameter is false mean that account is created using cPanel API
+        if (empty($params['ui']))
+            $params['ui'] = false;
+
+        $params['pkgname'] = $this->customPackage;
+        $params['reseller'] = (int) $params['reseller'];
+
+
+        // If i want to create account using the UI
+        if ($params['ui']) {
+
+            // Go to create new account page
+            $this->searchAndClickCommand("Create a New Account");
+
+            // Complete the fields for the new account
+            $this->fillField(Locator::combine(CpanelWHMPage::DOMAIN_FIELD_XPATH, CpanelWHMPage::DOMAIN_FIELD_CSS), $params['domain']);
+            $this->fillField(Locator::combine(CpanelWHMPage::USERNAME_FIELD_XPATH, CpanelWHMPage::USERNAME_FIELD_CSS), $params['username']);
+            $this->fillField(Locator::combine(CpanelWHMPage::PASSWORD_FIELD_XPATH, CpanelWHMPage::PASSWORD_FIELD_CSS), $params['password']);
+            $this->wait(2);
+            $this->fillField(Locator::combine(CpanelWHMPage::RE_PASSWORD_FIELD_XPATH, CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
+            $this->wait(2);
+            $this->fillField(Locator::combine(CpanelWHMPage::EMAIL_FIELD_XPATH, CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
+
+            // Choose default package for the account
+            $this->selectOption(Locator::combine(CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_XPATH, CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_CSS), $this->customPackage);
+            // If i want the account to be a reseller
+            if ($params['reseller'])
+                $this->checkOption(Locator::combine(CpanelWHMPage::MAKE_RESELLER_OPT_XPATH, CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
+
+            // Click the create account button
+            $this->click("Create");
+
+            // Wait for account creation to finish
+            $this->waitForText("Account Creation Status: ok (Account Creation Ok)", 200, '#masterContainer');
+
+            // If the new account is a reseller grant all access
+            if ($params['reseller'])
+                $this->grantAllAccessToReseller($params['username']);
+
+        } else {
+
+            // Make a cPanel API request for creating an account
+            $this->makeCpanelApiRequest()->addAccount($params);
+
+            // If the new account is a reseller grant all access
+            if ($params['reseller']) {
+                $this->grantAllAccessToReseller($params['username']);
+            }
+        }
+
+        // Save the new account details in a array
+        $account = array(
+            'domain' => $params['domain'],
+            'username' => $params['username'],
+            'password' => $params['password'],
+            'email' => $params['contactemail']
         );
 
         // Save the created account in the account list
@@ -943,6 +1038,120 @@ class CommonSteps extends \WebGuy
 
         // Wait for package creation to finish
         $this->waitForText("Success!");
+    }
+
+    /**
+     * Function used to create custom package in cPanel
+     * @param $feature - feature to select when create package
+     */
+    public function createCustomPackage($feature)
+    {
+        $this->createFeature($feature);
+
+        // Search for delete package option and click on it
+        $this->searchAndClickCommand('Delete a Package');
+
+        // Check if the default package already exist
+        $this->wait(2);
+        $count = $this->getElementsCount("//select/option[@value='$this->customPackage']");
+
+        if ($count) {
+            $this->comment("already created");
+            return;
+        }
+
+        // Search for add a package option and click on it
+        $this->searchAndClickCommand('Add a Package');
+
+        // Switch to main frame
+        $this->switchToMainFrame();
+
+        // Fill the package name field
+        $this->waitForElement(Locator::combine(CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH, CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), 10);
+        $this->fillField(Locator::combine(CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH, CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), $this->customPackage);
+
+        // Switch to main frame
+        $this->switchToMainFrame();
+
+        // Check unlimited parked domains
+        $this->executeJS('document.getElementById("maxpark_unlimited_radio").setAttribute("checked", "true")');
+
+        // Check unlimited addon domains
+        $this->executeJS('document.getElementById("maxaddon_unlimited_radio").setAttribute("checked", "true")');
+
+        $this->switchToMainFrame();
+
+        //Select the desired feature for the packet
+        $this->selectOption(CpanelWHMPage::SELECT_DESIRED_FEATURE_XPATH, $feature);
+
+        // Click the save changes button
+        $this->click('Add');
+
+        // Wait for package creation to finish
+        $this->waitForText("Success!");
+    }
+
+    /**
+     * Function used to create feature in cPanel
+     * @param null $SE_enabled - parameter is true when feature is created with Professional Spam Filter enabled
+     * @param $featureName - name of feature
+     */
+    public function createFeature($featureName, $SE_enabled = null)
+    {
+        // Search for add a package option and click on it
+        $this->searchAndClickCommand('Feature Manager');
+        $this->wait(2);
+        $this->switchToMainFrame();
+
+        $this->fillField(CpanelWHMPage::ADD_NEW_FEATURE_XPATH, $featureName);
+        $this->click(CpanelWHMPage::ADD_FEATURE_LIST_XPATH);
+        $this->waitForElement(CpanelWHMPage::SPAMEXPERTS_OPTION_XPATH);
+
+        //Check desired options/feature for the custom feature created
+        $this->checkOption(CpanelWHMPage::ADDON_DOMAIN_MANAGER_OPTION_XPATH);
+        $this->checkOption(CpanelWHMPage::PARKED_DOMAIN_MANAGER_OPTION_XPATH);
+        $this->checkOption(CpanelWHMPage::SUBDOMAIN_MANAGER_OPTION_XPATH);
+
+        //By default, Professional Spam Filter will be disabled
+        if($SE_enabled==true){
+            $this->checkOption(CpanelWHMPage::SPAMEXPERTS_OPTION_XPATH);
+        }
+
+        $this->scrollTo(CpanelWHMPage::SAVE_FEATURE_LIST_XPATH);
+        $this->click(CpanelWHMPage::SAVE_FEATURE_LIST_XPATH);
+        $this->waitForText("Success:");
+    }
+
+    /**
+     * Function used to create feature in cPanel
+     * @param $featureName - name of feature
+     */
+    public function removeFeature($featureName)
+    {
+        $this->loginAsRoot();
+        $this->searchAndClickCommand('Feature Manager');
+        $this->wait(2);
+        $this->switchToMainFrame();
+        $this->selectOption(CpanelWHMPage::DROP_DOWN_LIST_XPATH, $featureName);
+
+        $this->click(CpanelWHMPage::DELETE_FEATURE_XPATH);
+        $this->waitForText('Success:', 10);
+    }
+
+    public function removeDomains()
+    {
+        $this->will("Remove all accounts");
+        $this->loginAsRoot();
+        $this->searchAndClickCommand('Terminate Accounts');
+        $this->wait(2);
+        $this->switchToMainFrame();
+        $this->click(CpanelWHMPage::SELECT_ALL_VISIBLE_ACCOUNTS_XPATH);
+        $this->click(CpanelWHMPage::CONFIRM_REMOVE_XPATH);
+        $this->click(CpanelWHMPage::REQUEST_MULTI_DETELE_ACC_XPATH);
+        $this->checkOption(CpanelWHMPage::CHECK_BOX_XPATH);
+        $this->click(CpanelWHMPage::PERMANENTLY_DELETE_XPATH);
+        $this->switchToMainFrame();
+        $this->waitForText("No results match", 90);
     }
 
     /**

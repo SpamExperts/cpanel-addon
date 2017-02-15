@@ -70,4 +70,76 @@ class ToggleProtectionSteps extends CommonSteps
         ];
     }
 
+    public function setupDomainAddedWithoutFilteringScenario()
+    {
+        $account = $this->createNewAccountWithoutSE();
+        $domain = $account['domain'];
+
+        $this->loginAsClient($account['username'], $account['password']);
+
+        $this->loginAsRoot();
+
+        return [
+            'domain' => $domain,
+            'account' => $account
+        ];
+    }
+
+    public function setupAddonAddedWithoutFilteringScenario()
+    {
+
+        $account = $this->createNewAccountWithoutSE();
+        $domain = $account['domain'];
+
+        $this->loginAsClient($account['username'], $account['password']);
+
+        //Create a new addon domain as client
+        $addonDomainName = $this->addAddonDomainAsClient($domain);
+
+        $this->loginAsRoot();
+
+        return [
+            'domain' => $domain,
+            'addon_domain_name' => $addonDomainName,
+            'account' => $account
+        ];
+    }
+
+    public function setupSubdomainAddedWithoutFilteringScenario()
+    {
+        $account = $this->createNewAccountWithoutSE();
+        $domain = $account['domain'];
+
+        $this->loginAsClient($account['username'], $account['password']);
+
+        //Create a new subdomain as client
+        $subDomainName = $this->addSubdomainAsClient($domain);
+
+        $this->loginAsRoot();
+
+        return [
+            'domain' => $domain,
+            'sub_domain_name' => $subDomainName,
+            'account' => $account
+        ];
+    }
+
+    public function setupParkedDomainAddedWithoutFilteringScenario()
+    {
+        $account = $this->createNewAccountWithoutSE();
+        $domain = $account['domain'];
+
+        // Login as client
+        $this->loginAsClient($account['username'], $account['password']);
+
+        // Create new alias domain as client
+        $parkedDomain = $this->addAliasDomainAsClient($domain);
+
+        $this->loginAsRoot();
+
+        return [
+            'parked_domain_name' => $parkedDomain,
+            'account' => $account
+        ];
+    }
 }
