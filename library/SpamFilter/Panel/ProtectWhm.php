@@ -96,7 +96,7 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
     public function domainProtectHandler($destination, SpamFilter_PanelSupport_Cpanel $panelDriver)
 	{
         if (!$this->_account->isValid()) {
-            $this->_logger->debug("[WHM] Root domain skipped (empty/invalid/remote): '" . $this->_domain . "'.");            
+            $this->_logger->debug("[WHM] Root domain skipped (empty/invalid/remote): '" . $this->_domain . "'.");
             $this->addDomainReason($this->_domain, $this->_account->getErrorCode());
             $this->countsUp(SpamFilter_Panel_Protect::COUNTS_FAILED);
         } else {
@@ -183,6 +183,10 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
                 $this->countsUp(self::COUNTS_FAILED);
                 $this->addDomainReason($this->_domain, SpamFilter_Hooks::DOMAIN_LIMIT_REACHED);
                 $this->_logger->debug("[WHM] Domain '{$this->_domain}' has NOT been added because domain limit was reached.");
+            } elseif ($return['status'] == false && $return['reason'] == SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED) {
+                $this->countsUp(self::COUNTS_FAILED);
+                $this->addDomainReason($this->_domain, SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED);
+                $this->_logger->debug("[WHM] Domain '{$this->_domain}' has NOT been added because domain has prospamfilter feature disabled.");
             } elseif ($return['status'] == false) {
                 $this->countsUp(self::COUNTS_FAILED);
                 $this->_logger->debug("[WHM] Domain '{$this->_domain}' has NOT been added due to an API error ({$return['reason']}).");
@@ -326,6 +330,10 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
             $this->countsUp(self::COUNTS_FAILED);
             $this->addDomainReason($parked, SpamFilter_Hooks::DOMAIN_LIMIT_REACHED);
             $this->_logger->debug("[WHM] Parked domain '{$parked}' has NOT been added because domain limit was reached.");
+        } elseif ($return['status'] == false && $return['reason'] == SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED) {
+            $this->countsUp(self::COUNTS_FAILED);
+            $this->addDomainReason($parked, SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED);
+            $this->_logger->debug("[WHM] Domain '{$parked}' has NOT been added because domain has prospamfilter feature disabled.");
         } elseif ($return['status'] == false) {
             $this->countsUp(self::COUNTS_FAILED);
             $this->_logger->debug("[WHM] Parked domain '{$parked}' has NOT been added due to an API error ({$return['reason']}).");
@@ -467,7 +475,11 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
             $this->countsUp(self::COUNTS_FAILED);
             $this->addDomainReason($addon, SpamFilter_Hooks::DOMAIN_LIMIT_REACHED);
             $this->_logger->debug("[WHM] Addon domain '{$addon}' has NOT been added because domain limit was reached.");
-		} elseif ($return['status'] == false )
+        } elseif ($return['status'] == false && $return['reason'] == SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED) {
+            $this->countsUp(self::COUNTS_FAILED);
+            $this->addDomainReason($addon, SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED);
+            $this->_logger->debug("[WHM] Addon '{$addon}' has NOT been added because domain has prospamfilter feature disabled.");
+        } elseif ($return['status'] == false )
 		{
 			$this->countsUp(self::COUNTS_FAILED);
 			$this->_logger->debug("[WHM] Addon domain '{$addon}' has NOT been added due to an API error ({$return['reason']}).");
@@ -521,7 +533,7 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
         // Check add type
         if( $this->_config->add_extra_alias )
         {
-            
+
             if (!$this->_account->isValid()) {
                 // Root domain cannot be added, we cannot add it as an ALIAS then.
                 $this->countsUp(self::COUNTS_SKIPPED);
@@ -588,6 +600,10 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
             $this->countsUp(self::COUNTS_FAILED);
             $this->addDomainReason($sub, SpamFilter_Hooks::DOMAIN_LIMIT_REACHED);
             $this->_logger->debug("[WHM] Subdomain domain '{$sub}' has NOT been added because domain limit was reached.");
+        } elseif ($return['status'] == false && $return['reason'] == SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED) {
+            $this->countsUp(self::COUNTS_FAILED);
+            $this->addDomainReason($sub, SpamFilter_Hooks::DOMAIN_HAS_FEATURE_DISABLED);
+            $this->_logger->debug("[WHM] Domain '{$sub}' has NOT been added because domain has prospamfilter feature disabled.");
 		} elseif ($return['status'] == false ) {
             $this->countsUp(self::COUNTS_FAILED);
             $this->_logger->debug("[WHM] Subdomain '{$sub}' has NOT been added due to an API error ({$return['reason']}).");
