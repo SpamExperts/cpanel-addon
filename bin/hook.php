@@ -56,115 +56,94 @@ if (!Zend_Registry::isRegistered('general_config')) {
 $config = Zend_Registry::get('general_config');
 $protectionManager = new SpamFilter_ProtectionManager();
 
-if ($paneltype == "PLESK")
-{
-	$data = argv2array( $argv );
-    $action = (isset($data['action']) ? $data['action'] : '');
+$in = file_get_contents("php://stdin");
+if (!empty($in)) { // Cpanel: STDIN used
+    $_panel = new SpamFilter_PanelSupport_Cpanel;
+    Zend_Registry::get('logger')->debug("[Hook] STDIN received");
+    Zend_Registry::get('logger')->debug("[Hook] STDIN:\n{$in}\n");
 
-	// Get the domain to execute actions on.
-	$domain = $data['domain'];
+    // Now it is JSON
+    $dataArray = json_decode($in, true);
+    $action = translateCPHookNames($dataArray['context']['event'],$dataArray['context']['stage']);
 
-	switch($action)
-	{
-		case "editdomain":
-			$newdomain = $domain;
-		break;
+    switch($action){
+        case 'predelaccount':
+            $user = $dataArray["data"]["user"];
+            break;
+        case 'adddomain':
+                                $domain = $dataArray['data']['domain'];
+                                $mxtype = $dataArray['data']['mxcheck'];
+                                break;
+        case 'deldomain':
+            $username = $dataArray['data']['user'];
+            $domains[] = $_panel->getMainDomain($username);
+            $addonDomains = $_panel->getAddonDomains($username);
 
-		case "addaddondomain";
-		case "deladdondomain":
-			$alias = $data['alias'];
-		break;
-	}
+            if ($addonDomains) {
+                $addonDomains = array_map('getAliasFromArray', $addonDomains);
+                $domains = array_merge($domains, $addonDomains);
+            }
+
+            $parkedDomains = $_panel->getParkedDomains($username);
+
+            if ($parkedDomains) {
+                $parkedDomains = array_map('getAliasFromArray', $parkedDomains);
+                $domains = array_merge($domains, $parkedDomains);
+            }
+
+            break;
+        case 'addaddondomain':
+                                $domain = $_panel->getMainDomain($dataArray['data']['user']);
+                                $alias = $dataArray['data']['args']['newdomain'];
+                                break;
+        case 'addsubdomain':
+                                $domain = $_panel->getMainDomain($dataArray['data']['user']);
+                                $alias = $dataArray['data']['args']['domain'].".".$domain;
+                                break;
+        case 'delsubdomain':
+        case 'deladdondomain':
+                                $domain = $_panel->getMainDomain($dataArray['data']['user']);
+                                $alias = $dataArray['data']['args']['domain'];
+                                $alias = str_replace('_', '.', $alias);
+                                break;
+        case 'park':
+                                $domain = $dataArray['data']['target_domain'];
+                                $alias = $dataArray['data']['new_domain'];
+                                break;
+
+        case 'unpark':
+                                $domain = $dataArray['data']['parent_domain'];
+                                $alias = $dataArray['data']['domain'];
+
+                                break;
+        case 'savecontactinfo':
+                                $email = $dataArray['data']['args']['email'];
+                                $domain = $_panel->getMainDomain($dataArray['data']['user']);
+                                break;
+        case 'modifyaccount':
+                                $email = $dataArray['data']['contactemail'];
+                                $domain = $dataArray['data']['domain'];
+                                $action = 'savecontactinfo';
+                                break;
+        case 'setmxcheck':      $mxtype = $dataArray['data']['args']['mxcheck'];
+                                $domain = $dataArray['data']['args']['domain'];
+                                break;
+        case 'restore':
+                                $user = $dataArray['data']['user'];
+                                $domain = $_panel->getMainDomain($user);
+                                break;
+        default:                die('Wrong action provided! Aborting!');
+    }
 } else {
-    $in = file_get_contents("php://stdin");
-    if (!empty($in)) { // Cpanel: STDIN used       
-        $_panel = new SpamFilter_PanelSupport_Cpanel;
-        Zend_Registry::get('logger')->debug("[Hook] STDIN received");
-        Zend_Registry::get('logger')->debug("[Hook] STDIN:\n{$in}\n");
+    die("No output from API!");
+}
 
-        // Now it is JSON
-        $dataArray = json_decode($in, true);
-        $action = translateCPHookNames($dataArray['context']['event'],$dataArray['context']['stage']);
-
-        switch($action){
-            case 'predelaccount':
-                $user = $dataArray["data"]["user"];
-                break;
-            case 'adddomain':
-                                    $domain = $dataArray['data']['domain'];
-                                    $mxtype = $dataArray['data']['mxcheck'];
-                                    break;
-            case 'deldomain':
-                $username = $dataArray['data']['user'];
-                $domains[] = $_panel->getMainDomain($username);
-                $addonDomains = $_panel->getAddonDomains($username);
-
-                if ($addonDomains) {
-                    $addonDomains = array_map('getAliasFromArray', $addonDomains);
-                    $domains = array_merge($domains, $addonDomains);
-                }
-
-                $parkedDomains = $_panel->getParkedDomains($username);
-
-                if ($parkedDomains) {
-                    $parkedDomains = array_map('getAliasFromArray', $parkedDomains);
-                    $domains = array_merge($domains, $parkedDomains);
-                }
-
-                break;
-            case 'addaddondomain':                                    
-                                    $domain = $_panel->getMainDomain($dataArray['data']['user']);
-                                    $alias = $dataArray['data']['args']['newdomain'];
-                                    break;
-			case 'addsubdomain':
-                                    $domain = $_panel->getMainDomain($dataArray['data']['user']);
-                                    $alias = $dataArray['data']['args']['domain'].".".$domain;
-                                    break;
-            case 'delsubdomain':
-            case 'deladdondomain':  
-                                    $domain = $_panel->getMainDomain($dataArray['data']['user']);
-                                    $alias = $dataArray['data']['args']['domain'];
-                                    $alias = str_replace('_', '.', $alias);
-                                    break;
-            case 'park':
-                                    $domain = $dataArray['data']['target_domain'];
-                                    $alias = $dataArray['data']['new_domain'];
-                                    break;
-
-            case 'unpark':
-                                    $domain = $dataArray['data']['parent_domain'];
-                                    $alias = $dataArray['data']['domain'];
-
-                                    break;
-            case 'savecontactinfo':
-                                    $email = $dataArray['data']['args']['email'];
-                                    $domain = $_panel->getMainDomain($dataArray['data']['user']);
-                                    break;
-            case 'modifyaccount':
-                                    $email = $dataArray['data']['contactemail'];
-                                    $domain = $dataArray['data']['domain'];
-                                    $action = 'savecontactinfo';
-                                    break;
-            case 'setmxcheck':      $mxtype = $dataArray['data']['args']['mxcheck'];
-                                    $domain = $dataArray['data']['args']['domain'];
-                                    break;
-            case 'restore':         
-                                    $user = $dataArray['data']['user'];
-                                    $domain = $_panel->getMainDomain($user);
-                                    break;
-            default:                die('Wrong action provided! Aborting!');
-        }
-    } else {
-        die("No output from API!");
-    }
-    
-        // strip www. part from the name
-    if (!empty($domain)) {
-        $domain = preg_replace('/^www\./i', '', $domain);
-    }
-    if (!empty($alias)) {
-	$alias = preg_replace('/^www\./i', '', $alias);
-    }
+    // strip www. part from the name
+if (!empty($domain)) {
+    $domain = preg_replace('/^www\./i', '', $domain);
+}
+if (!empty($alias)) {
+$alias = preg_replace('/^www\./i', '', $alias);
 }
 
 //
@@ -184,7 +163,7 @@ switch( $action )
             if (isset($mxtype) && $mxtype <> 'local') {
                 /** @var $panelDriver SpamFilter_PanelSupport_Cpanel */
                 $panelDriver = new SpamFilter_PanelSupport;
-                if (!$panelDriver->IsRemoteDomain(array('domain' => $domain), $hook)) {
+                if (!$panelDriver->IsRemoteDomain(array('domain' => $domain))) {
                     $mxtype = 'local';
                 }
             }
@@ -275,7 +254,7 @@ switch( $action )
                 }
             }
 
-            $parkedDomains = $panel->getParkedDomains($user, $domain);
+            $parkedDomains = $panel->getParkedDomains($user);
 
             foreach ($parkedDomains as $parkedDomain) {
                 if ($config->add_extra_alias) {
