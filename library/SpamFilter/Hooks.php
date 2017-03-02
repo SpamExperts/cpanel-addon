@@ -120,9 +120,12 @@ class SpamFilter_Hooks
         $this->_panel	= new SpamFilter_PanelSupport();
     }
 
-    public function __construct()
+    public function __construct($logger = null, $config = null)
     {
-        $this->_logger = Zend_Registry::get('logger');
+        $this->_logger = null === $logger ? Zend_Registry::get('logger') : $logger;
+        if (null !== $config) {
+            $this->_config = $config;
+        }
 
         // Even if we are not using it as a static class, we need to be able to work with it.
         $this->_logger->debug("[Hook] Hook Initiated via class, will go static ");
@@ -715,7 +718,7 @@ class SpamFilter_Hooks
      * @param string $domain Domainname to switch for
      * @param string $mxtype Type to work on
      *
-     * @return bool Status
+     * @return mixed
      *
      * @access public
      */
