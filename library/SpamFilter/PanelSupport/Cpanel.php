@@ -1050,7 +1050,7 @@ class SpamFilter_PanelSupport_Cpanel
      *
      * @param string $domain domain to lookup MX records for
      *
-     * @return array MX records
+     * @return array|boolean
      *
      * @access public
      */

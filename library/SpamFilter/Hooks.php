@@ -741,7 +741,16 @@ class SpamFilter_Hooks
             if ($this->_config->provision_dns) {
                 $this->_logger->info("[Hook] {$domain}'s MX records will be automatically reset, as configured in settings.");
 
-                return $this->DelDomain($domain, true, true); // Force remove it and reset MX records
+                /**
+                 * Force remove the domain but skip MX records reset
+                 *
+                 * @see https://github.com/SpamExperts/cpanel-addon/issues/10
+                 */
+                if ($this->DelDomain($domain, true, false)) {
+                    return $this->safeResetDns($domain);
+                }
+
+                return false;
             } else {
                 $this->_logger->info("[Hook] {$domain}'s MX records will NOT be automatically reset, as configured in settings.");
 
@@ -988,5 +997,53 @@ class SpamFilter_Hooks
         }
 
         return array('routes' => $routes, 'info' => $info);
+    }
+
+    /**
+     * This method implements the procedure of "safe" MX records reset as
+     * https://github.com/SpamExperts/cpanel-addon/issues/10 suggests
+     *
+     * @access public
+     *
+     * @param string $domain
+     */
+    public function safeResetDns($domain)
+    {
+        $existimgMxRecords = $this->_panel->getMxRecords($domain);
+
+        if (is_array($existimgMxRecords)) {
+            $recordsRemoved = 0;
+            $spamfilterMxRecords = $this->getFilteringClusterHostnames();
+            foreach ($existimgMxRecords as $existimgMxRec) {
+                if (in_array($existimgMxRec['exchange'], $spamfilterMxRecords)) {
+                    $this->_panel->removeDNSRecord($domain, $existimgMxRec['Line']);
+                    $recordsRemoved++;
+                }
+            }
+
+            if ($recordsRemoved == count($existimgMxRecords)) {
+                $this->_panel->addMxRecord($domain, 10, $this->getFallbackMxRecordHostname());
+            }
+        }
+    }
+
+    /**
+     * Wrapper for \SpamFilter_DNS::getFilteringClusterHostnames() for testability
+     *
+     * @return array
+     */
+    private function getFilteringClusterHostnames()
+    {
+        return \SpamFilter_DNS::getFilteringClusterHostnames();
+    }
+
+    /**
+     * Wrapper for \SpamFilter_Core::GetServerName() for testability
+     *
+     * @return string
+     */
+    private function getFallbackMxRecordHostname()
+    {
+        return (string) \SpamFilter_Core::GetServerName();
     }
 }

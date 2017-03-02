@@ -67,7 +67,7 @@ class SpamFilter_HooksTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($sut->setMailHandling(self::DOMAIN, self::MAIL_HANDLER_LOCAL));
     }
 
-    public function testMailHandlerRemovesDomainAndUpdatesMxRecordsWhenSwitchedToNonLocal()
+    public function testMailHandlerRemovesDomainAndUpdatesMxRecordsSafelyWhenSwitchedToNonLocal()
     {
         $loggerMock = $this->getMockBuilder('\SpamFilter_Logger')
             ->setMethods(['info', 'debug'])
@@ -79,14 +79,18 @@ class SpamFilter_HooksTest extends \PHPUnit_Framework_TestCase
 
         $sut = $this->getMockBuilder('\SpamFilter_Hooks')
             ->setConstructorArgs([ $loggerMock, $configMock ])
-            ->setMethods([ 'SpamFilter_Hooks', 'AddDomain', 'DelDomain' ])
+            ->setMethods([ 'SpamFilter_Hooks', 'AddDomain', 'DelDomain', 'safeResetDns' ])
             ->getMock();
 
         $sut->expects($this->never())
             ->method('AddDomain');
         $sut->expects($this->exactly(2))
             ->method('DelDomain')
-            ->with($this->equalTo(self::DOMAIN), $this->equalTo(true), $this->equalTo(true))
+            ->with($this->equalTo(self::DOMAIN), $this->equalTo(true), $this->equalTo(false))
+            ->will($this->returnValue(true));
+        $sut->expects($this->exactly(2))
+            ->method('safeResetDns')
+            ->with($this->equalTo(self::DOMAIN))
             ->will($this->returnValue(true));
 
         foreach ([ self::MAIL_HANDLER_REMOTE, self::MAIL_HANDLER_AUTO ] as $type) {

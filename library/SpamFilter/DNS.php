@@ -83,7 +83,7 @@ class SpamFilter_DNS
         $records = array();
 
         // Revert MX records to $serverhostname
-        $records['10'] = (string)SpamFilter_Core::GetServerName();
+        $records['10'] = (string) SpamFilter_Core::GetServerName();
 
         // Actions to take are being executed by the Panel Library
         $panel = new SpamFilter_PanelSupport();
