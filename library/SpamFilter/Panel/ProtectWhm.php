@@ -163,7 +163,7 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
                      * @see https://trac.spamexperts.com/software/ticket/15889
                      */
                     if (empty($status)) {
-                        SpamFilter_DNS::ConfigureDNS($this->_domain, $this->_config);
+                        SpamFilter_DNS::ConfigureDNS($this->_domain);
                         $status = true;
                     }
 
@@ -310,7 +310,7 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
                  * @see https://trac.spamexperts.com/software/ticket/15889
                  */
                 if (empty($status)) {
-                    SpamFilter_DNS::ConfigureDNS($parked, $this->_config);
+                    SpamFilter_DNS::ConfigureDNS($parked);
                     $status = true;
                 }
 
@@ -456,7 +456,7 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
                  * @see https://trac.spamexperts.com/software/ticket/15889
                  */
                 if (empty($status['status'])) {
-                    SpamFilter_DNS::ConfigureDNS($addon, $this->_config);
+                    SpamFilter_DNS::ConfigureDNS($addon);
                     $status = true;
                 }
 
@@ -581,7 +581,7 @@ class SpamFilter_Panel_ProtectWhm extends SpamFilter_Panel_Protect
                  * @see https://trac.spamexperts.com/software/ticket/15889
                  */
                 if (empty($status['status'])) {
-                    SpamFilter_DNS::ConfigureDNS($sub, $this->_config);
+                    SpamFilter_DNS::ConfigureDNS($sub);
                     $status = true;
                 }
 

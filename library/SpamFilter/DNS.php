@@ -46,9 +46,8 @@ class SpamFilter_DNS
      * ConfigureDNS
      * Configures the DNS
      *
-     * @param string                 $domain The Domain to configure
-     * @param stdClass               $config The configuration to use
-     * @param SpamFilter_ResellerAPI $apiRef The API reference (controlpanel) to use, or autoguess
+     * @param string           $domain The Domain to configure
+     * @param Cpanel_PublicAPI $apiRef The API reference (controlpanel) to use, or autoguess
      *
      * @return bool Status of DNS provisioning
      *
@@ -56,7 +55,7 @@ class SpamFilter_DNS
      * @static
      * @todo   Check if we are actually calling this and moving it to some more central place.
      */
-    public static function ConfigureDNS($domain, $config, $apiRef = null)
+    public static function ConfigureDNS($domain, $apiRef = null)
     {
         Zend_Registry::get('logger')->debug("[DNS] Configuring DNS for: '{$domain}'");
 
@@ -88,6 +87,7 @@ class SpamFilter_DNS
 
         // Actions to take are being executed by the Panel Library
         $panel = new SpamFilter_PanelSupport();
+        /** @var SpamFilter_PanelSupport_Cpanel $panel */
         $act = $panel->SetupDNS(array(
             'domain'  => $domain,
             'records' => $records
@@ -103,43 +103,47 @@ class SpamFilter_DNS
      * @access public
      * @param $domain - domain name
      * @param $routes - array of routes
-     * @return array
+     *
+     * @return boolean
      */
     public static function RevertMXs($domain, $routes){
-        if(empty($routes) || isset($routes['status'])){
+        if (empty($routes) || isset($routes['status'])) {
             Zend_Registry::get('logger')->debug("[DNS] Setting MX records failed. Gathered routes is not valid: " . serialize($routes));
+
             return false;
         }
 
         $routes = self::removePorts($routes);
         $routes = array_unique(self::reverseDNS($routes));
 
-        if(self::validateRecords($routes)){
+        if (self::validateRecords($routes)) {
             Zend_Registry::get('logger')->debug("[DNS] Setting MX records gathered from routes from domain: " . $domain);
             $panel = new SpamFilter_PanelSupport();
-            $idn = new IDNA_Convert();
             $prior = 10;
             $records = array();
-            foreach ($routes as $route){
+            foreach ($routes as $route) {
                 $space = strpos($route, ' '); //for domains with special chars are routes are returned in format : 'domain route' - we want only route
-                if($space !== FALSE){
-                    $route = substr($route, $space+1);                
+                if ($space !== false) {
+                    $route = substr($route, $space + 1);
                 }
                 $records[$prior] = $route;
                 $prior += 10;
             }
 
-            if(!empty($records)){
+            if (!empty($records)) {
+                /** @var SpamFilter_PanelSupport_Cpanel $panel */
                 $response = $panel->SetupDNS(array(
                         'domain' => $domain,
                         'records' => $records,
                         'unprotect' => true
                 ));
-                return $response;
-            }
 
+                return $response;
+            } else {
+                return false;
+            }
         } else {
-            self::DeconfigureDns($domain);
+            return self::DeconfigureDns($domain);
         }
     }
 
@@ -174,30 +178,38 @@ class SpamFilter_DNS
 
         return $records;
     }
+
     /**
      * Checks if there's no IP addresses in routes
      * 
-     * @param type $records
+     * @param array $records
+     *
      * @return boolean
      */
-    private static function validateRecords($records){
-        foreach($records as $record){
-            if(filter_var($record, FILTER_VALIDATE_IP) == $record){
+    private static function validateRecords($records)
+    {
+        foreach ($records as $record) {
+            if (filter_var($record, FILTER_VALIDATE_IP) == $record) {
                 return false;
             }            
         }
+
         return true;
     }
     /**
      * Removes ports from gathered routes
      * 
-     * @param type $records
+     * @param array $records
+     *
      * @return array of sanitized routes
      */
-    private static function removePorts($records){
-        foreach ($records as $route){
+    private static function removePorts($records)
+    {
+        $clearRoutes = [];
+
+        foreach ($records as $route) {
             $x = explode('::', $route);
-            if (count($x)>1) {
+            if (count($x) > 1) {
                 array_pop($x);
             }
 

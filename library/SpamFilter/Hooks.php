@@ -703,7 +703,7 @@ class SpamFilter_Hooks
     { // Update MX records
         if ($this->_config->provision_dns) {
             $this->_logger->debug("[Hook] Changing MX records for: '{$domain}'");
-            return SpamFilter_DNS::ConfigureDNS($domain, $this->_config, $apiRef);
+            return SpamFilter_DNS::ConfigureDNS($domain, $apiRef);
         } else {
             $this->_logger->debug(
                 "[Hook] NOT changing MX records for: '{$domain}' due to configuration restriction (provision_dns)"
@@ -783,7 +783,7 @@ class SpamFilter_Hooks
             if( $c1 > $myRRCount )
             {
                 $this->_logger->debug("More records found ({$c1}) than required ({$myRRCount}). Re-running DNS setup");
-                return SpamFilter_DNS::ConfigureDNS($domain, $this->_config );
+                return SpamFilter_DNS::ConfigureDNS($domain);
             }
 
             // Second check
