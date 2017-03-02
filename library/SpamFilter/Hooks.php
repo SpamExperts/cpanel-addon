@@ -725,28 +725,32 @@ class SpamFilter_Hooks
     public function setMailHandling($domain, $mxtype)
     {
         $this->_logger->info("[Hook] {$domain}'s route has changed to '{$mxtype}'");
-        if( !$this->_config->handle_route_switching )
-        {
+
+        if (!$this->_config->handle_route_switching) {
             $this->_logger->info("[Hook] NOT executing actions linked to routing change, disabled in settings.");
+
             return false;
         }
 
         $this->_logger->info("[Hook] Executing actions linked to routing change.");
-        //@TODO: Implement changing status if the status is set to 'local'. Auto / remote / backup does not count and should not be acted upon.
-        if ( strtolower($mxtype) <> "local" )
-        {
+
+        // @TODO: Implement changing status if the status is set to 'local'.
+        // Auto / remote / backup does not count and should not be acted upon.
+        if (strtolower($mxtype) <> "local") {
             // Domain NOT set to local, we should stop handling it
-            if( $this->_config->provision_dns ) {
+            if ($this->_config->provision_dns) {
                 $this->_logger->info("[Hook] {$domain}'s MX records will be automatically reset, as configured in settings.");
+
                 return $this->DelDomain($domain, true, true); // Force remove it and reset MX records
-            }
-            else {
+            } else {
                 $this->_logger->info("[Hook] {$domain}'s MX records will NOT be automatically reset, as configured in settings.");
+
                 return $this->DelDomain($domain, true); // Force remove it and don't change MX records
             }
         } else {
             // Domain set to local, we should handle it.
             $this->_logger->debug("[Hook] Domain '{$domain}' has been changed to local, making sure it exists in the filtering solution.");
+
             return $this->AddDomain( $domain );
         }
     }
