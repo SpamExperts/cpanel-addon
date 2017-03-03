@@ -1086,11 +1086,15 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function removeDNSRecord($domain, $line)
     {
-        $this->_logger->debug("Removing DNS line '{$line}' for domain '{$domain}'");
+        $this->_logger->debug("Removing DNS line '{$line}' for domain '{$domain}' ... ");
         try {
             /** @var Cpanel_Query_Object $response */
             $response = $this->_api->whm_api('removezonerecord', array('zone' => $domain, 'Line' => $line));
             $arr      = $response->getResponse('array');
+
+            $this->_logger->debug(
+                "Removing DNS line '{$line}' for domain '{$domain}' resulted into " . print_r($arr, true)
+            );
 
             if (0 < $arr['result']['0']['status']) {
                 // Wait for BIND reloaded ("smart delay")
@@ -1230,6 +1234,10 @@ class SpamFilter_PanelSupport_Cpanel
             /** @var Cpanel_Query_Object $response */
             $response = $this->_api->whm_api('addzonerecord', array('zone' => $domain, 'args' => $args));
             $arr      = $response->getResponse('array');
+
+            $this->_logger->debug(
+                "Creation of MX record ({$priority} - {$server}) for '{$domain}' resulted into " . print_r($arr, true) . ""
+            );
 
             // Wait for BIND reloaded ("smart delay")
             // @see https://trac.spamexperts.com/software/ticket/14566

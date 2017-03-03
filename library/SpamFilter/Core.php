@@ -506,7 +506,7 @@ class SpamFilter_Core
         }
 
         // Fallback to a generic method which should provide us what we need.
-        $hostname = trim(shell_exec('hostname -f'));
+        $hostname = gethostname();
         if (!empty($hostname)) {
             return $hostname;
         }

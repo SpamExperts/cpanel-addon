@@ -111,7 +111,9 @@ class SpamFilter_PanelSupport
 			if (method_exists($this->_classname,$name)) {
 				Zend_Registry::get('logger')->debug("[PanelSupport] Triggering '{$name}' in class '{$this->_classname}'");
 
-				if (isset($params[0]) && isset($params[1])) {
+                if (isset($params[0]) && isset($params[1]) && isset($params[2])) {
+                    return $this->_class->$name($params[0], $params[1], $params[2]);
+                } elseif (isset($params[0]) && isset($params[1])) {
 					return $this->_class->$name($params[0], $params[1]);
 				} elseif (isset($params[0])) {
 					return $this->_class->$name($params[0]);

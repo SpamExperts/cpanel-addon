@@ -749,11 +749,9 @@ class SpamFilter_Hooks
                  *
                  * @see https://github.com/SpamExperts/cpanel-addon/issues/10
                  */
-                if ($this->DelDomain($domain, true, false)) {
-                    return $this->safeResetDns($domain);
-                }
+                $this->DelDomain($domain, true, false);
 
-                return false;
+                return $this->safeResetDns($domain);
             } else {
                 $this->_logger->info("[Hook] {$domain}'s MX records will NOT be automatically reset, as configured in settings.");
 
@@ -1019,9 +1017,13 @@ class SpamFilter_Hooks
         if (is_array($existimgMxRecords)) {
             $recordsRemoved = 0;
             $spamfilterMxRecords = $this->getFilteringClusterHostnames();
+
+            // Sort existing MX records by line in DESC order to avoid attempting
+            // entries with obsolete line reference
+            usort($existimgMxRecords, function ($a, $b) { return $b['Line'] > $a['Line'] ? 1 : -1; });
             foreach ($existimgMxRecords as $existimgMxRec) {
                 if (in_array($existimgMxRec['exchange'], $spamfilterMxRecords)) {
-                    $this->_panel->removeDNSRecord($existimgMxRec['exchange'], $existimgMxRec['Line']);
+                    $this->_panel->removeDNSRecord($domain, $existimgMxRec['Line']);
                     $recordsRemoved++;
                 }
             }
@@ -1051,6 +1053,6 @@ class SpamFilter_Hooks
      */
     public function getFallbackMxRecordHostname()
     {
-        return (string) \SpamFilter_Core::GetServerName();
+        return gethostname();
     }
 }
