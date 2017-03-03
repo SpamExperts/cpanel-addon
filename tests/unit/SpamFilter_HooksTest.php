@@ -146,7 +146,10 @@ class SpamFilter_HooksTest extends \PHPUnit_Framework_TestCase
         $panelMock->expects($this->once())
             ->method('getMxRecords')
             ->with($this->equalTo(self::DOMAIN))
-            ->will($this->returnValue([ [ 'exchange' => 'mx1.host.test' ], [ 'exchange' => 'mx2.host.test' ] ]));
+            ->will($this->returnValue([
+                [ 'exchange' => 'mx1.host.test', 'Line' => 10 ],
+                [ 'exchange' => 'mx2.host.test', 'Line' => 20 ],
+            ]));
 
         $sut = $this->getMockBuilder('\SpamFilter_Hooks')
             ->setConstructorArgs([ $loggerMock, $configMock, $panelMock ])
@@ -155,7 +158,7 @@ class SpamFilter_HooksTest extends \PHPUnit_Framework_TestCase
 
         $sut->expects($this->once())
             ->method('getFilteringClusterHostnames')
-            ->will($this->returnValue([ '10' => 'mx1.spamfilter.test', 'exchange' => 'mx2.spamfilter.test' ]));
+            ->will($this->returnValue([ '10' => 'mx1.spamfilter.test', '20' => 'mx2.spamfilter.test' ]));
 
         $sut->safeResetDns(self::DOMAIN);
     }
@@ -176,7 +179,7 @@ class SpamFilter_HooksTest extends \PHPUnit_Framework_TestCase
             ->method('addMxRecord');
         $panelMock->expects($this->once())
             ->method('removeDNSRecord')
-            ->with($this->equalTo('mx1.spamfilter.test'), $this->equalTo(20));
+            ->with(self::DOMAIN, $this->equalTo(20));
         $panelMock->expects($this->once())
             ->method('getMxRecords')
             ->with($this->equalTo(self::DOMAIN))
@@ -215,8 +218,8 @@ class SpamFilter_HooksTest extends \PHPUnit_Framework_TestCase
         $panelMock->expects($this->exactly(2))
             ->method('removeDNSRecord')
             ->withConsecutive(
-                [ $this->equalTo('mx1.spamfilter.test'), $this->equalTo(10) ],
-                [ $this->equalTo('mx2.spamfilter.test'), $this->equalTo(20) ]
+                [ $this->equalTo(self::DOMAIN), $this->equalTo(20) ],
+                [ $this->equalTo(self::DOMAIN), $this->equalTo(10) ]
             );
         $panelMock->expects($this->once())
             ->method('getMxRecords')
