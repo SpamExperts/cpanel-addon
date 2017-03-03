@@ -110,9 +110,11 @@ class SpamFilter_HooksTest extends \PHPUnit_Framework_TestCase
 
         $sut = $this->getMockBuilder('\SpamFilter_Hooks')
             ->setConstructorArgs([ $loggerMock, $configMock ])
-            ->setMethods([ 'SpamFilter_Hooks', 'AddDomain', 'DelDomain' ])
+            ->setMethods([ 'SpamFilter_Hooks', 'AddDomain', 'DelDomain', 'safeResetDns' ])
             ->getMock();
 
+        $sut->expects($this->never())
+            ->method('safeResetDns');
         $sut->expects($this->never())
             ->method('AddDomain');
         $sut->expects($this->exactly(2))
@@ -123,5 +125,156 @@ class SpamFilter_HooksTest extends \PHPUnit_Framework_TestCase
         foreach ([ self::MAIL_HANDLER_REMOTE, self::MAIL_HANDLER_AUTO ] as $type) {
             $this->assertTrue($sut->setMailHandling(self::DOMAIN, $type));
         }
+    }
+
+    public function testSafeDnsResetDoesNotRemoveNonspamfilterMxRecords()
+    {
+        $loggerMock = $this->getMockBuilder('\SpamFilter_Logger')
+            ->setMethods(['info', 'debug'])
+            ->getMock();
+
+        $configMock = new \stdClass;
+
+        $panelMock = $this->getMockBuilder('\SpamFilter_PanelSupport_Cpanel')
+            ->setMethods(['getMxRecords', 'addMxRecord', 'removeDNSRecord'])
+            ->getMock();
+
+        $panelMock->expects($this->never())
+            ->method('addMxRecord');
+        $panelMock->expects($this->never())
+            ->method('removeDNSRecord');
+        $panelMock->expects($this->once())
+            ->method('getMxRecords')
+            ->with($this->equalTo(self::DOMAIN))
+            ->will($this->returnValue([ [ 'exchange' => 'mx1.host.test' ], [ 'exchange' => 'mx2.host.test' ] ]));
+
+        $sut = $this->getMockBuilder('\SpamFilter_Hooks')
+            ->setConstructorArgs([ $loggerMock, $configMock, $panelMock ])
+            ->setMethods([ 'SpamFilter_Hooks', 'getFilteringClusterHostnames' ])
+            ->getMock();
+
+        $sut->expects($this->once())
+            ->method('getFilteringClusterHostnames')
+            ->will($this->returnValue([ '10' => 'mx1.spamfilter.test', 'exchange' => 'mx2.spamfilter.test' ]));
+
+        $sut->safeResetDns(self::DOMAIN);
+    }
+
+    public function testSafeDnsResetRemovesSpamfilterMxRecords()
+    {
+        $loggerMock = $this->getMockBuilder('\SpamFilter_Logger')
+            ->setMethods(['info', 'debug'])
+            ->getMock();
+
+        $configMock = new \stdClass;
+
+        $panelMock = $this->getMockBuilder('\SpamFilter_PanelSupport_Cpanel')
+            ->setMethods(['getMxRecords', 'addMxRecord', 'removeDNSRecord'])
+            ->getMock();
+
+        $panelMock->expects($this->never())
+            ->method('addMxRecord');
+        $panelMock->expects($this->once())
+            ->method('removeDNSRecord')
+            ->with($this->equalTo('mx1.spamfilter.test'), $this->equalTo(20));
+        $panelMock->expects($this->once())
+            ->method('getMxRecords')
+            ->with($this->equalTo(self::DOMAIN))
+            ->will($this->returnValue([
+                [ 'exchange' => 'mx1.host.test', 'Line' => 10 ],
+                [ 'exchange' => 'mx1.spamfilter.test', 'Line' => 20 ],
+            ]));
+
+        $sut = $this->getMockBuilder('\SpamFilter_Hooks')
+            ->setConstructorArgs([ $loggerMock, $configMock, $panelMock ])
+            ->setMethods([ 'SpamFilter_Hooks', 'getFilteringClusterHostnames' ])
+            ->getMock();
+
+        $sut->expects($this->once())
+            ->method('getFilteringClusterHostnames')
+            ->will($this->returnValue([ '10' => 'mx1.spamfilter.test', '20' => 'mx2.spamfilter.test' ]));
+
+        $sut->safeResetDns(self::DOMAIN);
+    }
+
+    public function testSafeDnsResetAddsBackupMxRecordWhenAllExistingMxRecordsWereRemoved()
+    {
+        $loggerMock = $this->getMockBuilder('\SpamFilter_Logger')
+            ->setMethods(['info', 'debug'])
+            ->getMock();
+
+        $configMock = new \stdClass;
+
+        $panelMock = $this->getMockBuilder('\SpamFilter_PanelSupport_Cpanel')
+            ->setMethods(['getMxRecords', 'addMxRecord', 'removeDNSRecord'])
+            ->getMock();
+
+        $panelMock->expects($this->once())
+            ->method('addMxRecord')
+            ->with($this->equalTo(self::DOMAIN), $this->equalTo(10), $this->equalTo('cpanel.host.test'));
+        $panelMock->expects($this->exactly(2))
+            ->method('removeDNSRecord')
+            ->withConsecutive(
+                [ $this->equalTo('mx1.spamfilter.test'), $this->equalTo(10) ],
+                [ $this->equalTo('mx2.spamfilter.test'), $this->equalTo(20) ]
+            );
+        $panelMock->expects($this->once())
+            ->method('getMxRecords')
+            ->with($this->equalTo(self::DOMAIN))
+            ->will($this->returnValue([
+                [ 'exchange' => 'mx1.spamfilter.test', 'Line' => 10 ],
+                [ 'exchange' => 'mx2.spamfilter.test', 'Line' => 20 ],
+            ]));
+
+        $sut = $this->getMockBuilder('\SpamFilter_Hooks')
+            ->setConstructorArgs([ $loggerMock, $configMock, $panelMock ])
+            ->setMethods([ 'SpamFilter_Hooks', 'getFilteringClusterHostnames', 'getFallbackMxRecordHostname' ])
+            ->getMock();
+
+        $sut->expects($this->once())
+            ->method('getFilteringClusterHostnames')
+            ->will($this->returnValue([ '10' => 'mx1.spamfilter.test', '20' => 'mx2.spamfilter.test' ]));
+        $sut->expects($this->once())
+            ->method('getFallbackMxRecordHostname')
+            ->will($this->returnValue('cpanel.host.test'));
+
+        $sut->safeResetDns(self::DOMAIN);
+    }
+
+    public function testSafeDnsResetAddsBackupMxRecordWhenThereWereNoMxRecordsBefore()
+    {
+        $loggerMock = $this->getMockBuilder('\SpamFilter_Logger')
+            ->setMethods(['info', 'debug'])
+            ->getMock();
+
+        $configMock = new \stdClass;
+
+        $panelMock = $this->getMockBuilder('\SpamFilter_PanelSupport_Cpanel')
+            ->setMethods(['getMxRecords', 'addMxRecord', 'removeDNSRecord'])
+            ->getMock();
+
+        $panelMock->expects($this->once())
+            ->method('addMxRecord')
+            ->with($this->equalTo(self::DOMAIN), $this->equalTo(10), $this->equalTo('cpanel.host.test'));
+        $panelMock->expects($this->never())
+            ->method('removeDNSRecord');
+        $panelMock->expects($this->once())
+            ->method('getMxRecords')
+            ->with($this->equalTo(self::DOMAIN))
+            ->will($this->returnValue([]));
+
+        $sut = $this->getMockBuilder('\SpamFilter_Hooks')
+            ->setConstructorArgs([ $loggerMock, $configMock, $panelMock ])
+            ->setMethods([ 'SpamFilter_Hooks', 'getFilteringClusterHostnames', 'getFallbackMxRecordHostname' ])
+            ->getMock();
+
+        $sut->expects($this->once())
+            ->method('getFilteringClusterHostnames')
+            ->will($this->returnValue([ '10' => 'mx1.spamfilter.test', '20' => 'mx2.spamfilter.test' ]));
+        $sut->expects($this->once())
+            ->method('getFallbackMxRecordHostname')
+            ->will($this->returnValue('cpanel.host.test'));
+
+        $sut->safeResetDns(self::DOMAIN);
     }
 }

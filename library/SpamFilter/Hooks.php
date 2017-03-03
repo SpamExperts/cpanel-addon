@@ -120,11 +120,14 @@ class SpamFilter_Hooks
         $this->_panel	= new SpamFilter_PanelSupport();
     }
 
-    public function __construct($logger = null, $config = null)
+    public function __construct($logger = null, $config = null, $panel = null)
     {
         $this->_logger = null === $logger ? Zend_Registry::get('logger') : $logger;
         if (null !== $config) {
             $this->_config = $config;
+        }
+        if (null !== $panel) {
+            $this->_panel = $panel;
         }
 
         // Even if we are not using it as a static class, we need to be able to work with it.
@@ -1006,6 +1009,8 @@ class SpamFilter_Hooks
      * @access public
      *
      * @param string $domain
+     *
+     * @return boolean
      */
     public function safeResetDns($domain)
     {
@@ -1016,7 +1021,7 @@ class SpamFilter_Hooks
             $spamfilterMxRecords = $this->getFilteringClusterHostnames();
             foreach ($existimgMxRecords as $existimgMxRec) {
                 if (in_array($existimgMxRec['exchange'], $spamfilterMxRecords)) {
-                    $this->_panel->removeDNSRecord($domain, $existimgMxRec['Line']);
+                    $this->_panel->removeDNSRecord($existimgMxRec['exchange'], $existimgMxRec['Line']);
                     $recordsRemoved++;
                 }
             }
@@ -1025,6 +1030,8 @@ class SpamFilter_Hooks
                 $this->_panel->addMxRecord($domain, 10, $this->getFallbackMxRecordHostname());
             }
         }
+
+        return true;
     }
 
     /**
@@ -1032,7 +1039,7 @@ class SpamFilter_Hooks
      *
      * @return array
      */
-    private function getFilteringClusterHostnames()
+    public function getFilteringClusterHostnames()
     {
         return \SpamFilter_DNS::getFilteringClusterHostnames();
     }
@@ -1042,7 +1049,7 @@ class SpamFilter_Hooks
      *
      * @return string
      */
-    private function getFallbackMxRecordHostname()
+    public function getFallbackMxRecordHostname()
     {
         return (string) \SpamFilter_Core::GetServerName();
     }
