@@ -168,7 +168,7 @@ class DomainController extends Zend_Controller_Action
             if (!$panel->resellerHasFeatureEnabled(SpamFilter_Core::getUsername())) {
                 $this->_flashMessenger->addMessage(
                     array(
-                        'message' => $this->t->_('This featured is not available for your account'),
+                        'message' => $this->t->_('This feature is not available for your account'),
                         'status' => 'info',
                     )
                 );
