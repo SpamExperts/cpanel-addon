@@ -2734,7 +2734,7 @@ class SpamFilter_PanelSupport_Cpanel
      * @access public
      */
     public function resellerHasFeatureEnabled($user) {
-        $this->_logger->debug("Checking if Prospamfilter feature is available for the authenticated user");
+        $this->_logger->debug("Checking if Prospamfilter feature is available for ".$user);
 
         $args = array(
             'api.version' => '1',
