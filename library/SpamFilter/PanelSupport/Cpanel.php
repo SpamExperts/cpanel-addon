@@ -2734,17 +2734,27 @@ class SpamFilter_PanelSupport_Cpanel
      * @access public
      */
     public function resellerHasFeatureEnabled($user) {
-        $package = $this->getUserPackages($user);
-        $args['featurelist'] = $this->getFeatureList($package);
-        $args['api.version'] = '1';
+        $this->_logger->debug("Checking if Prospamfilter feature is available for the authenticated user");
+
+        $args = array(
+            'api.version' => '1',
+            'user' => $user,
+            'feature' => 'prospamfilter'
+        );
+
+        $hasFeature = false;
+
         try {
-            $response = $this->_api->getWhm()->makeQuery('read_featurelist', $args);
+            $response = $this->_api->getWhm()->makeQuery('verify_user_has_feature', $args);
             $arr = $response->getResponse('array');
+            $hasFeature = $arr['data']['has_feature'];
         } catch (Exception $e) {
             $this->_logger->crit("Exception caught in " . __METHOD__ . " method : " . $e->getMessage());
         }
 
-        return $arr['data']['features']['prospamfilter'] == 1 ? true : false;
+        $this->_logger->debug("Prospamfilter feature is available result: ".$hasFeature);
+
+        return $hasFeature;
     }
     
      /**
