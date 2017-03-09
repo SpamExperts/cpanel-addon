@@ -31,10 +31,6 @@ class C04BulkProtectCest
      */
     public function checkBulkProtectPage(BulkProtectSteps $I)
     {
-
-        // Remove all created accounts
-        $I->removeAllAccounts();
-
         // Go to the plugin configuration page
         $I->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
 

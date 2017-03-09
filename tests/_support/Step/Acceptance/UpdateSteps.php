@@ -50,7 +50,8 @@ class UpdateSteps extends CommonSteps
         // Check if one of the following messages appear on the page
         $this->seeOneOf(array(
             'The update process has been initiated successfully. Please wait around 30 seconds before opening other pages to allow the update process to complete',
-            'There is no stable update available to install. You are already at the latest version.'
+            'There is no stable update available to install. You are already at the latest version.',
+            'There is no testing update available to install. You are already at the latest version.'
         ));
     }
 }

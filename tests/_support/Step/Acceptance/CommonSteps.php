@@ -1106,9 +1106,9 @@ class CommonSteps extends \WebGuy
      */
     public function removeAllAccounts()
     {
-        $this->will("Terminate ALL accounts");
-        $this->searchAndClickCommand('Terminate Multiple Accounts');
-        $selector = "//input[@type='checkbox'][contains(@name, 'acct')]";
+        $this->will("Terminate Accounts");
+        $this->searchAndClickCommand('Terminate Accounts');
+        $selector = "//*[@id='select_all_visable_accts']";
         $this->checkAllBoxes($selector);
         $this->fillField(Locator::combine(TerminateAccountsPage::DESTROY_ACCOUNTS_INPUT_XPATH, TerminateAccountsPage::DESTROY_ACCOUNTS_INPUT_CSS), "I understand this will irrevocably remove all the accounts that have been checked");
         $this->click(Locator::combine(TerminateAccountsPage::DESTROY_ACCOUNTS_BTTN_XPATH, TerminateAccountsPage::DESTROY_ACCOUNTS_BTTN_CSS));
