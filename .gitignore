@@ -1,2 +1,3 @@
 .idea/
 tests/_output/failed
+sftp-config.json

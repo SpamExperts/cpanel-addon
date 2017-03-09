@@ -5,5 +5,10 @@
 class_name: UnitTester
 modules:
     enabled:
+        # - Laravel5
         - Asserts
         - \Helper\Unit
+coverage:
+    enabled: true
+    include:
+        - library/

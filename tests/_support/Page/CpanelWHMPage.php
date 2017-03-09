@@ -12,16 +12,12 @@ class CpanelWHMPage
     const SEARCH_BAR_XPATH = "//input[@id='quickJump']";
     const SEARCH_BAR_CSS = "#quickJump";
 
-    const TOP_FRAME_XPATH = "//*[@id='topFrame']";
-    const TOP_FRAME_CSS = "#topFrame";
-    const TOP_FRAME_NAME = "topFrame";
-
-    const COMMANDER_FRAME_XPATH = "//*[@id='commander']";
-    const COMMANDER_FRAME_CSS = "#commander";
+    const COMMANDER_FRAME_XPATH = "//*[contains(@class,'commandContainer')]";
+    const COMMANDER_FRAME_CSS = ".commandContainer grid-container-fluid";
     const COMMANDER_FRAME_NAME = "commander";
 
-    const MAIN_FRAME_XPATH = "//*[@id='mainFrame']";
-    const MAIN_FRAME_CSS = "#mainFrame";
+    const MAIN_FRAME_XPATH = "//*[@id='masterContainer']";
+    const MAIN_FRAME_CSS = "#masterContainer";
     const MAIN_FRAME_NAME = "mainFrame";
 
     // Create new account page

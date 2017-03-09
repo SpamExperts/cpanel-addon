@@ -63,20 +63,40 @@ class CommonSteps extends \WebGuy
         $this->amOnUrl(getenv($this->getEnvParameter('url')));
 
         // Fill the username field
-        $this->waitForElement(Locator::combine(CpanelWHMLoginPage::USERNAME_FIELD_XPATH, CpanelWHMLoginPage::USERNAME_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelWHMLoginPage::USERNAME_FIELD_XPATH, CpanelWHMLoginPage::USERNAME_FIELD_CSS), $username);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelWHMLoginPage::USERNAME_FIELD_XPATH,
+                CpanelWHMLoginPage::USERNAME_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelWHMLoginPage::USERNAME_FIELD_XPATH,
+                CpanelWHMLoginPage::USERNAME_FIELD_CSS), $username);
 
         // Fill password field
-        $this->waitForElement(Locator::combine(CpanelWHMLoginPage::PASSWORD_FIELD_XPATH, CpanelWHMLoginPage::PASSWORD_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelWHMLoginPage::PASSWORD_FIELD_XPATH, CpanelWHMLoginPage::PASSWORD_FIELD_CSS), $password);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelWHMLoginPage::PASSWORD_FIELD_XPATH,
+                CpanelWHMLoginPage::PASSWORD_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelWHMLoginPage::PASSWORD_FIELD_XPATH,
+                CpanelWHMLoginPage::PASSWORD_FIELD_CSS), $password);
 
         // Click the login button
         $this->click("Log in");
+        $this->wait(1);
 
         // Wait for all frames to show
-        $this->waitForElement(Locator::combine(CpanelWHMPage::TOP_FRAME_XPATH, CpanelWHMPage::TOP_FRAME_CSS), 10);
-        $this->waitForElement(Locator::combine(CpanelWHMPage::COMMANDER_FRAME_XPATH, CpanelWHMPage::COMMANDER_FRAME_CSS), 10);
-        $this->waitForElement(Locator::combine(CpanelWHMPage::MAIN_FRAME_XPATH, CpanelWHMPage::MAIN_FRAME_CSS), 10);
+        $this->switchToMainFrame();
+        $this->waitForElement(
+            Locator::combine(
+                CpanelWHMPage::MAIN_FRAME_XPATH,
+                CpanelWHMPage::MAIN_FRAME_CSS), 10);
+        $this->switchToCommanderFrame();
+        $this->waitForElement(
+            Locator::combine(
+                CpanelWHMPage::COMMANDER_FRAME_XPATH,
+                CpanelWHMPage::COMMANDER_FRAME_CSS), 10);
     }
 
     /**
@@ -96,8 +116,14 @@ class CommonSteps extends \WebGuy
      */
     public function logoutAsClient()
     {
-        $this->waitForElement(Locator::combine(CpanelClientPage::CLIENT_LOGOUT_BTN_XPATH, CpanelClientPage::CLIENT_LOGOUT_BTN_CSS), 10);
-        $this->click(Locator::combine(CpanelClientPage::CLIENT_LOGOUT_BTN_XPATH, CpanelClientPage::CLIENT_LOGOUT_BTN_CSS));
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::CLIENT_LOGOUT_BTN_XPATH,
+                CpanelClientPage::CLIENT_LOGOUT_BTN_CSS), 10);
+        $this->click(
+            Locator::combine(
+                CpanelClientPage::CLIENT_LOGOUT_BTN_XPATH,
+                CpanelClientPage::CLIENT_LOGOUT_BTN_CSS));
 
     }
 
@@ -227,19 +253,41 @@ class CommonSteps extends \WebGuy
             $this->searchAndClickCommand("Create a New Account");
 
             // Complete the fields for the new account
-            $this->fillField(Locator::combine(CpanelWHMPage::DOMAIN_FIELD_XPATH, CpanelWHMPage::DOMAIN_FIELD_CSS), $params['domain']);
-            $this->fillField(Locator::combine(CpanelWHMPage::USERNAME_FIELD_XPATH, CpanelWHMPage::USERNAME_FIELD_CSS), $params['username']);
-            $this->fillField(Locator::combine(CpanelWHMPage::PASSWORD_FIELD_XPATH, CpanelWHMPage::PASSWORD_FIELD_CSS), $params['password']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::DOMAIN_FIELD_XPATH,
+                    CpanelWHMPage::DOMAIN_FIELD_CSS), $params['domain']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::USERNAME_FIELD_XPATH,
+                    CpanelWHMPage::USERNAME_FIELD_CSS), $params['username']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::PASSWORD_FIELD_XPATH,
+                    CpanelWHMPage::PASSWORD_FIELD_CSS), $params['password']);
             $this->wait(2);
-            $this->fillField(Locator::combine(CpanelWHMPage::RE_PASSWORD_FIELD_XPATH, CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::RE_PASSWORD_FIELD_XPATH,
+                    CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
             $this->wait(2);
-            $this->fillField(Locator::combine(CpanelWHMPage::EMAIL_FIELD_XPATH, CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::EMAIL_FIELD_XPATH,
+                    CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
 
             // Choose default package for the account
-            $this->selectOption(Locator::combine(CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_XPATH, CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_CSS), "package1");
+            $this->selectOption(
+                Locator::combine(
+                    CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_XPATH,
+                    CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_CSS), "package1");
             // If i want the account to be a reseller
+            $this->pauseExecution();
             if ($params['reseller'])
-                $this->checkOption(Locator::combine(CpanelWHMPage::MAKE_RESELLER_OPT_XPATH, CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
+                $this->checkOption(
+                    Locator::combine(
+                        CpanelWHMPage::MAKE_RESELLER_OPT_XPATH,
+                        CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
 
             // Click the create account button
             $this->click("Create");
@@ -321,19 +369,40 @@ class CommonSteps extends \WebGuy
             $this->searchAndClickCommand("Create a New Account");
 
             // Complete the fields for the new account
-            $this->fillField(Locator::combine(CpanelWHMPage::DOMAIN_FIELD_XPATH, CpanelWHMPage::DOMAIN_FIELD_CSS), $params['domain']);
-            $this->fillField(Locator::combine(CpanelWHMPage::USERNAME_FIELD_XPATH, CpanelWHMPage::USERNAME_FIELD_CSS), $params['username']);
-            $this->fillField(Locator::combine(CpanelWHMPage::PASSWORD_FIELD_XPATH, CpanelWHMPage::PASSWORD_FIELD_CSS), $params['password']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::DOMAIN_FIELD_XPATH,
+                    CpanelWHMPage::DOMAIN_FIELD_CSS), $params['domain']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::USERNAME_FIELD_XPATH,
+                    CpanelWHMPage::USERNAME_FIELD_CSS), $params['username']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::PASSWORD_FIELD_XPATH,
+                    CpanelWHMPage::PASSWORD_FIELD_CSS), $params['password']);
             $this->wait(2);
-            $this->fillField(Locator::combine(CpanelWHMPage::RE_PASSWORD_FIELD_XPATH, CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::RE_PASSWORD_FIELD_XPATH,
+                    CpanelWHMPage::RE_PASSWORD_FIELD_CSS), $params['password']);
             $this->wait(2);
-            $this->fillField(Locator::combine(CpanelWHMPage::EMAIL_FIELD_XPATH, CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
+            $this->fillField(
+                Locator::combine(
+                    CpanelWHMPage::EMAIL_FIELD_XPATH,
+                    CpanelWHMPage::EMAIL_FIELD_CSS), $params['contactemail']);
 
             // Choose default package for the account
-            $this->selectOption(Locator::combine(CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_XPATH, CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_CSS), $this->customPackage);
+            $this->selectOption(
+                Locator::combine(
+                    CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_XPATH,
+                    CpanelWHMPage::CHOOSE_PKG_DROP_DOWN_CSS), $this->customPackage);
             // If i want the account to be a reseller
             if ($params['reseller'])
-                $this->checkOption(Locator::combine(CpanelWHMPage::MAKE_RESELLER_OPT_XPATH, CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
+                $this->checkOption(
+                    Locator::combine(
+                        CpanelWHMPage::MAKE_RESELLER_OPT_XPATH,
+                        CpanelWHMPage::MAKE_RESELLER_OPT_XPATH));
 
             // Click the create account button
             $this->click("Create");
@@ -381,10 +450,16 @@ class CommonSteps extends \WebGuy
         $this->searchAndClickCommand('Edit Reseller Nameservers and Privileges');
 
         // Select the desired username from list
-        $this->selectOption(Locator::combine(CpanelWHMPage::RESELLER_LIST_XPATH, CpanelWHMPage::RESELLER_LIST_CSS), $username);
+        $this->selectOption(
+            Locator::combine(
+                CpanelWHMPage::RESELLER_LIST_XPATH,
+                CpanelWHMPage::RESELLER_LIST_CSS), $username);
 
         // Click submit button
-        $this->click(Locator::combine(CpanelWHMPage::RESELLER_SUBMIT_BTN_XPATH, CpanelWHMPage::RESELLER_SUBMIT_BTN_CSS));
+        $this->click(
+            Locator::combine(
+                CpanelWHMPage::RESELLER_SUBMIT_BTN_XPATH,
+                CpanelWHMPage::RESELLER_SUBMIT_BTN_CSS));
 
         // Check Root Access All features option
         $this->executeJS("document.getElementById('acl_group_everything').childNodes[1].childNodes[0].checked=true");
@@ -406,7 +481,10 @@ class CommonSteps extends \WebGuy
         $this->switchToCommanderFrame();
 
         // Fill the search box with the desired command name
-        $this->fillField(Locator::combine(CpanelWHMPage::SEARCH_BAR_XPATH, CpanelWHMPage::SEARCH_BAR_CSS), $fullCommand);
+        $this->fillField(
+            Locator::combine(
+                CpanelWHMPage::SEARCH_BAR_XPATH,
+                CpanelWHMPage::SEARCH_BAR_CSS), $fullCommand);
 
         // Click on the searched command from the commander frame
         $this->click($fullCommand);
@@ -433,18 +511,7 @@ class CommonSteps extends \WebGuy
     public function switchToCommanderFrame()
     {
         $this->switchToWindow();
-        $this->waitForElement(Locator::combine(CpanelWHMPage::COMMANDER_FRAME_XPATH, CpanelWHMPage::COMMANDER_FRAME_CSS), 30);
         $this->switchToIFrame(CpanelWHMPage::COMMANDER_FRAME_NAME);
-    }
-
-    /**
-     * Function used to switch focus to top frame
-     */
-    public function switchToTopFrame()
-    {
-        $this->switchToWindow();
-        $this->waitForElement(Locator::combine(CpanelWHMPage::TOP_FRAME_XPATH, CpanelWHMPage::TOP_FRAME_CSS), 30);
-        $this->switchToIFrame(CpanelWHMPage::TOP_FRAME_NAME);
     }
 
     /**
@@ -453,7 +520,6 @@ class CommonSteps extends \WebGuy
     public function switchToMainFrame()
     {
         $this->switchToWindow();
-        $this->waitForElement(Locator::combine(CpanelWHMPage::MAIN_FRAME_XPATH, CpanelWHMPage::MAIN_FRAME_CSS), 30);
         $this->switchToIFrame(CpanelWHMPage::MAIN_FRAME_NAME);
     }
 
@@ -472,18 +538,40 @@ class CommonSteps extends \WebGuy
      */
     public function searchDomainList($domain)
     {
-        $this->goToPage(ProfessionalSpamFilterPage::DOMAIN_LIST_BTN, DomainListPage::TITLE);
-        $this->fillField(Locator::combine(DomainListPage::SEARCH_FIELD_XPATH, DomainListPage::SEARCH_FIELD_CSS), $domain);
-        $this->click(Locator::combine(DomainListPage::SEARCH_BTN_XPATH, DomainListPage::SEARCH_BTN_CSS));
-        $this->see($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
+        $this->goToPage(
+            ProfessionalSpamFilterPage::DOMAIN_LIST_BTN,
+            DomainListPage::TITLE);
+        $this->fillField(
+            Locator::combine(
+                DomainListPage::SEARCH_FIELD_XPATH,
+                DomainListPage::SEARCH_FIELD_CSS), $domain);
+        $this->click(
+            Locator::combine(
+                DomainListPage::SEARCH_BTN_XPATH,
+                DomainListPage::SEARCH_BTN_CSS));
+        $this->see($domain,
+            Locator::combine(
+                DomainListPage::DOMAIN_TABLE_XPATH,
+                DomainListPage::DOMAIN_TABLE_CSS));
     }
 
     public function searchDomainNotinList($domain)
     {
-        $this->goToPage(ProfessionalSpamFilterPage::DOMAIN_LIST_BTN, DomainListPage::TITLE);
-        $this->fillField(Locator::combine(DomainListPage::SEARCH_FIELD_XPATH, DomainListPage::SEARCH_FIELD_CSS), $domain);
-        $this->click(Locator::combine(DomainListPage::SEARCH_BTN_XPATH, DomainListPage::SEARCH_BTN_CSS));
-        $this->dontSee($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
+        $this->goToPage(
+            ProfessionalSpamFilterPage::DOMAIN_LIST_BTN,
+            DomainListPage::TITLE);
+        $this->fillField(
+            Locator::combine(
+                DomainListPage::SEARCH_FIELD_XPATH,
+                DomainListPage::SEARCH_FIELD_CSS), $domain);
+        $this->click(
+            Locator::combine(
+                DomainListPage::SEARCH_BTN_XPATH,
+                DomainListPage::SEARCH_BTN_CSS));
+        $this->dontSee($domain,
+            Locator::combine(
+                DomainListPage::DOMAIN_TABLE_XPATH,
+                DomainListPage::DOMAIN_TABLE_CSS));
     }
 
     /**
@@ -493,7 +581,8 @@ class CommonSteps extends \WebGuy
     public function checkDomainIsPresentInFilter($domain)
     {
         $this->searchDomainList($domain);
-        $this->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_PRESENT_IN_THE_FILTER);
+        $this->checkProtectionStatusIs(
+            DomainListPage::STATUS_DOMAIN_IS_PRESENT_IN_THE_FILTER);
     }
 
     /**
@@ -503,7 +592,8 @@ class CommonSteps extends \WebGuy
     public function checkDomainIsNotPresentInFilter($domain)
     {
         $this->searchDomainList($domain);
-        $this->checkProtectionStatusIs(DomainListPage::STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER);
+        $this->checkProtectionStatusIs(
+            DomainListPage::STATUS_DOMAIN_IS_NOT_PRESENT_IN_THE_FILTER);
     }
 
     /**
@@ -512,7 +602,10 @@ class CommonSteps extends \WebGuy
      */
     public function checkProtectionStatusIs($status)
     {
-        $this->click(Locator::combine(DomainListPage::CHECK_ALL_DOMAINS_BTN_XPATH, DomainListPage::CHECK_ALL_DOMAINS_BTN_CSS));
+        $this->click(
+            Locator::combine(
+                DomainListPage::CHECK_ALL_DOMAINS_BTN_XPATH,
+                DomainListPage::CHECK_ALL_DOMAINS_BTN_CSS));
         $this->waitForText($status);
     }
 
@@ -527,12 +620,24 @@ class CommonSteps extends \WebGuy
         $this->amOnUrl($this->getClientUrl());
 
         // Fill the username field
-        $this->waitForElement(Locator::combine(CpanelWHMLoginPage::USERNAME_FIELD_XPATH, CpanelWHMLoginPage::USERNAME_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelWHMLoginPage::USERNAME_FIELD_XPATH, CpanelWHMLoginPage::USERNAME_FIELD_CSS), $username);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelWHMLoginPage::USERNAME_FIELD_XPATH,
+                CpanelWHMLoginPage::USERNAME_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelWHMLoginPage::USERNAME_FIELD_XPATH,
+                CpanelWHMLoginPage::USERNAME_FIELD_CSS), $username);
 
         // Fill the password field
-        $this->waitForElement(Locator::combine(CpanelWHMLoginPage::PASSWORD_FIELD_XPATH, CpanelWHMLoginPage::PASSWORD_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelWHMLoginPage::PASSWORD_FIELD_XPATH, CpanelWHMLoginPage::PASSWORD_FIELD_CSS), $password);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelWHMLoginPage::PASSWORD_FIELD_XPATH,
+                CpanelWHMLoginPage::PASSWORD_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelWHMLoginPage::PASSWORD_FIELD_XPATH,
+                CpanelWHMLoginPage::PASSWORD_FIELD_CSS), $password);
 
         // Click on the login button
         $this->click("Log in");
@@ -553,11 +658,20 @@ class CommonSteps extends \WebGuy
 
         // Wait for search bar container
         $this->wait(2);
-        $this->waitForElement(Locator::combine(CpanelClientPage::SEARCH_BAR_CONTAINER_XPATH, CpanelClientPage::SEARCH_BAR_CONTAINER_CSS), 10);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::SEARCH_BAR_CONTAINER_XPATH,
+                CpanelClientPage::SEARCH_BAR_CONTAINER_CSS), 10);
 
         // Fill the search box with the desired command name
-        $this->waitForElement(Locator::combine(CpanelClientPage::SEARCH_BAR_XPATH, CpanelClientPage::SEARCH_BAR_CSS));
-        $this->fillField(Locator::combine(CpanelClientPage::SEARCH_BAR_XPATH, CpanelClientPage::SEARCH_BAR_CSS), $fullCommand);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::SEARCH_BAR_XPATH,
+                CpanelClientPage::SEARCH_BAR_CSS));
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::SEARCH_BAR_XPATH,
+                CpanelClientPage::SEARCH_BAR_CSS), $fullCommand);
 
         // Click on the searched command from the commander frame
         $this->waitForText($fullCommand);
@@ -583,16 +697,36 @@ class CommonSteps extends \WebGuy
         $this->waitForText('Create an Addon Domain');
 
         // Fill new domain name field
-        $this->waitForElement(Locator::combine(CpanelClientPage::NEW_DOMAIN_NAME_FIELD_XPATH, CpanelClientPage::NEW_DOMAIN_NAME_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelClientPage::NEW_DOMAIN_NAME_FIELD_XPATH, CpanelClientPage::NEW_DOMAIN_NAME_FIELD_CSS), $addonDomainName);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::NEW_DOMAIN_NAME_FIELD_XPATH,
+                CpanelClientPage::NEW_DOMAIN_NAME_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::NEW_DOMAIN_NAME_FIELD_XPATH,
+                CpanelClientPage::NEW_DOMAIN_NAME_FIELD_CSS), $addonDomainName);
 
         // Fill subdomain field
-        $this->waitForElement(Locator::combine(CpanelClientPage::SUBDOMAIN_FIELD_XPATH, CpanelClientPage::SUBDOMAIN_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelClientPage::SUBDOMAIN_FIELD_XPATH, CpanelClientPage::SUBDOMAIN_FIELD_CSS), array_shift(explode(".",$addonDomainName)));
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::SUBDOMAIN_FIELD_XPATH,
+                CpanelClientPage::SUBDOMAIN_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::SUBDOMAIN_FIELD_XPATH,
+                CpanelClientPage::SUBDOMAIN_FIELD_CSS),
+            array_shift(explode(".",$addonDomainName)));
 
         // Fill document root field
-        $this->waitForElement(Locator::combine(CpanelClientPage::DOCUMENT_ROOT_FIELD_XPATH, CpanelClientPage::DOCUMENT_ROOT_FIELD_CSS));
-        $this->fillField(Locator::combine(CpanelClientPage::DOCUMENT_ROOT_FIELD_XPATH, CpanelClientPage::DOCUMENT_ROOT_FIELD_CSS), "public_html/".$addonDomainName);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::DOCUMENT_ROOT_FIELD_XPATH,
+                CpanelClientPage::DOCUMENT_ROOT_FIELD_CSS));
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::DOCUMENT_ROOT_FIELD_XPATH,
+                CpanelClientPage::DOCUMENT_ROOT_FIELD_CSS),
+            "public_html/".$addonDomainName);
 
         // Click on Add Domain button
         $this->click('Add Domain');
@@ -616,10 +750,16 @@ class CommonSteps extends \WebGuy
         $this->waitForText('Create an Addon Domain');
 
         // Search for domain to be removed
-        $this->fillField(Locator::combine(CpanelClientPage::ADDON_DOMAIN_SEARCH_BAR_XPATH, CpanelClientPage::ADDON_DOMAIN_SEARCH_BAR_CSS), $addonDomainName);
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::ADDON_DOMAIN_SEARCH_BAR_XPATH,
+                CpanelClientPage::ADDON_DOMAIN_SEARCH_BAR_CSS), $addonDomainName);
 
         // Click the search button
-        $this->click(Locator::combine(CpanelClientPage::ADDON_DOMAIN_SEARCH_BTN_XPATH, CpanelClientPage::ADDON_DOMAIN_SEARCH_BTN_CSS));
+        $this->click(
+            Locator::combine(
+                CpanelClientPage::ADDON_DOMAIN_SEARCH_BTN_XPATH,
+                CpanelClientPage::ADDON_DOMAIN_SEARCH_BTN_CSS));
 
         // Click the remove button
         $this->click("#lnkRemove_$addonDomainName");
@@ -628,7 +768,10 @@ class CommonSteps extends \WebGuy
         $this->waitForText("Are you sure you wish to permanently remove the addon domain “".$addonDomainName."”?");
 
         // Click the remove button to confirm
-        $this->click(Locator::combine(CpanelClientPage::ADDON_DOMAIN_CONFIRM_REMOVE_BTN_XPATH, CpanelClientPage::ADDON_DOMAIN_CONFIRM_REMOVE_BTN_CSS));
+        $this->click(
+            Locator::combine(
+                CpanelClientPage::ADDON_DOMAIN_CONFIRM_REMOVE_BTN_XPATH,
+                CpanelClientPage::ADDON_DOMAIN_CONFIRM_REMOVE_BTN_CSS));
 
         // Wait for confirmation message
         $this->waitForText("The addon domain “".$addonDomainName."” has been removed.", 30);
@@ -657,12 +800,24 @@ class CommonSteps extends \WebGuy
         $this->waitForText('Create a Subdomain');
 
         // Fill domain field
-        $this->waitForElement(Locator::combine(CpanelClientPage::ADD_SUBDOMAIN_FIELD_XPATH, CpanelClientPage::ADD_SUBDOMAIN_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelClientPage::ADD_SUBDOMAIN_FIELD_XPATH, CpanelClientPage::ADD_SUBDOMAIN_FIELD_CSS), $subDomainPrefix);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::ADD_SUBDOMAIN_FIELD_XPATH,
+                CpanelClientPage::ADD_SUBDOMAIN_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::ADD_SUBDOMAIN_FIELD_XPATH,
+                CpanelClientPage::ADD_SUBDOMAIN_FIELD_CSS), $subDomainPrefix);
 
         // Choose the domain from the drop down
-        $this->waitForElement(Locator::combine(CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_XPATH, CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_CSS), 10);
-        $this->selectOption(Locator::combine(CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_XPATH, CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_CSS), $domain);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_XPATH,
+                CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_CSS), 10);
+        $this->selectOption(
+            Locator::combine(
+                CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_XPATH,
+                CpanelClientPage::ADD_SUBDOMAIN_ROOT_DOMAIN_FIELD_CSS), $domain);
 
         // Click Create button
         $this->click('Create');
@@ -686,10 +841,16 @@ class CommonSteps extends \WebGuy
         $this->waitForText('Create a Subdomain');
 
         // Search for subdomain to be removed
-        $this->fillField(Locator::combine(CpanelClientPage::SUBDOMAIN_SEARCH_BAR_XPATH, CpanelClientPage::SUBDOMAIN_SEARCH_BAR_CSS), $subdomain);
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::SUBDOMAIN_SEARCH_BAR_XPATH,
+                CpanelClientPage::SUBDOMAIN_SEARCH_BAR_CSS), $subdomain);
 
         // Click the search button
-        $this->click(Locator::combine(CpanelClientPage::SUBDOMAIN_SEARCH_BTN_XPATH, CpanelClientPage::SUBDOMAIN_SEARCH_BTN_CSS));
+        $this->click(
+            Locator::combine(
+                CpanelClientPage::SUBDOMAIN_SEARCH_BTN_XPATH,
+                CpanelClientPage::SUBDOMAIN_SEARCH_BTN_CSS));
 
         // Click the remove button
         $this->click("#{$subdomain}_lnkRemove");
@@ -698,7 +859,10 @@ class CommonSteps extends \WebGuy
         $this->waitForText("Are you sure you wish to permanently remove subdomain “".$subdomain."”?");
 
         // Click the remove button to confirm
-        $this->click(Locator::combine(CpanelClientPage::DELETE_SUBDOMAIN_BTN_XPATH, CpanelClientPage::DELETE_SUBDOMAIN_BTN_CSS));
+        $this->click(
+            Locator::combine(
+                CpanelClientPage::DELETE_SUBDOMAIN_BTN_XPATH,
+                CpanelClientPage::DELETE_SUBDOMAIN_BTN_CSS));
 
         // Wait for confirmation message
         $this->waitForText("The subdomain “".$subdomain."” has been successfully removed.", 30);
@@ -725,8 +889,14 @@ class CommonSteps extends \WebGuy
         $this->waitForText('Create a New Alias');
 
         // Fill domain field
-        $this->waitForElement(Locator::combine(CpanelClientPage::ALIAS_DOMAIN_FIELD_XPATH, CpanelClientPage::ALIAS_DOMAIN_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelClientPage::ALIAS_DOMAIN_FIELD_XPATH, CpanelClientPage::ALIAS_DOMAIN_FIELD_CSS), $aliasDomain);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::ALIAS_DOMAIN_FIELD_XPATH,
+                CpanelClientPage::ALIAS_DOMAIN_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::ALIAS_DOMAIN_FIELD_XPATH,
+                CpanelClientPage::ALIAS_DOMAIN_FIELD_CSS), $aliasDomain);
 
         // Click Add Domain button
         $this->click('Add Domain');
@@ -750,10 +920,16 @@ class CommonSteps extends \WebGuy
         $this->waitForText('Create a New Alias');
 
         // Search for alias domain to be removed
-        $this->fillField(Locator::combine(CpanelClientPage::ALIAS_DOMAIN_SEARCH_BAR_XPATH, CpanelClientPage::ALIAS_DOMAIN_SEARCH_BAR_CSS), $aliasDomain);
+        $this->fillField(
+            Locator::combine(
+                CpanelClientPage::ALIAS_DOMAIN_SEARCH_BAR_XPATH,
+                CpanelClientPage::ALIAS_DOMAIN_SEARCH_BAR_CSS), $aliasDomain);
 
         // Click the search button
-        $this->click(Locator::combine(CpanelClientPage::ALIAS_DOMAIN_SEARCH_BTN_XPATH, CpanelClientPage::ALIAS_DOMAIN_SEARCH_BTN_CSS));
+        $this->click(
+            Locator::combine(
+                CpanelClientPage::ALIAS_DOMAIN_SEARCH_BTN_XPATH,
+                CpanelClientPage::ALIAS_DOMAIN_SEARCH_BTN_CSS));
 
         // Click the remove button
         $this->click("#del_");
@@ -762,7 +938,10 @@ class CommonSteps extends \WebGuy
         $this->waitForText("Are you sure you want to permanently remove the alias, “".$aliasDomain."”?");
 
         // Click the remove button to confirm
-        $this->click(Locator::combine(CpanelClientPage::DELETE_ALIAS_BTN_XPATH, CpanelClientPage::DELETE_ALIAS_BTN_XPATH));
+        $this->click(
+            Locator::combine(
+                CpanelClientPage::DELETE_ALIAS_BTN_XPATH,
+                CpanelClientPage::DELETE_ALIAS_BTN_XPATH));
 
         // Wait for confirmation message
         $this->waitForText("The alias, ".$aliasDomain.", has been successfully removed.", 30);
@@ -797,12 +976,24 @@ class CommonSteps extends \WebGuy
         $this->click('Add a route');
 
         // Fill route host field
-        $this->waitForElement(Locator::combine(SpampanelPage::ROUTE_FIELD_XPATH, SpampanelPage::ROUTE_FIELD_CSS));
-        $this->fillField(Locator::combine(SpampanelPage::ROUTE_FIELD_XPATH, SpampanelPage::ROUTE_FIELD_CSS), $route);
+        $this->waitForElement(
+            Locator::combine(
+                SpampanelPage::ROUTE_FIELD_XPATH,
+                SpampanelPage::ROUTE_FIELD_CSS));
+        $this->fillField(
+            Locator::combine(
+                SpampanelPage::ROUTE_FIELD_XPATH,
+                SpampanelPage::ROUTE_FIELD_CSS), $route);
 
         // Fill route port field
-        $this->waitForElement(Locator::combine(SpampanelPage::PORT_FIELD_XPATH, SpampanelPage::PORT_FIELD_CSS));
-        $this->fillField(Locator::combine(SpampanelPage::PORT_FIELD_XPATH, SpampanelPage::PORT_FIELD_CSS), $port);
+        $this->waitForElement(
+            Locator::combine(
+                SpampanelPage::PORT_FIELD_XPATH,
+                SpampanelPage::PORT_FIELD_CSS));
+        $this->fillField(
+            Locator::combine(
+                SpampanelPage::PORT_FIELD_XPATH,
+                SpampanelPage::PORT_FIELD_CSS), $port);
 
         // Click the submit button
         $this->click('Save');
@@ -849,7 +1040,10 @@ class CommonSteps extends \WebGuy
      */
     public function seeInDomainTable($domain)
     {
-        $this->see($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
+        $this->see($domain,
+            Locator::combine(
+                DomainListPage::DOMAIN_TABLE_XPATH,
+                DomainListPage::DOMAIN_TABLE_CSS));
     }
 
     /**
@@ -858,7 +1052,10 @@ class CommonSteps extends \WebGuy
      */
     public function dontSeeInDomainTable($domain)
     {
-        $this->dontSee($domain, Locator::combine(DomainListPage::DOMAIN_TABLE_XPATH, DomainListPage::DOMAIN_TABLE_CSS));
+        $this->dontSee($domain,
+            Locator::combine(
+                DomainListPage::DOMAIN_TABLE_XPATH,
+                DomainListPage::DOMAIN_TABLE_CSS));
     }
 
     /**
@@ -993,7 +1190,9 @@ class CommonSteps extends \WebGuy
      */
     public function goToConfigurationPageAndSetOptions(array $options)
     {
-        $this->goToPage(ProfessionalSpamFilterPage::CONFIGURATION_BTN, ConfigurationPage::TITLE);
+        $this->goToPage(
+            ProfessionalSpamFilterPage::CONFIGURATION_BTN,
+            ConfigurationPage::TITLE);
         $this->setConfigurationOptions($options);
     }
 
@@ -1021,8 +1220,14 @@ class CommonSteps extends \WebGuy
         $this->switchToMainFrame();
 
         // Fill the package name field
-        $this->waitForElement(Locator::combine(CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH, CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH, CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), $this->defaultPackage);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH,
+                CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH,
+                CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), $this->defaultPackage);
 
         // Switch to main frame
         $this->switchToMainFrame();
@@ -1067,8 +1272,14 @@ class CommonSteps extends \WebGuy
         $this->switchToMainFrame();
 
         // Fill the package name field
-        $this->waitForElement(Locator::combine(CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH, CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), 10);
-        $this->fillField(Locator::combine(CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH, CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), $this->customPackage);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH,
+                CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), 10);
+        $this->fillField(
+            Locator::combine(
+                CpanelWHMPage::PACKAGE_NAME_FIELD_XPATH,
+                CpanelWHMPage::PACKAGE_NAME_FIELD_CSS), $this->customPackage);
 
         // Switch to main frame
         $this->switchToMainFrame();
@@ -1160,10 +1371,16 @@ class CommonSteps extends \WebGuy
     public function clickHomeMenuLink()
     {
         // Wait for home menu link
-        $this->waitForElement(Locator::combine(CpanelClientPage::HOME_MENU_LINK_XPATH, CpanelClientPage::HOME_MENU_LINK_CSS), 10);
+        $this->waitForElement(
+            Locator::combine(
+                CpanelClientPage::HOME_MENU_LINK_XPATH,
+                CpanelClientPage::HOME_MENU_LINK_CSS), 10);
 
         // Click the home menu link
-        $this->click(Locator::combine(CpanelClientPage::HOME_MENU_LINK_XPATH, CpanelClientPage::HOME_MENU_LINK_CSS));
+        $this->click(
+            Locator::combine(
+                CpanelClientPage::HOME_MENU_LINK_XPATH,
+                CpanelClientPage::HOME_MENU_LINK_CSS));
     }
 
     /**
@@ -1266,7 +1483,10 @@ class CommonSteps extends \WebGuy
     public function submitBulkprotectForm()
     {
         // Click the execute bulkprotect button
-        $this->click(Locator::combine(BulkprotectPage::EXECUTE_BULKPROTECT_BTN_XPATH, BulkprotectPage::EXECUTE_BULKPROTECT_BTN_CSS));
+        $this->click(
+            Locator::combine(
+                BulkprotectPage::EXECUTE_BULKPROTECT_BTN_XPATH,
+                BulkprotectPage::EXECUTE_BULKPROTECT_BTN_CSS));
     }
 
     /**
@@ -1287,24 +1507,60 @@ class CommonSteps extends \WebGuy
     private function getDefaultConfigurationOptions()
     {
         return array(
-            Locator::combine(ConfigurationPage::ENABLE_SSL_FOR_API_OPT_XPATH, ConfigurationPage::ENABLE_SSL_FOR_API_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::ENABLE_AUTOMATIC_UPDATES_OPT_XPATH, ConfigurationPage::ENABLE_AUTOMATIC_UPDATES_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH, ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH, ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH, ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH, ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::USE_EXISTING_MX_OPT_XPATH, ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH, ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_XPATH, ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::ADD_DOMAIN_DURING_LOGIN_OPT_XPATH, ConfigurationPage::ADD_DOMAIN_DURING_LOGIN_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT_XPATH, ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::CHANGE_EMAIL_ROUTING_OPT_XPATH, ConfigurationPage::CHANGE_EMAIL_ROUTING_OPT_CSS) => true,
-            Locator::combine(ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH, ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => false,
-            Locator::combine(ConfigurationPage::DISABLE_ADDON_IN_CPANEL_XPATH, ConfigurationPage::DISABLE_ADDON_IN_CPANEL_CSS) => false,
-            Locator::combine(ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH, ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS) => false,
-            Locator::combine(ConfigurationPage::SET_SPF_RECORD_XPATH, ConfigurationPage::SET_SPF_RECORD_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::ENABLE_SSL_FOR_API_OPT_XPATH,
+                ConfigurationPage::ENABLE_SSL_FOR_API_OPT_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::ENABLE_AUTOMATIC_UPDATES_OPT_XPATH,
+                ConfigurationPage::ENABLE_AUTOMATIC_UPDATES_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_ADD_DOMAINS_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_DELETE_DOMAINS_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_XPATH,
+                ConfigurationPage::AUTOMATICALLY_CHANGE_MX_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_XPATH,
+                ConfigurationPage::CONFIGURE_EMAIL_ADDRESS_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_XPATH,
+                ConfigurationPage::PROCESS_ADDON_CPANEL_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_XPATH,
+                ConfigurationPage::ADD_ADDON_AS_ALIAS_CPANEL_OPT_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::USE_EXISTING_MX_OPT_XPATH,
+                ConfigurationPage::USE_EXISTING_MX_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_XPATH,
+                ConfigurationPage::DO_NOT_PROTECT_REMOTE_DOMAINS_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_XPATH,
+                ConfigurationPage::REDIRECT_BACK_TO_CPANEL_OPT_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::ADD_DOMAIN_DURING_LOGIN_OPT_XPATH,
+                ConfigurationPage::ADD_DOMAIN_DURING_LOGIN_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT_XPATH,
+                ConfigurationPage::FORCE_CHANGE_MX_ROUTE_OPT_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::CHANGE_EMAIL_ROUTING_OPT_XPATH,
+                ConfigurationPage::CHANGE_EMAIL_ROUTING_OPT_CSS) => true,
+            Locator::combine(
+                ConfigurationPage::ADD_REMOVE_DOMAIN_XPATH,
+                ConfigurationPage::ADD_REMOVE_DOMAIN_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::DISABLE_ADDON_IN_CPANEL_XPATH,
+                ConfigurationPage::DISABLE_ADDON_IN_CPANEL_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::USE_IP_AS_DESTINATION_OPT_XPATH,
+                ConfigurationPage::USE_IP_AS_DESTINATION_OPT_CSS) => false,
+            Locator::combine(
+                ConfigurationPage::SET_SPF_RECORD_XPATH,
+                ConfigurationPage::SET_SPF_RECORD_CSS) => false,
         );
     }
 
