@@ -96,30 +96,6 @@ class SpamFilter_Hooks
      */
     public $_panel;
 
-    /**
-     * SpamFilter_Hooks
-     * Constructor class of hook handler, intiates API communication & configuration retrieval.
-     *
-     *
-     * @return void
-     *
-     * @access public
-     */
-    public function SpamFilter_Hooks()
-    {
-        $this->_logger->debug("[Hook] Hook Initiated statically");
-        $this->_api 	= new SpamFilter_ResellerAPI;
-
-        if (!Zend_Registry::isRegistered('general_config'))
-        {
-            $this->_logger->debug("[Hooks] Initializing settings.. ");
-            Zend_Registry::set('general_config', new SpamFilter_Configuration( CFG_PATH . '/settings.conf' )); // <-- General settings
-        }
-
-        $this->_config	= Zend_Registry::get('general_config');
-        $this->_panel	= new SpamFilter_PanelSupport();
-    }
-
     public function __construct($logger = null, $config = null, $panel = null)
     {
         $this->_logger = null === $logger ? Zend_Registry::get('logger') : $logger;
@@ -130,9 +106,15 @@ class SpamFilter_Hooks
             $this->_panel = $panel;
         }
 
-        // Even if we are not using it as a static class, we need to be able to work with it.
-        $this->_logger->debug("[Hook] Hook Initiated via class, will go static ");
-        $this->SpamFilter_Hooks();
+        $this->_api 	= new SpamFilter_ResellerAPI;
+
+        if (!Zend_Registry::isRegistered('general_config')) {
+            $this->_logger->debug("[Hooks] Initializing settings.. ");
+            Zend_Registry::set('general_config', new SpamFilter_Configuration( CFG_PATH . '/settings.conf' )); // <-- General settings
+        }
+
+        $this->_config	= Zend_Registry::get('general_config');
+        $this->_panel	= new SpamFilter_PanelSupport();
     }
 
     /**
