@@ -4,7 +4,7 @@
 WRAPPER '_assets/master.html.tt'
     app_key = 'Spam Experts'
     page_tittle = "Spam Experts"
-    page_scripts = ["/unprotected/libraries/jquery/3.2.0/jquery-3.2]
+    page_scripts = ["/unprotected/libraries/jquery/3.2.0/jquery-3.2.0.min.js"]
 %]
 
 <div id="mydata" class="body-container">
