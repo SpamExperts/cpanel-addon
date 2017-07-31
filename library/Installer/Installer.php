@@ -105,6 +105,11 @@ class Installer_Installer
 
         file_put_contents('/usr/local/cpanel/whostmgr/addonfeatures/prospamfilter', 'prospamfilter:SpamExperts');
 
+        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0/")) {
+            mkdir("/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0/");
+            copy("/usr/local/prospamfilter/public/js/jquery.min.js","/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0/jquery-3.2.0.min.js");
+        }
+
         $this->setUpdateCronjob();
         $this->setupSuidPermissions();
         $this->removeMigrationFiles($this->currentVersion);

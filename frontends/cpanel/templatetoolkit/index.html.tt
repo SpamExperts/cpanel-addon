@@ -1,10 +1,12 @@
 [% SET CPANEL.CPVAR.dprefix = "../"; %]
 
-[% WRAPPER '_assets/master.html.tt'
+[%
+WRAPPER '_assets/master.html.tt'
     app_key = 'Spam Experts'
     page_tittle = "Spam Experts"
-    page_scripts = ["/jquery/1.4/jquery.min.js"]
--%]
+    page_scripts = ["/unprotected/libraries/jquery/3.2.0/jquery-3.2]
+%]
+
 <div id="mydata" class="body-container">
         <center>
 		<h1>Please wait....</h1>
@@ -66,3 +68,7 @@
     }
 </script>
 [% END #WRAPPER END %]
+
+
+
+
