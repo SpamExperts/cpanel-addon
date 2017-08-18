@@ -294,12 +294,12 @@ class ResellerController extends Zend_Controller_Action
 				$newstatus = "unprotected";
 
 				$hook = new SpamFilter_Hooks;
-				$status = $hook->DeleteAccount( $user, true, true );
+				$status = $hook->DeleteAccount($user);
 			break;
 		}
 
 		// Report back the status
-		if( !$status['status'] )
+		if (empty($status['status']))
 		{
 			$this->_flashMessenger->addMessage(
 							array(

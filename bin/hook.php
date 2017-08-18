@@ -294,7 +294,7 @@ switch( $action )
 		// account ($data['user'] will be removed)
 		// We need to get all of the domains associated to this acct.
 		$response .= "\nDeleting all domains of '{$user}' from the Antispam filter...\n";
-                    $status = $hook->DeleteAccount( $user );
+        $status = $hook->DeleteAccount($user);
 		break;
 
 	case "delaccount":
@@ -348,12 +348,12 @@ switch( $action )
 }
 
 if (isset($status['status'])) {
-    if (!$status['status']) {
+    if (empty($status['status'])) {
         $response .= " Failed!\n";
-    }
-    if($paneltype == 'CPANEL'){ 
+    } else {
         $response = "1 " . $response;
     }
+
     echo $response;
 }
 
