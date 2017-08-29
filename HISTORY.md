@@ -1,4 +1,4 @@
-Changelog for the SpamExpets cPanel addon. 
+Changelog for the SpamExperts cPanel addon. 
 
 ### v3.0.96529 2017-08-24
 
