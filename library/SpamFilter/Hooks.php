@@ -534,16 +534,14 @@ class SpamFilter_Hooks
      * Remove a whole account. This requires us to retrieve all domains/aliases and remove them all
      *
      * @param string $username Username that is being removed. Used as filter.
-     * @param bool $force Force removal, even if it removals are disabled.
-     * @param bool $silent Do not echo results (for internal usage)
      *
-     * @return  bool Status code
+     * @return array Status info
      *
      * @todo Rewrite this to rely on removal procedures in the PanelSupport driver (e.g. removeAccountDomains( $username ))
      *
      * @access public
      */
-    public function DeleteAccount( $username, $force = false, $silent = false )
+    public function DeleteAccount($username)
     {
         // Get all of $username's domains using the panel hook.
         $this->_logger->info("[Hook] DeleteAccount: '{$username}'");
@@ -555,9 +553,9 @@ class SpamFilter_Hooks
         {
             foreach($result as $domain)
             {
-                if (!$silent) echo "Deleting domain: {$domain['domain']}..";
-                $this->DelDomain( $domain['domain']/*, $force*/ );
-                if (!$silent) echo "Done\n";
+                $this->_logger->info("[Hook] Deleting domain: {$domain['domain']}..");
+                $this->DelDomain($domain['domain']);
+                $this->_logger->info("[Hook] Done\n");
             }
         }
 
@@ -572,10 +570,9 @@ class SpamFilter_Hooks
             {
                 foreach ($addonDomains as $key => $addon)
                 {
-                    $this->_logger->debug("[WHM] Removing addon '{$addon['alias']}'");
-                    if (!$silent) echo "Deleting addon domain: {$addon['alias']}..";
-                    $this->DelDomain( $addon['alias']/*, $force*/ );
-                    if (!$silent) echo "Done\n";
+                    $this->_logger->info("[Hook] Deleting addon domain: {$addon['alias']}..");
+                    $this->DelDomain($addon['alias']);
+                    $this->_logger->info("[Hook] Done\n");
                 }
             }
 
@@ -585,10 +582,9 @@ class SpamFilter_Hooks
             {
                 foreach ($parkedDomains as $key => $parked)
                 {
-                    Zend_Registry::get('logger')->debug("[WHM] Removing parked domain '{$parked['alias']}'");
-                    if (!$silent) echo "Deleting parked domain: {$parked['alias']}..";
-                    $this->DelDomain( $parked['alias']/*, $force*/ );
-                    if (!$silent) echo "Done\n";
+                    $this->_logger->info("[Hook] Deleting parked domain: {$parked['alias']}..");
+                    $this->DelDomain($parked['alias']);
+                    $this->_logger->info("[Hook] Done\n");
                 }
             }
 
@@ -598,15 +594,14 @@ class SpamFilter_Hooks
             {
                 foreach ($subDomains as $key => $subDomain)
                 {
-                    Zend_Registry::get('logger')->debug("[WHM] Removing subdomain '{$subDomain['alias']}'");
-                    if (!$silent) echo "Deleting subdomain: {$subDomain['alias']}..";
-                    $this->DelDomain( $subDomain['alias']/*, $force*/ );
-                    if (!$silent) echo "Done\n";
+                    $this->_logger->info("[Hook] Deleting subdomain: {$subDomain['alias']}..");
+                    $this->DelDomain($subDomain['alias']);
+                    $this->_logger->info("[Hook] Done\n");
                 }
             }
         }
 
-        return true;
+        return array('status' => true);
     }
 
     /**
