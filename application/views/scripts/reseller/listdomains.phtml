@@ -316,7 +316,7 @@ if( !$this->isConfigured )
                 );
             });
 
-            $("#hideOutput").live('click' ,function ()
+            $("#hideOutput").on('click' ,function ()
             {
                 $('#ajaxoutput').html('<button type="button" class="close" aria-label="Close" id="hideOutput"><span aria-hidden="true">&times;</span></button>');
                 $('#ajaxoutput').css({'display':'none'});
