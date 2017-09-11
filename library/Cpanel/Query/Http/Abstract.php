@@ -720,11 +720,7 @@ abstract class Cpanel_Query_Http_Abstract extends Cpanel_Core_Object
         $rObj->query->authstr = $authstr;
         $rObj->query->directURL = $isURL;
 
-        try {
-            return $this->exec($rObj);
-        } catch (Exception $ex) {
-            throw new Exception($ex->getMessage());
-        }
+        return $this->exec($rObj);
     }
     /**
      * Proxy method for PHP's curl function set
