@@ -68,6 +68,7 @@ class Uninstaller
         $this->filesystem->removeDirectory($this->paths->config);
         $this->filesystem->removeDirectory($this->paths->destination);
         $this->removeUpdateCronjob();
+        $this->revokeApiToken();
         $this->output->write("\n\n***** We're sad to see you go, but ProSpamFilter has now been uninstalled from your system! *****\n\n");
     }
 
@@ -343,6 +344,19 @@ class Uninstaller
             $this->output->error("** Unable to reload cron **");
             $this->output->error("--> Please rotate the cron daemon to make sure the cronjob is not longer being executed.");
             sleep(10);
+        }
+    }
+
+    private function revokeApiToken()
+    {
+        $this->output->info("Rewoke api token...");
+
+        $response = trim(shell_exec("whmapi1 api_token_revoke token_name=prospamfilter"));
+
+        if (strpos($response, "result: 1") > -1) {
+            $this->output->info("Api token was succesfully rewoked.");
+        } else {
+            $this->output->error("Api token couldn't be rewoked. Please remove it manually from 'Manage API Tokens' page");
         }
     }
 }

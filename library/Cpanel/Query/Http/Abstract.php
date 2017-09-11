@@ -643,6 +643,7 @@ abstract class Cpanel_Query_Http_Abstract extends Cpanel_Core_Object
         if (empty($client) || !method_exists($this, $func)) {
             THROW new Exception("Query client $client is not defined");
         }
+
         return $rObj->parse($this->$func($rObj));
     }
     /**
@@ -718,7 +719,12 @@ abstract class Cpanel_Query_Http_Abstract extends Cpanel_Core_Object
         $rObj->query->argsArray = $vars;
         $rObj->query->authstr = $authstr;
         $rObj->query->directURL = $isURL;
-        return $this->exec($rObj);
+
+        try {
+            return $this->exec($rObj);
+        } catch (Exception $ex) {
+            throw new Exception($ex->getMessage());
+        }
     }
     /**
      * Proxy method for PHP's curl function set
