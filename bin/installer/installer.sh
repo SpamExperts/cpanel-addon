@@ -181,16 +181,7 @@ fullfile="$package$filepart"
 srcpath="/usr/src/prospamfilter"
 
 if [ "$paneltype" == "cpanel" ]; then
-    ## Make passwd hash
-    if [ -f "/root/.accesshash" ]; then
-        echo "Access hash for WHM API already exists, skipping step."
-    else
-        echo -n "Generating access hash for the WHM API.."
-        export REMOTE_USER="root"
-        /usr/local/cpanel/bin/realmkaccesshash
-        chmod 660 /root/.accesshash
-        echo "Done"
-    fi
+    ## Check for Api token
 
     if [ -f "/root/.accesstoken" ]; then
                  echo "Access token for WHM API already exists, skipping step."
