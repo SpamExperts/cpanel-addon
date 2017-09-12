@@ -69,7 +69,7 @@ class SpamFilter_Configuration
 
         Zend_Registry::get('logger')->debug("[Config] Configuration constructed with filename '{$fileName}'");
         //Windows way to gather config data
-            if(SpamFilter_Core::isWindows()){
+        if(SpamFilter_Core::isWindows()){
                 $this->_fileName = $fileName;
                 if(isset($_SESSION['auth']['isAuthenticatedAsRoot']) && $_SESSION['auth']['isAuthenticatedAsRoot'] == true){
                 if (is_readable($fileName)) {
@@ -246,7 +246,7 @@ class SpamFilter_Configuration
         }
 
         $command = "%s %s";
-        $command = sprintf($command, $binary, "--accesshash");
+        $command = sprintf($command, $binary, "--accesstoken");
         $hash    = shell_exec($command);
 
         // Check if the binary returned data
