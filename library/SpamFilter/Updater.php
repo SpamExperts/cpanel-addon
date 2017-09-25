@@ -120,6 +120,20 @@ class SpamFilter_Updater
             }
         }
         $updateLogFile = '/tmp/' . uniqid($updateLogFilePrefix) . '.log';
+
+        //download new installer
+        //@see https://github.com/SpamExperts/cpanel-addon/issues/23
+
+        $remoteInstallFileUrl = "https://download.seinternal.com/integration/installers/cpanel/installer.sh";
+        $localInstallFileUrl = "/usr/local/prospamfilter/bin/installer/installer.sh";
+
+        $copy = copy( $remoteInstallFileUrl, $localInstallFileUrl );
+        if (!$copy) {
+            $logger->info("[ERR] The installer.sh couldn't be updated");
+
+            return false;
+        }
+
         $cmd = 'nohup nice -n 10 /usr/local/prospamfilter/bin/installer/installer.sh -f'
             . ( $tier == "frozen" ? ' frozen' :
                 ( ($tier <> "stable") ? ' trunk' : '') ) . ' > ' . $updateLogFile . ' 2>&1 & echo $!';
