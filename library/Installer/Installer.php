@@ -113,11 +113,36 @@ class Installer_Installer
             copy("/usr/local/prospamfilter/public/js/jquery.min.js","/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0/jquery-3.2.0.min.js");
         }
 
+        $this->setUpApiTokens();
         $this->setUpdateCronjob();
         $this->setupSuidPermissions();
         $this->removeMigrationFiles($this->currentVersion);
         $this->removeSrcFolder();
         $this->removeInstallFileAndDisplaySuccessMessage();
+    }
+
+    private function setUpApiTokens() {
+        $accessTokenFile = "/root/.accesstoken";
+        if (!file_exists("/root/.accesstoken")) {
+            $output = shell_exec("whmapi1 api_token_create token_name=prospamfilter acl-1=list-acct | egrep 'result: 1|token:'");
+
+            $result = explode(" ",$output);
+            if (count($result)>7) {
+                $this->logger->debug("Access token couldn't be created. Reason: ".$result);
+                $this->output->error("Access token couldn't be created. Reason: ".$result);
+            } else {
+                $token = $result[3];
+
+                $accessTokenFile = fopen($accessTokenFile, "w");
+                fwrite($accessTokenFile, $token);
+                fclose($accessTokenFile);
+
+                $this->logger->debug("Access token was successfully created.");
+                $this->output->info("Access token was successfully created.");
+            }
+        } else {
+            $this->output->info("Api token already exists.");
+        }
     }
 
     private function findCurrentVersionAndInitPanelSupport()
