@@ -123,7 +123,7 @@ class Installer_Installer
 
     private function setUpApiTokens() {
         $accessTokenFile = "/root/.accesstoken";
-        if (!file_exists("/root/.accesstoken")) {
+        if (!file_exists($accessTokenFile)) {
             $output = shell_exec("whmapi1 api_token_create token_name=prospamfilter acl-1=list-acct | egrep 'result: 1|token:'");
 
             $result = explode(" ",$output);
@@ -141,6 +141,7 @@ class Installer_Installer
                 $this->output->info("Access token was successfully created.");
             }
         } else {
+            $this->logger->debug("Api token already exists.");
             $this->output->info("Api token already exists.");
         }
     }
