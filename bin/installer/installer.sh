@@ -187,7 +187,7 @@ if [ "$paneltype" == "cpanel" ]; then
                  echo "Access token for WHM API already exists, skipping step."
              else
                  echo -n "Generating access token for the WHM API.."
-                 output=`whmapi1 api_token_create token_name=prospamfilter acl-1=list-acct | egrep 'result: 1|token:'`
+                 output=`whmapi1 api_token_create token_name=prospamfilter acl-1=list-accts | egrep 'result: 1|token:'`
 
      	    arr=(${output//: /})
      		key=5
