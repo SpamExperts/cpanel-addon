@@ -124,7 +124,7 @@ class Installer_Installer
     private function setUpApiTokens() {
         $accessTokenFile = "/root/.accesstoken";
         if (!file_exists($accessTokenFile)) {
-            $output = shell_exec("whmapi1 api_token_create token_name=prospamfilter acl-1=list-accts | egrep 'result: 1|token:'");
+            $output = shell_exec("whmapi1 api_token_create token_name=prospamfilter acl-1=list-accts acl-2=basic-system-info | egrep 'result: 1|token:'");
 
             $result = explode(" ",$output);
             if (count($result)>7) {
