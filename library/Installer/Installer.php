@@ -124,10 +124,10 @@ class Installer_Installer
     private function setUpApiTokens() {
         $accessTokenFile = "/root/.accesstoken";
         if (!file_exists($accessTokenFile) || !(trim(file_get_contents($accessTokenFile)))) {
-            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_create token_name=prospamfilter acl-1=list-accts acl-2=basic-system-info --output=json'");
+            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_create token_name=prospamfilter acl-1=list-accts acl-2=basic-system-info --output=json");
             $output = json_decode($jsonOutput, true);
 
-            if (!($output['metadata'])) {
+            if (!empty($output['metadata'])) {
                 if ($output['metadata']['reason'] != "OK") {
                     $this->logger->debug("Access token couldn't be created. Reason: " . $output['metadata']['reason']);
                     $this->output->error("Access token couldn't be created. Reason: " . $output['metadata']['reason']);
