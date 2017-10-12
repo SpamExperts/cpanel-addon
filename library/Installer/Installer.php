@@ -145,6 +145,9 @@ class Installer_Installer
                 $this->logger->debug("Error when using Whm Api call. Response: " . $jsonOutput);
                 $this->output->info("Error when using Whm Api call. Response: " . $jsonOutput);
             }
+        } else {
+            $this->logger->debug("Access token for WHM API already exists, skipping step.");
+            $this->output->info("Access token for WHM API already exists, skipping step.");
         }
     }
 
