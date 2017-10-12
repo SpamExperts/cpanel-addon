@@ -351,14 +351,18 @@ class Uninstaller
     {
         $this->output->info("Rewoke api token...");
 
-        $response = trim(shell_exec("whmapi1 api_token_revoke token_name=prospamfilter"));
+        $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=prospamfilter --output=json");
+        $output = json_decode($jsonOutput, true);
 
-        if (strpos($response, "result: 1") > -1) {
-            @unlink("/root/.accesstoken");
+        if (!($output['metadata'])) {
+            if ($output['metadata']['reason'] == "OK") {
+                @unlink("/root/.accesstoken");
 
-            $this->output->info("Api token was succesfully rewoked.");
-        } else {
-            $this->output->error("Api token couldn't be rewoked. Please remove it manually from 'Manage API Tokens' page");
+                $this->output->info("Api token was successfully revoked.");
+                return;
+            }
         }
+
+        $this->output->error("Api token couldn't be revoked. Please remove it manually from 'Manage API Tokens' page");
     }
 }

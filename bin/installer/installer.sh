@@ -180,32 +180,6 @@ package="v$version"
 fullfile="$package$filepart"
 srcpath="/usr/src/prospamfilter"
 
-if [ "$paneltype" == "cpanel" ]; then
-    ## Check for Api token
-
-    if [ -f "/root/.accesstoken" ]; then
-                 echo "Access token for WHM API already exists, skipping step."
-             else
-                 echo -n "Generating access token for the WHM API.."
-                 output=`whmapi1 api_token_create token_name=prospamfilter acl-1=list-accts acl-2=basic-system-info | egrep 'result: 1|token:'`
-
-     	    arr=(${output//: /})
-     		key=5
-            if [[ -z "${arr[${key}]}" ]]; then
-     		    token=${arr[0]}
-     		    token="${token/token/}"
-                echo $token > /root/.accesstoken
-                chmod 660 /root/.accesstoken
-                echo "Done"
-     	    else
-                rm -rf /root/.accesstoken
-                echo "Unable to create token. $output"
-                exit 1
-            fi;
-    fi
-
-fi
-
 # (Re)create /usr/local/bin/prospamfilter_php symlink to point to the validated php_binary (if needed)
 # /usr/local/bin/prospamfilter_php symlink should exist so that auto-update works
 if [[ ! "$php_binary" == "/usr/local/bin/prospamfilter_php" ]]; then
