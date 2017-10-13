@@ -192,7 +192,7 @@ class SpamFilter_PanelSupport_Cpanel
         $this->_config = Zend_Registry::get('general_config');
         if (is_readable('/root/.accesstoken')) {
             $this->_logger->debug("Using file to obtain access token");
-            $hash = file_get_contents('/root/.accesstoken');
+            $hash = trim(file_get_contents('/root/.accesstoken'));
         } else {
             $this->_logger->debug("Using binary to obtain access hash");
             $hash = $configurator->getPassword();
