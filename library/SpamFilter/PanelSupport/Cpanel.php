@@ -199,8 +199,9 @@ class SpamFilter_PanelSupport_Cpanel
         }
 
         if ((!$hash) || (!isset($hash)) || (empty($hash)) || (strlen($hash) < 5)) {
-            $this->_logger->crit("Unable to authenticate to the API with a missing password");
-            throw new Exception("Unable to authenticate to API");
+            $this->_logger->crit("Unable to authenticate to the API with a missing password: please check if your token exists under 'Manage API Tokens' and in /root/.accesstoken file");
+
+            return false;
         }
 
         // Include the autoloader
