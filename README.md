@@ -3,4 +3,4 @@
 # cpanel-addon
 WHM/cPanel add-on for providing integration with SpamExperts services.
 
-Installation and further details can be found here: https://my.spamexperts.com/kb/133/cPanel-addon.html
+Installation and further details can be found here: https://kb.spamexperts.com/29941-integration/227827-cpanel-addon
