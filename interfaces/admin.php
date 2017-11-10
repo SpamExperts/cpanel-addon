@@ -62,5 +62,7 @@ Zend_Layout::startMvc(array(
 Zend_Controller_Front::run(ADDON_ROOT_FOLDER . '/application/controllers');
 
 require_once 'Zend/Controller/Action/HelperBroker.php';
+Zend_Session::setOptions(array ("strict" => false));
 Zend_Controller_Action_HelperBroker::addHelper(
     new Zend_Controller_Action_Helper_FlashMessenger());
+Zend_Session::setOptions(array ("strict" => true));
