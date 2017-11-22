@@ -2,6 +2,8 @@
 
 class Installer_Installer
 {
+    const API_TOKEN_ID = 'prospamfilter';
+
     /**
      * @var Filesystem_AbstractFilesystem
      */
@@ -124,7 +126,7 @@ class Installer_Installer
     private function setUpApiTokens() {
         $accessTokenFile = "/root/.accesstoken";
         if (!file_exists($accessTokenFile) || !(trim(file_get_contents($accessTokenFile)))) {
-            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_create token_name=prospamfilter acl-1=list-accts acl-2=basic-system-info --output=json");
+            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_create token_name=" . self::API_TOKEN_ID . " acl-1=all --output=json");
             $output = json_decode($jsonOutput, true);
 
             if (!empty($output['metadata'])) {
@@ -146,8 +148,24 @@ class Installer_Installer
                 $this->output->info("Error when using Whm Api call. Response: " . $jsonOutput);
             }
         } else {
-            $this->logger->debug("Access token for WHM API already exists, skipping step.");
-            $this->output->info("Access token for WHM API already exists, skipping step.");
+            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_list --output=json");
+            $tokensInfo = json_decode($jsonOutput);
+            if (empty($tokensInfo['data']['tokens'][self::API_TOKEN_ID]['acls']['all'])) {
+                $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_update token_name=" . self::API_TOKEN_ID . " acl-1=all --output=json");
+                $updateInfo = json_decode($jsonOutput);
+                if (!empty($updateInfo['data']['acls'])
+                    && is_array($updateInfo['data']['acls'])
+                    && in_array('all', $updateInfo['data']['acls'])) {
+                    $this->logger->debug("Access token for WHM API has been successfully updated (ACL allows 'all' now).");
+                    $this->output->info("Access token for WHM API has been successfully updated (ACL allows 'all' now).");
+                } else {
+                    $this->logger->error("Failed to update ACL for the WHM API to 'all': $jsonOutput");
+                    $this->output->error("Failed to update ACL for the WHM API to 'all': $jsonOutput");
+                }
+            }
+
+            $this->logger->debug("Access token for WHM API already exists and has correct permissions, skipping step.");
+            $this->output->info("Access token for WHM API already exists and has correct permissions, skipping step.");
         }
     }
 
