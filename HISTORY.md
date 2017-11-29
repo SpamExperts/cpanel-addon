@@ -3,6 +3,7 @@ Changelog for the SpamExperts cPanel addon.
 ### v3.0.96559 2017-11-28
 
  - [#35](https://github.com/SpamExperts/cpanel-addon/issues/35) Cpanel not displaying reseller domains on v11.68
+ - [#37](https://github.com/SpamExperts/cpanel-addon/issues/37) Disable Zend_Session's strict mode during FlashMessenger initialization
 
 ### v3.0.96549 2017-10-10
 
