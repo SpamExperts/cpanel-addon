@@ -149,7 +149,7 @@ class Installer_Installer
             }
         } else {
             $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_list --output=json");
-            $tokensInfo = json_decode($jsonOutput);
+            $tokensInfo = json_decode($jsonOutput, true);
             if (empty($tokensInfo['data']['tokens'][self::API_TOKEN_ID]['acls']['all'])) {
                 $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_update token_name=" . self::API_TOKEN_ID . " acl-1=all --output=json");
                 $updateInfo = json_decode($jsonOutput);
