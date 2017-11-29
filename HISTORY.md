@@ -1,5 +1,9 @@
 Changelog for the SpamExperts cPanel addon. 
 
+### v3.0.96562 2017-11-29
+
+ - [#39](https://github.com/SpamExperts/cpanel-addon/issues/39) Incorrect permissions on configuration binary
+
 ### v3.0.96559 2017-11-28
 
  - [#35](https://github.com/SpamExperts/cpanel-addon/issues/35) Cpanel not displaying reseller domains on v11.68
