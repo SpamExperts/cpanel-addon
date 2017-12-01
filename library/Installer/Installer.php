@@ -159,8 +159,8 @@ class Installer_Installer
                     $this->logger->debug("Access token for WHM API has been successfully updated (ACL allows 'all' now).");
                     $this->output->info("Access token for WHM API has been successfully updated (ACL allows 'all' now).");
                 } else {
-                    $this->logger->error("Failed to update ACL for the WHM API to 'all': $jsonOutput");
-                    $this->output->error("Failed to update ACL for the WHM API to 'all': $jsonOutput");
+                    $this->logger->err("Failed to update ACL for the WHM API to 'all': $jsonOutput. Please update the token permissions manually.");
+                    $this->output->error("Failed to update ACL for the WHM API to 'all': $jsonOutput. Please update the token permissions manually.");
                 }
             }
 
