@@ -126,46 +126,42 @@ class Installer_Installer
     private function setUpApiTokens() {
         $accessTokenFile = "/root/.accesstoken";
         if (!file_exists($accessTokenFile) || !(trim(file_get_contents($accessTokenFile)))) {
-            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_create token_name=" . self::API_TOKEN_ID . " acl-1=all --output=json");
-            $output = json_decode($jsonOutput, true);
-
-            if (!empty($output['metadata'])) {
-                if ($output['metadata']['reason'] != "OK") {
-                    $this->logger->debug("Access token couldn't be created. Reason: " . $output['metadata']['reason']);
-                    $this->output->error("Access token couldn't be created. Reason: " . $output['metadata']['reason']);
-                } else {
-                    $token = $output['data']['token'];
-
-                    $accessTokenFile = fopen($accessTokenFile, "w");
-                    fwrite($accessTokenFile, $token);
-                    fclose($accessTokenFile);
-
-                    $this->logger->debug("Access token was successfully created.");
-                    $this->output->info("Access token was successfully created.");
-                }
-            } else {
-                $this->logger->debug("Error when using Whm Api call. Response: " . $jsonOutput);
-                $this->output->info("Error when using Whm Api call. Response: " . $jsonOutput);
-            }
+            $this->createApiAuthToken($accessTokenFile);
         } else {
             $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_list --output=json");
             $tokensInfo = json_decode($jsonOutput, true);
             if (empty($tokensInfo['data']['tokens'][self::API_TOKEN_ID]['acls']['all'])) {
-                $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_update token_name=" . self::API_TOKEN_ID . " acl-1=all --output=json");
-                $updateInfo = json_decode($jsonOutput, true);
-                if (!empty($updateInfo['data']['acls'])
-                    && is_array($updateInfo['data']['acls'])
-                    && in_array('all', $updateInfo['data']['acls'])) {
-                    $this->logger->debug("Access token for WHM API has been successfully updated (ACL allows 'all' now).");
-                    $this->output->info("Access token for WHM API has been successfully updated (ACL allows 'all' now).");
-                } else {
-                    $this->logger->err("Failed to update ACL for the WHM API to 'all': $jsonOutput. Please update the token permissions manually.");
-                    $this->output->error("Failed to update ACL for the WHM API to 'all': $jsonOutput. Please update the token permissions manually.");
-                }
+                shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=" . self::API_TOKEN_ID);
+                $this->createApiAuthToken($accessTokenFile);
             }
 
             $this->logger->debug("Access token for WHM API already exists and has correct permissions, skipping step.");
             $this->output->info("Access token for WHM API already exists and has correct permissions, skipping step.");
+        }
+    }
+
+    private function createApiAuthToken($accessTokenFile)
+    {
+        $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_create token_name=" . self::API_TOKEN_ID . " acl-1=all --output=json");
+        $output = json_decode($jsonOutput, true);
+
+        if (!empty($output['metadata'])) {
+            if ($output['metadata']['reason'] != "OK") {
+                $this->logger->debug("Access token couldn't be created. Reason: " . $output['metadata']['reason']);
+                $this->output->error("Access token couldn't be created. Reason: " . $output['metadata']['reason']);
+            } else {
+                $token = $output['data']['token'];
+
+                $accessTokenFile = fopen($accessTokenFile, "w");
+                fwrite($accessTokenFile, $token);
+                fclose($accessTokenFile);
+
+                $this->logger->debug("Access token was successfully created.");
+                $this->output->info("Access token was successfully created.");
+            }
+        } else {
+            $this->logger->debug("Error when using Whm Api call. Response: " . $jsonOutput);
+            $this->output->info("Error when using Whm Api call. Response: " . $jsonOutput);
         }
     }
 
