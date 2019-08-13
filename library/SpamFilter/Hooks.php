@@ -549,7 +549,7 @@ class SpamFilter_Hooks
             'username' => $username
         ));
         //$domains = (!empty($result[0]['domain'])) ? $result['acct'] : null;
-        if (count($result) > 0 && is_array($result))
+        if (is_array($result) && count($result) > 0)
         {
             foreach($result as $domain)
             {
@@ -565,7 +565,8 @@ class SpamFilter_Hooks
             // Aliases are already being processed by the SE-api.
 
             $addonDomains = $this->_panel->getAddonDomains( $username );
-            $this->_logger->debug("[WHM] Domain Removal, " . count($addonDomains) . " addon domains: " . serialize($addonDomains) );
+            $countAddonDomains = is_array($addonDomains) ? count($addonDomains) : 0;
+            $this->_logger->debug("[WHM] Domain Removal, " . $countAddonDomains . " addon domains: " . serialize($addonDomains) );
             if ($addonDomains !== false)
             {
                 foreach ($addonDomains as $key => $addon)
@@ -577,7 +578,8 @@ class SpamFilter_Hooks
             }
 
             $parkedDomains = $this->_panel->getParkedDomains( $username );
-            $this->_logger->debug("[WHM] Domain Removal, " . count($parkedDomains) . " parked domains: " . serialize($parkedDomains) );
+            $countParkedDomains = is_array($parkedDomains) ? count($parkedDomains) : 0;
+            $this->_logger->debug("[WHM] Domain Removal, " . $countParkedDomains . " parked domains: " . serialize($parkedDomains) );
             if ( $parkedDomains !== false )
             {
                 foreach ($parkedDomains as $key => $parked)
@@ -589,7 +591,8 @@ class SpamFilter_Hooks
             }
 
             $subDomains = $this->_panel->getSubDomains( $username );
-            $this->_logger->debug("[WHM] Domain Removal, " . count($subDomains) . " subdomains: " . serialize($subDomains) );
+            $countSubDomains = is_array($subDomains) ? count($subDomains) : 0;
+            $this->_logger->debug("[WHM] Domain Removal, " . $countSubDomains . " subdomains: " . serialize($subDomains) );
             if ( $subDomains !== false )
             {
                 foreach ($subDomains as $key => $subDomain)
@@ -1005,7 +1008,7 @@ class SpamFilter_Hooks
                 }
             }
 
-            if ($recordsRemoved == count($existimgMxRecords)) {
+            if ($recordsRemoved === count($existimgMxRecords)) {
                 $this->_panel->addMxRecord($domain, 10, $this->getFallbackMxRecordHostname());
             }
         }

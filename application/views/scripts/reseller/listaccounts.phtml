@@ -16,16 +16,16 @@ if( !$this->isConfigured )
 			<th><?php echo $this->t->_('Username'); ?></th>
 			<th><?php echo $this->t->_('Primary domain'); ?></th>
 			<th></th>
-		</tr>	
+		</tr>
 	</thead>
 	<tbody>
-<?php 
-	if( count($this->paginator) == 0 )
+<?php
+	if( $this->paginator->count() === 0 )
 	{
 		echo '<tr><td colspan="3">' . $this->t->_('There are no users assigned to your account') . '</td></tr>';
 	}
 
-	foreach( $this->paginator as $u ) 
+	foreach( $this->paginator as $u )
 	{
 	?>
 		<tr>
@@ -33,7 +33,7 @@ if( !$this->isConfigured )
 			<td><?php echo $u['domain']; ?></td>
 			<td><a href="?q=reseller/toggleuser/user/<?php echo $u['user']; ?>/state/enable"><?php echo $this->t->_('Enable Protection'); ?></a> | <a href="?q=reseller/toggleuser/user/<?php echo $u['user']; ?>/state/disable"><?php echo $this->t->_('Disable Protection'); ?></a></td>
 		</tr>
-	<?php 
+	<?php
 	}
 	?>
 	</tbody>

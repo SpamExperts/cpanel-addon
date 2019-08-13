@@ -112,7 +112,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Placeholder_Container_Stan
 
     /**
      * Set table summary
-     * 
+     *
      * @param string $summary
      * @return App_View_Helper_Table
      */
@@ -172,7 +172,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Placeholder_Container_Stan
      */
     public function setRows($rows)
     {
-        if (count($rows)) {
+        if (is_countable($rows) && count($rows)) {
             foreach ($rows as $r) {
                 $this->addRow($r);
             }
@@ -279,7 +279,7 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Placeholder_Container_Stan
                     elseif (isset($r[$i])) {
                         $xhtml .= stripslashes($r[$i]);
                     }
-                    
+
 
                     $xhtml .= '</td>';
                     $i++;

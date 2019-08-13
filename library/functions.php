@@ -19,7 +19,7 @@
 * inclusion of the above copyright notice. No title to and ownership    *
 * of the software is  hereby  transferred.                              *
 *                                                                       *
-* You may not reverse engineer, decompile or disassemble this software  * 
+* You may not reverse engineer, decompile or disassemble this software  *
 * product or software product license.                                  *
 *                                                                       *
 * SpamExperts may terminate this license if you don't comply with any   *
@@ -39,7 +39,7 @@
 			echo "{$wl}\n";
 		}
 	}
-	
+
 	if( !function_exists( "bcdiv" ) ) //<-- This function *might* exist in PHP already. Or atleas customers' PHP
 	{
 		function bcdiv( $first, $second, $scale = 0 )
@@ -50,7 +50,7 @@
 	}
 
 	if( !function_exists( "_sort_by_dots_qty_rev" ) )
-	{		
+	{
 		function _sort_by_dots_qty_rev($d1, $d2)
 		{
 			$dots1 = substr_count($d1, '.');
@@ -67,7 +67,7 @@
 	}
 
 	if( !function_exists( "simpleXMLToArray" ) )
-	{			
+	{
 		function simpleXMLToArray($xml,$flattenValues=true,$flattenAttributes = true,$flattenChildren=true,$valueKey='@value',$attributesKey='@attributes',	$childrenKey='@children')
 		{
 			$return = array();
@@ -111,13 +111,13 @@
 				if(!$flattenAttributes){$return[$attributesKey] = $attributes;}
 				else{$return = array_merge($return, $attributes);}
 			}
-		   
+
 			return $return;
 		}
 	}
 
 	if( !function_exists( "argv2array" ) )
-	{			
+	{
 		function argv2array ($argv)
 		{
 			$opts = array();
@@ -136,7 +136,7 @@
 
 	//
 	if( !function_exists( "xml2array" ) )
-	{		
+	{
 		function xml2array($contents, $get_attributes=1, $priority = 'tag') {
 			if(!$contents) return array();
 
@@ -174,7 +174,7 @@
 
 				$result = array();
 				$attributes_data = array();
-				
+
 				if(isset($value)) {
 					if($priority == 'tag') $result = $value;
 					else $result['value'] = $value; //Put the value in a assoc array if we are in the 'Attribute' mode
@@ -206,7 +206,7 @@
 						} else {//This section will make the value an array if multiple tags with the same name appear together
 							$current[$tag] = array($current[$tag],$result);//This will combine the existing item and the new item together to make an array
 							$repeated_tag_index[$tag.'_'.$level] = 2;
-							
+
 							if(isset($current[$tag.'_attr'])) { //The attribute of the last(0th) tag must be moved as well
 								$current[$tag]['0_attr'] = $current[$tag.'_attr'];
 								unset($current[$tag.'_attr']);
@@ -229,7 +229,7 @@
 
 							// ...push the new element into that array.
 							$current[$tag][$repeated_tag_index[$tag.'_'.$level]] = $result;
-							
+
 							if($priority == 'tag' and $get_attributes and $attributes_data) {
 								$current[$tag][$repeated_tag_index[$tag.'_'.$level] . '_attr'] = $attributes_data;
 							}
@@ -240,11 +240,11 @@
 							$repeated_tag_index[$tag.'_'.$level] = 1;
 							if($priority == 'tag' and $get_attributes) {
 								if(isset($current[$tag.'_attr'])) { //The attribute of the last(0th) tag must be moved as well
-									
+
 									$current[$tag]['0_attr'] = $current[$tag.'_attr'];
 									unset($current[$tag.'_attr']);
 								}
-								
+
 								if($attributes_data) {
 									$current[$tag][$repeated_tag_index[$tag.'_'.$level] . '_attr'] = $attributes_data;
 								}
@@ -257,59 +257,59 @@
 					$current = &$parent[$level-1];
 				}
 			}
-			
+
 			return($xml_array);
-		} 
+		}
 	}
 
 if( !function_exists( "smartCopy" ) )
-{	
+{
     function smartCopy($source, $dest, $options=array('folderPermission'=>0755,'filePermission'=>0644))
     {
         $result=false;
-                 
-        if (is_file($source)) 
+
+        if (is_file($source))
 		{
             if ($dest[strlen($dest)-1]== DS )
 			{
-                if (!file_exists($dest)) 
+                if (!file_exists($dest))
 				{
 					// PHP5 mkdir function supports recursive, so just use that
 					mkdir($dest,$options['folderPermission'],true);
                 }
                 $__dest=$dest.DS.basename($source);
             }
-			else 
+			else
 			{
                 $__dest=$dest;
             }
             $result=copy($source, $__dest);
             chmod($__dest,$options['filePermission']);
-           
-        } 
-		elseif(is_dir($source)) 
+
+        }
+		elseif(is_dir($source))
 		{
-            if ($dest[strlen($dest)-1]== DS ) 
+            if ($dest[strlen($dest)-1]== DS )
 			{
-                if ($source[strlen($source)-1]== DS ) 
+                if ($source[strlen($source)-1]== DS )
 				{
                     //Copy only contents
                 }
-				else 
+				else
 				{
                     //Change parent itself and its contents
                     $dest=$dest.basename($source);
                     @mkdir($dest,$options['folderPermission']);
                 }
-            } 
-			else 
+            }
+			else
 			{
-                if ($source[strlen($source)-1]== DS ) 
+                if ($source[strlen($source)-1]== DS )
 				{
                     //Copy parent directory with new name and all its content
                     @mkdir($dest,$options['folderPermission']);
                 }
-				else 
+				else
 				{
                     //Copy parent directory with new name and all its content
                     @mkdir($dest,$options['folderPermission']);
@@ -325,14 +325,14 @@ if( !function_exists( "smartCopy" ) )
                 }
             }
             closedir($dirHandle);
-           
+
         }
 		else
 		{
             $result=false;
         }
         return $result;
-    } 	
+    }
 }
 
 if (! function_exists('isWindows')) {
@@ -341,7 +341,7 @@ if (! function_exists('isWindows')) {
     }
 }
 
-if( !function_exists( "rrmdir" ) )	
+if( !function_exists( "rrmdir" ) )
 {
 	 function rrmdir($dir)
 	 {
@@ -353,16 +353,16 @@ if( !function_exists( "rrmdir" ) )
 	 }
 }
 
-if( !function_exists( "is_cli" ) )	
+if( !function_exists( "is_cli" ) )
 {
-	function is_cli() 
-	{ 
+	function is_cli()
+	{
 		if ( !isset($_SERVER['HTTP_USER_AGENT']) )
-		{ 
-			return true; 
-		} else { 
-			return false; 
-		} 
+		{
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
 
@@ -388,7 +388,7 @@ if( !function_exists( "clean_domain" ) )
 	{
 		// Lowercase it & trim it.
 		$domain = strtolower( trim( $domain ) );
-		
+
 		// Explode it by the separator
 		$x = explode('.', $domain);
 		if(is_array($x))
@@ -415,13 +415,13 @@ if( !function_exists( "array_sort" ) )
 		$new_array = array();
 		$sortable_array = array();
 
-		if (count($array) > 0 && is_array($array)) 
+		if (count($array) > 0 && is_array($array))
 		{
-			foreach ($array as $k => $v) 
+			foreach ($array as $k => $v)
 			{
-				if (is_array($v)) 
+				if (is_array($v))
 				{
-					foreach ($v as $k2 => $v2) 
+					foreach ($v as $k2 => $v2)
 					{
 						if ($k2 == $on) {
 							$sortable_array[$k] = $v2;
@@ -432,7 +432,7 @@ if( !function_exists( "array_sort" ) )
 				}
 			}
 
-			switch ($order) 
+			switch ($order)
 			{
 				case SORT_ASC:
 					asort($sortable_array);
@@ -442,7 +442,7 @@ if( !function_exists( "array_sort" ) )
 				break;
 			}
 
-			foreach ($sortable_array as $k => $v) 
+			foreach ($sortable_array as $k => $v)
 			{
 				$new_array[$k] = $array[$k];
 			}
@@ -454,32 +454,38 @@ if( !function_exists( "array_sort" ) )
 
 // Workaround for [ZF-9088] and missing parse_ini_string for PHP < 5.3.0
 if( !function_exists('parse_ini_string') )
-{   
-    function parse_ini_string( $string ) 
+{
+    function parse_ini_string( $string )
 	{
         $array = Array();
 
         $lines = explode("\n", $string );
-       
+
         foreach( $lines as $line ) {
             $statement = preg_match(
 "/^(?!;)(?P<key>[\w+\.\-]+?)\s*=\s*(?P<value>.+?)\s*$/", $line, $match );
 
-            if( $statement ) 
+            if( $statement )
 			{
                 $key    = $match[ 'key' ];
                 $value    = $match[ 'value' ];
-               
+
                 # Remove quote
-                if( preg_match( "/^\".*\"$/", $value ) || preg_match( "/^'.*'$/", $value ) ) 
+                if( preg_match( "/^\".*\"$/", $value ) || preg_match( "/^'.*'$/", $value ) )
 				{
                     $value = mb_substr( $value, 1, mb_strlen( $value ) - 2 );
                 }
-               
+
                 $array[ $key ] = $value;
             }
         }
         return $array;
     }
 }
-?>
+
+// is_countable polyfill for PHP < 7.3.0
+if (!function_exists('is_countable')) {
+    function is_countable($var) {
+        return (is_array($var) || $var instanceof Countable);
+    }
+}

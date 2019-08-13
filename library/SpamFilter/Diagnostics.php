@@ -269,12 +269,12 @@ class SpamFilter_Diagnostics
     {
         $return = $this->set_initial_array();
 
-        switch(strtolower($this->_paneltype)){                                       
+        switch(strtolower($this->_paneltype)){
             case "cpanel":
             $panel = new SpamFilter_PanelSupport_Cpanel;
             $registeredHooks = $panel->listHooks();
             $file = BASE_PATH . '/bin/hook.php';
-            $files = array('hook.php' => BASE_PATH . '/bin/hook.php');           
+            $files = array('hook.php' => BASE_PATH . '/bin/hook.php');
             $hooks =  SpamFilter_PanelSupport_Cpanel::getHooksList();
 
             foreach ($hooks as $hook) {
@@ -291,7 +291,7 @@ class SpamFilter_Diagnostics
                 break;
 
         }
-            
+
             foreach ($files as $hook => $file) {
                 $this->_logger->debug("Checking hook: '{$hook}' (file: '{$file}')");
                 // check if the file exists
@@ -303,7 +303,7 @@ class SpamFilter_Diagnostics
                     $return['critical'][] = "The hook '{$hook}' is not executable.";
                 }
             }
-               
+
         // do check here
         return $this->return_result($return);
     }
@@ -459,7 +459,7 @@ class SpamFilter_Diagnostics
                 return true;
             }
         }
-        
+
         if (SpamFilter_Core::isWindows()){
             if($job == 'symlink_to_PHP5_binary'){
                 $this->_logger->debug("Skipping check {$job}..");
@@ -472,11 +472,11 @@ class SpamFilter_Diagnostics
 
     private function return_result($return)
     {
-        if (count($return['critical']) == 0) {
+        if (is_countable($return['critical']) && count($return['critical']) === 0) {
             unset($return['critical']);
         }
 
-        if (count($return['warning']) == 0) {
+        if (is_countable($return['warning']) && count($return['warning']) === 0) {
             unset($return['warning']);
         }
 

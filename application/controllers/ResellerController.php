@@ -59,7 +59,7 @@ class ResellerController extends Zend_Controller_Action
      * @var SpamFilter_PanelSupport_Cpanel
      */
 	protected $_panel;
-        
+
 	public function init()
 	{
 		try {
@@ -135,19 +135,19 @@ class ResellerController extends Zend_Controller_Action
 		$config = Zend_Registry::get('general_config');
 		$this->view->isConfigured = (!empty($config->apiuser)) ? true : false;
 		if(!$this->view->isConfigured) { return false; }
-                
+
                 // Items Per Page functionality
                 $itemsPerPage = $this->_getParam('items')? (int)htmlspecialchars($this->_getParam('items')) : 25 ;
                 if($itemsPerPage<1 || $itemsPerPage > 25){
                     $this->view->itemsPerPageLimit = $this->t->_('The items per page parameter should be an integer greater than or equal to 1 and less than or equal to 25');
                     $itemsPerPage = 25;
                 }
-                       
+
                 // Get params
                 $filter = htmlspecialchars($this->_getParam('search'));
                 $order = $this->_getParam('sortorder');
 		$oldorder = SpamFilter_Panel_Cache::get( 'domains_sort_order' );
-                
+
                 // Get domain from cache if not root
                 if(SpamFilter_Core::getUsername() != 'root'){
                     $domains = SpamFilter_Panel_Cache::get(SpamFilter_Core::getDomainsCacheId());
@@ -162,8 +162,8 @@ class ResellerController extends Zend_Controller_Action
         if ($order != $oldorder) {
             $domains = $this->_panel->getSortedDomains(array ('domains' => $domains, 'order' => $order));
             SpamFilter_Panel_Cache::set(SpamFilter_Core::getDomainsCacheId(), $domains);
-		}              
-                
+		}
+
 		// No cache set, proceed with retrieval
 		if (empty($domains)) {
 		    $domains = $this->_panel->getDomains(
@@ -177,7 +177,7 @@ class ResellerController extends Zend_Controller_Action
             // Cache miss, save the data
 			SpamFilter_Panel_Cache::set(SpamFilter_Core::getDomainsCacheId(), $domains);
 		}
-                
+
 		// Proceed
 		if ( !isset($domains))
 		{
@@ -190,7 +190,7 @@ class ResellerController extends Zend_Controller_Action
 			return false;
 		}
 
-		if ((empty($domains)) || (count($domains) == 0) )
+		if ((empty($domains)) || (is_countable($domains) && count($domains) === 0) )
 		{
 			$this->_flashMessenger->addMessage(
 							array(
@@ -200,11 +200,11 @@ class ResellerController extends Zend_Controller_Action
 							);
 			return false;
 		}
-                
+
                 if(!empty($filter)){
                     $domains = $this->_panel->filterDomains(array('domains' => $domains, 'filter' => $filter));
                 }
-                if ((empty($domains)) || (count($domains) == 0) )
+                if ((empty($domains)) || (is_countable($domains) && count($domains) == 0) )
 		{
 			$this->_flashMessenger->addMessage(
 							array(
@@ -257,7 +257,7 @@ class ResellerController extends Zend_Controller_Action
 		}
 
 		// Proceed
-		if( (!isset($accounts)) || (empty($accounts)) || (count($accounts) == 0) )
+		if( (!isset($accounts)) || (empty($accounts)) || (is_countable($accounts) && count($accounts) == 0) )
 		{
 			$this->_flashMessenger->addMessage(
 							array(

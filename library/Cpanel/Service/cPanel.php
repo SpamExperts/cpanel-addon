@@ -1,7 +1,7 @@
 <?php
 /**
  * Cpanel_Service_cPanel
- * 
+ *
  * Copyright (c) 2011, cPanel, Inc.
  * All rights reserved.
  * http://cpanel.net
@@ -27,25 +27,25 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * @category  Cpanel
  * @package   Cpanel_Service
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
  */
-/** 
+/**
  * cPanel Service class
  *
  * @class     Cpanel_Service_cPanel
  * @category  Cpanel
  * @package   Cpanel_Service
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
@@ -58,14 +58,14 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     const ADAPTER_DEFAULT = 'cpanel';
     /**
      * Constructor
-     * 
+     *
      * @param arrays $optsArray Option configuration data
-     * 
+     *
      * @return Cpanel_Service_cPanel
      */
     public function __construct($optsArray = array())
     {
-        if (!count($optsArray)) {
+        if (!is_array($optsArray) || !count($optsArray)) {
             $opts = array();
         }
         if (array_key_exists('config', $optsArray)) {
@@ -86,9 +86,9 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     }
     /**
      * Fetch default adapter name for WHM service
-     * 
+     *
      * @see    Cpanel_Service_Abstract::getDefaultAdapterName()
-     * 
+     *
      * @return string
      */
     public function getDefaultAdapterName()
@@ -97,13 +97,13 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     }
     /**
      * Validate a given string corresponds to a usable adapter type
-     * 
+     *
      * NOTE: will normalize $type for use in other methods
-     * 
+     *
      * @param string $type service adapter name to validate
-     * 
+     *
      * @see    Cpanel_Service_Abstract::validAdapter()
-     * 
+     *
      * @return string|bool String of normalized $type, if valid, otherwise false
      */
     public function validAdapter($type)
@@ -126,11 +126,11 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     }
     /**
      * Spawn a new adapter object based on valid service adapter name
-     * 
+     *
      * @param string $adapterType Valid service adapter name
-     * 
+     *
      * @see    Cpanel_Service_Abstract::spawnAdapter()
-     * 
+     *
      * @return Cpanel_Service_Adapter_Cpanelapi|Cpanel_Service_Adapter_WHMapi|Cpanel_Service_Adapter_Liveapi
      */
     protected function spawnAdapter($adapterType)
@@ -157,12 +157,12 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     }
     /**
      * Make an API1 cPanel query for a given service
-     * 
+     *
      * @param string $aservice service adapter name
      * @param array  $mf       Any required parameters for constructing the call
      *  like module and function
      * @param array  $args     Arguments for the API1 call, ordinal array
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function api1_request($aservice, $mf, $args = array())
@@ -171,8 +171,8 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
         $rObj = $this->genResponseObject($aservice);
         $a = $this->getAdapter($rObj);
         /**
-         * TODO: handle more dynamically; 
-         *  need logic for user set before query request. 
+         * TODO: handle more dynamically;
+         *  need logic for user set before query request.
          *  prob need a set/get_output type meth.
          */
         $rObj->setResponseFormatType($a->getAdapterResponseFormatType());
@@ -187,12 +187,12 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     }
     /**
      * Make an API2 cPanel query for a given service
-     * 
+     *
      * @param string $aservice service adapter name
      * @param array  $mf       Any required parameters for constructing the call
      *  like module and function
      * @param array  $args     Arguments for the API2 call, associative array
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function api2_request($aservice, $mf, $args = array())
@@ -212,11 +212,11 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     }
     /**
      * Direct URL query method for PublicAPI client
-     * 
+     *
      * @param string $uri          URL to query
      * @param array  $formdata     Array of URL parameters
      * @param array  $queryOptions Array of options for query mechanism
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function directURLQuery($uri, $formdata, $queryOptions = array())
@@ -241,10 +241,10 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     }
     /**
      * Set a mode for a stored adapter
-     * 
+     *
      * @param string $adapterType The adapter to modify
      * @param string $mode        Mode to set
-     * 
+     *
      * @return Cpanel_Service_cPanel
      */
     public function setAdapterMode($adapterType, $mode)
@@ -258,10 +258,10 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     }
     /**
      * Unset a mode for a stored adapter
-     * 
+     *
      * @param string $adapterType The adapter to modify
      * @param string $mode        Mode to unset
-     * 
+     *
      * @return Cpanel_Service_cPanel
      */
     public function unsetAdapterMode($adapterType, $mode)
@@ -276,13 +276,13 @@ class Cpanel_Service_cPanel extends Cpanel_Service_Abstract
     /**
      * Get the current adapter, spawn if necessary, and call requested method on
      * it.
-     * 
+     *
      * NOTE: It's assumed that the adapter implements it's own measure to throw
      * if the method is undefined
      *
      * @param string $method Method to invoke on adapter
      * @param array  $args   Method arguments
-     * 
+     *
      * @return mixed   The result of the success adapter method call
      */
     public function __call($method, $args)

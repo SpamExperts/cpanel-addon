@@ -48,7 +48,7 @@ class Zend_View_Helper_FlashMessages
 		$output = '';
 
 		// If there are no messages, don't bother with this whole process.
-		if (count($messages) > 0)
+		if (is_array($messages) && count($messages) > 0)
 		{
 			// This chunk of code takes the messages (formatted as in the above sample
 			// input) and puts them into an array of the form:
