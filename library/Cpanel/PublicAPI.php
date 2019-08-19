@@ -1,7 +1,7 @@
 <?php
 /**
  * Cpanel_PublicAPI
- * 
+ *
  * Copyright (c) 2011, cPanel, Inc.
  * All rights reserved.
  * http://cpanel.net
@@ -27,30 +27,30 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * @category  Cpanel
  * @package   Cpanel_PublicAPI
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
  */
 /**
  * PublicAPI client class.
- * 
+ *
  * The PublicAPI client class provides a PHP class for the PublicAPI interface,
  * which is used by other API client classes in other languages, but this client
  * also incorporates the legacy cPanel PHP client classes, namely LivePHP and
- * XML-API. 
+ * XML-API.
  *
  * @class     Cpanel_PublicAPI
  * @category  Cpanel
  * @package   Cpanel_PublicAPI
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
@@ -79,10 +79,10 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     /**
      * The class is a Singleton.  The constructor, however is public due to
      * inheritance from Cpanel_Core_Object.
-     * 
+     *
      * @param arrays $optsArray Option configuration data
-     * 
-     * @return Cpanel_PublicAPI  
+     *
+     * @return Cpanel_PublicAPI
      * @throws Exception If      instantiated directly. {@link getInstance()}
      */
     public function __construct($optsArray = false)
@@ -122,8 +122,8 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Enforce singleton; no cloning; php >=5.0
-     * 
-     * @return void     
+     *
+     * @return void
      * @throws Exception If class is cloned.
      */
     final public function __clone()
@@ -132,9 +132,9 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Get the Singleton instance, creating it as necessary.
-     * 
+     *
      * @param array $optsArray Optional configuration data
-     * 
+     *
      * @return Cpanel_PublicAPI
      */
     public static function getInstance($optsArray = array())
@@ -148,10 +148,10 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Obliterate all internals
-     * 
+     *
      * Useful for enforcing a known state. It is extremely rare, outside of unit
      * testing, that this method is used.
-     * 
+     *
      * @return void
      */
     public static function resetInstance()
@@ -162,14 +162,14 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Create the internal registry for storing factory objects.
-     * 
+     *
      * NOTE: Any class outside the PHP builtin space or the Cpanel package space
      * will need to have been previously included/required or be available via
-     * previously defined autoloader.  The class specificed should be or 
+     * previously defined autoloader.  The class specificed should be or
      * inherit from ArrayObject.
      *
-     * @param string $registryClass Name of object class to instantiate 
-     * 
+     * @param string $registryClass Name of object class to instantiate
+     *
      * @return Cpanel_PublicAPI
      * @throws Exception If $registryClass does not inherit ArrayObject
      */
@@ -197,7 +197,7 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Return internal factory object registry.
-     * 
+     *
      * @return ArrayObject|mixed
      */
     protected function getRegistry()
@@ -206,17 +206,17 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Retrieve the Service namespace from given array or config, if one exists
-     * 
+     *
      * If the Cpanel config convention is utilized, a successful return will
      * provide a Cpanel_Core_Object which should have a key/namespace
-     * 'config'. If the $type is not found, the general service namespace will 
+     * 'config'. If the $type is not found, the general service namespace will
      * be returned (which may also have the 'config' namespace).
-     * 
+     *
      * @param string             $type      The named service type to retrieve
      * @param Cpanel_Core_Object $optsArray Cpanel config to search within
-     * 
+     *
      * @return Cpanel_Core_Object|array Emtpy array if $type or $optsArray is
-     *  empty, otherwise the expected configuration data 
+     *  empty, otherwise the expected configuration data
      */
     public static function getServiceConfig($type, $optsArray)
     {
@@ -251,11 +251,11 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Used to extract config values from a specific namespace
-     * 
+     *
      * @param string             $name      Namespace to seek config values for
      * @param Cpanel_Core_Object $optsArray Config to seek within
-     * 
-     * @return Cpanel_Core_Object|array Empty array if $optsArray is 
+     *
+     * @return Cpanel_Core_Object|array Empty array if $optsArray is
      *  empty or $name do not exist if config.
      */
     public static function getNamedConfig($name, $optsArray)
@@ -279,12 +279,12 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Recursively merge two arrays.
-     * 
-     * @param array $arr1 base array, existing key/values will be overwritten 
+     *
+     * @param array $arr1 base array, existing key/values will be overwritten
      * @param array $arr2 array of new values
-     * 
+     *
      * @static
-     * 
+     *
      * @return array A new array contain all values of the two arrays, keys in
      *  second array take precedent
      */
@@ -301,11 +301,11 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Return an aggregated config based on passed config & stored config values
-     * 
+     *
      * @param string $type      Service type
      * @param arrays $optsArray Additional config to parse/merge
      * @param string $name      Specific namespace to seek
-     * 
+     *
      * @return array Aggregated config
      */
     private static function _getAggregateConfig($type, $optsArray, $name)
@@ -316,8 +316,8 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
         //TODO: decouple and thoroughly test deeply nested configs
         if (!empty($name)) {
             $workingConfigNamed = $self->getNamedConfig($name, $workingConfig);
-            if (count($workingConfigNamed)) {
-                if (count($workingConfig->config)) {
+            if (is_countable($workingConfig) && count($workingConfigNamed)) {
+                if (is_countable($workingConfig->config) && count($workingConfig->config)) {
                     //must try to merge
                     $workingConfig = self::mergeConfigs(
                         $workingConfig->config->getAllDataRecursively(),
@@ -329,6 +329,7 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
             }
             $storedNamedConfig = $self->getNamedConfig($name, $storedServicesConfig);
             if ($storedServicesConfig instanceof Cpanel_Core_Object
+                && is_countable($storedServicesConfig->config)
                 && count($storedServicesConfig->config)
             ) {
                 $storedConfig = self::mergeConfigs(
@@ -344,7 +345,7 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
             if ($storedServicesConfig instanceof Cpanel_Core_Object
                 && $storedServicesConfig->config
             ) {
-                if (count($storedServicesConfig) > 1) {
+                if (is_countable($storedServicesConfig) && count($storedServicesConfig) > 1) {
                     $default = $storedServicesConfig->getAllDataRecursively();
                     unset($default['config']);
                     $storedConfig = self::mergeConfigs(
@@ -370,7 +371,7 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
      * @param array  $optsArray Service  object configuration data
      * @param string $name      Specific name for retrieving a predefine service
      *  setup or stored instance thereof
-     * 
+     *
      * @return mixed      A Cpanel_Service object
      * @throws Exception If invalid service type is requested.
      */
@@ -394,7 +395,7 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
         ) {
             return $self->getRegistry()->offsetGet($type . $tmpName);
         }
-        
+
         // No valid object found: determine class name and instantiate
         $classname;
         $storageName;
@@ -414,13 +415,13 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
             $classname = 'Cpanel_Service_cPanel';
             break;
             // TODO: custom service loading
-            
+
         }
-    
+
         if (!isset($classname) || !class_exists($classname)) {
             throw new Exception("Invalid service: {$type}");
         }
-        
+
         // by change, the same service may be stored under the normalized name
         if (($reg !== null && isset($storageName))
             && (is_string($tmpName))
@@ -429,8 +430,8 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
         ) {
             return $self->getRegistry()->offsetGet($storageName . $tmpName);
         }
-        
-        
+
+
         if (empty($optsArray)) {
             $optsArray = array();
         }
@@ -440,7 +441,7 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
             $optsArray['listner'] = $self->listner;
         }
         $aggConfig = self::_getAggregateConfig($type, $optsArray, $name);
-        
+
         $newobj = new $classname($aggConfig);
         // if registry, store
         if ($reg !== null) {
@@ -453,7 +454,7 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Direct http URL query
-     * 
+     *
      * @param string $service  cPanel service to use
      * @param string $uri      URI to fetch
      * @param string $method   HTTP method
@@ -461,7 +462,7 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
      *  form data to send
      * @param array  $headers  Associative array of custom header to add to http
      *  request
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function api_request($service, $uri, $method = 'GET', $formdata = '', $headers = '')
@@ -478,14 +479,14 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
     }
     /**
      * Works as dispatch
-     * 
-     * Coordinates with the {@link factory()} to return and instance when 
+     *
+     * Coordinates with the {@link factory()} to return and instance when
      * "get{$service}" is invoked.  Otherwise will take the "api" query method
      * and pass in to an appropriate service object.
      *
      * @param string $method Method name as originally invoked
      * @param array  $args   Method arguments from original call
-     * 
+     *
      * @return Cpanel_Query_Object
      * @throws Exception If service cannot be deduced from "api" query or
      *  original method call was not a "get" or "api" based invocation.
@@ -495,21 +496,21 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
         if (strpos($method, 'get') === 0) {
             //attempt to factory an item
             $type = substr($method, 3);
-            $factargs = (count($args) >= 1 && is_array($args[0])) ? $args[0] : array();
+            $factargs = (is_array($args) && count($args) >= 1 && is_array($args[0])) ? $args[0] : array();
             $name = (is_array($factargs) && array_key_exists('name', $factargs)) ? $factargs['name'] : '';
             return self::factory($type, $factargs, $name);
         } elseif (strpos($method, '_api') !== false) {
             //invoking the service, ie "whm_api", "cpanel_api1_request", etc.
             $type = substr($method, 0, strpos($method, '_'));
             $obj = self::factory($type);
-            if (empty($args) || (is_array($args) && count($args) == 0)) {
+            if (empty($args) || (is_array($args) && count($args) === 0)) {
                 throw new Exception(
                     'Service API call requires at least one parameter'
                 );
             }
             if ($type == 'whm') {
                 $func = $args[0];
-                if (is_array($args) && count($args) == 1) {
+                if (is_array($args) && count($args) === 1) {
                     $args_to_pass = array();
                 } else {
                     $args_to_pass = $args[1];

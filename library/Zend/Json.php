@@ -150,9 +150,10 @@ class Zend_Json
         }
 
         //only do post-proccessing to revert back the Zend_Json_Expr if any.
-        if (count($javascriptExpressions) > 0) {
-            $count = count($javascriptExpressions);
-            for($i = 0; $i < $count; $i++) {
+
+        $countJavascriptExpressions = is_array($javascriptExpressions) ? count($javascriptExpressions) : 0;
+        if ($countJavascriptExpressions > 0) {
+            for($i = 0; $i < $countJavascriptExpressions; $i++) {
                 $magicKey = $javascriptExpressions[$i]['magicKey'];
                 $value    = $javascriptExpressions[$i]['value'];
 
@@ -268,14 +269,14 @@ class Zend_Json
         $value = self::_getXmlValue($simpleXmlElementObject);
         $attributes = (array) $simpleXmlElementObject->attributes();
 
-        if (count($children) == 0) {
+        if (is_countable($children) && count($children) === 0) {
             if (!empty($attributes) && !$ignoreXmlAttributes) {
                 foreach ($attributes['@attributes'] as $k => $v) {
                     $attributes['@attributes'][$k]= self::_getXmlValue($v);
                 }
                 if (!empty($value)) {
                     $attributes['@text'] = $value;
-                } 
+                }
                 return array($name => $attributes);
             } else {
                return array($name => $value);
@@ -356,7 +357,7 @@ class Zend_Json
         return($jsonStringOutput);
     }
 
-    
+
 
     /**
      * Pretty-print JSON string
@@ -420,9 +421,9 @@ class Zend_Json
                 $result .= $token . $lineBreak;
             } else {
                 $result .= ( $inLiteral ? '' : $prefix ) . $token;
-                
+
                 // Count # of unescaped double-quotes in token, subtract # of
-                // escaped double-quotes and if the result is odd then we are 
+                // escaped double-quotes and if the result is odd then we are
                 // inside a string literal
                 if ((substr_count($token, "\"")-substr_count($token, "\\\"")) % 2 != 0) {
                     $inLiteral = !$inLiteral;

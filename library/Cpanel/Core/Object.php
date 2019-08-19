@@ -1,7 +1,7 @@
 <?php
 /**
  * Cpanel_Core_Object
- * 
+ *
  * Copyright (c) 2011, cPanel, Inc.
  * All rights reserved.
  * http://cpanel.net
@@ -27,19 +27,19 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * @category  Cpanel
  * @package   Cpanel_Core
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
  */
 /**
  * Base class for any Cpanel class to inherit from.
- * 
+ *
  * This class is a container class with accessors to the internal storage.  The
  * internal stoeage container will store data as a Cpanel_Core_Object
  * such that it the parent object can continuely recure into the data structure.
@@ -48,8 +48,8 @@
  * @category  Cpanel
  * @package   Cpanel_Core
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
@@ -62,10 +62,10 @@ class Cpanel_Core_Object implements IteratorAggregate
     protected $dataContainer;
     /**
      * Constructor
-     * 
+     *
      * @param array $optsArray Data to store internally
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function __construct($optsArray = array())
     {
@@ -76,7 +76,7 @@ class Cpanel_Core_Object implements IteratorAggregate
     }
     /**
      * IteratorAggregate required method
-     * 
+     *
      * @return ArrayIterator Internal data with an iterable object
      */
     public function getIterator()
@@ -85,10 +85,10 @@ class Cpanel_Core_Object implements IteratorAggregate
     }
     /**
      * Accessor for storing data internally
-     * 
+     *
      * @param array $optsArray Array of key/value parses to store internally
      * @param bool  $override  Override any previous stored data. Default is true
-     * 
+     *
      * @return Cpanel_Core_Object
      */
     public function setOptions($optsArray, $override = true)
@@ -104,7 +104,7 @@ class Cpanel_Core_Object implements IteratorAggregate
                 .'"parent::__construct()"'
             );
         }
-        if (count($optsArray) == 0) {
+        if (is_countable($optsArray) && count($optsArray) === 0) {
             return $this;
         } elseif (is_array($optsArray)) {
             foreach ($optsArray as $key => $value) {
@@ -138,15 +138,15 @@ class Cpanel_Core_Object implements IteratorAggregate
             //}elseif(is_object($optsArray)){ //not supported ATM
             //some fallback to get_object_vars or
             // implement an iterable if
-            
+
         }
         return $this;
     }
     /**
      * Accessor method for retrieving internal data
-     * 
+     *
      * @param string $key Key to search for within data store
-     * 
+     *
      * @return mixed|void Value if $key exists, otherwise NULL
      */
     public function getOption($key)
@@ -158,7 +158,7 @@ class Cpanel_Core_Object implements IteratorAggregate
     }
     /**
      * Retrieve internal data storage object
-     * 
+     *
      * @return ArrayObject
      */
     public function getAllData()
@@ -167,7 +167,7 @@ class Cpanel_Core_Object implements IteratorAggregate
     }
     /**
      * Retreive a deeply nested array structure representation of data store
-     * 
+     *
      * @return array Array representation of internal data object storage
      */
     public function getAllDataRecursively()
@@ -186,11 +186,11 @@ class Cpanel_Core_Object implements IteratorAggregate
     }
     /**
      * Magic get accessor
-     * 
+     *
      * @param string $key Key to search for in internal data storage
-     * 
+     *
      * @see    getOption()
-     * 
+     *
      * @return mixed|void Value of $key if it exists, otherwise null
      */
     public function __get($key)
@@ -199,13 +199,13 @@ class Cpanel_Core_Object implements IteratorAggregate
     }
     /**
      * Magic set accessor
-     * 
+     *
      * @param string $key   Key portion of element to store
      * @param mixed  $value Value portion of element to store
-     * 
+     *
      * @see    setOptions()
-     * 
-     * @return void  
+     *
+     * @return void
      */
     public function __set($key, $value)
     {

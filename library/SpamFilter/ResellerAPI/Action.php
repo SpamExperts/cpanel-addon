@@ -411,7 +411,7 @@ class SpamFilter_ResellerAPI_Action
             if (($this->_controller == 'authticket') || (in_array($action, array('get', 'list')))) {
 
                 // Single entries can be converted to a string instead (e.g. version retrieval)
-                if (count($data['result']) == 1) {
+                if (is_array($data['result']) && count($data['result']) === 1) {
                     $logger->debug("[API] Single array item, converting to string instead. ");
 
                     return $data['result'];

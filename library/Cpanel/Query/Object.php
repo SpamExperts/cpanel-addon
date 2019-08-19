@@ -1,7 +1,7 @@
 <?php
 /**
  * Cpanel_Query_Object
- * 
+ *
  * Copyright (c) 2011, cPanel, Inc.
  * All rights reserved.
  * http://cpanel.net
@@ -27,25 +27,25 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * @category  Cpanel
  * @package   Cpanel_Query
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
  */
 /**
  * Query and response object class
- * 
+ *
  * This class works as both a request (or query) and response object in the
  * since of most PHP frameworks. There are two containers for these
  * responsibilities (query and response). Internally they are '_query' and
- * '_response' but can be accessed externally simply by fetching 
+ * '_response' but can be accessed externally simply by fetching
  * $rObj->getQuery() or $rObj->getResponse().  Alternatively, there's a shortcut
- * for fetching individual key/value pairs within those containers.  If 
+ * for fetching individual key/value pairs within those containers.  If
  * $rObj->key is called, $key will be fetched out of the response container. If
  * $rObj->query->key is called, $key will be fetched from the query container.
  * Setting values works in the same manner.
@@ -54,8 +54,8 @@
  * @category  Cpanel
  * @package   Cpanel_Query
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
@@ -112,9 +112,9 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     const ERROR_PARSE = 'Could not parse.';
     /**
      * Constructor
-     * 
+     *
      * @param arrays $optsArray Optional configuration data
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function __construct($optsArray = array())
@@ -130,9 +130,9 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Set server expected input format
-     * 
+     *
      * @param string $type Input format type
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function setInputFormatType($type)
@@ -142,7 +142,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Retrieve input format type
-     * 
+     *
      * @return string Input format type
      */
     public function getInputFormatType()
@@ -151,15 +151,15 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Set response format type
-     * 
+     *
      * The response format type (RFT) is the format of the server response. This
      * value is propagated to the stored parser object (generating a new parser
      * object if one was not previous instantiated)
-     * 
+     *
      * @param string $type   Response format type
      * @param bool   $reinit Force a new parser object instantiation prior to
      *  setting RFT
-     * 
+     *
      * @return Cpanel_Query_Object
      * @throws Exception If parser object does not implement the defined parser
      *  interface
@@ -184,15 +184,15 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Instantiate a parser object.
-     * 
+     *
      * This method expects $type to coorelate to a Cpanel parser class located
      * within Cpanel_Library.  If a Cpane parser class cannot be found, $type
      * will be treated as a custom class that has previously been defined (or
      * available via the autoload stack).  Custom parser classes must implement
      * Cpanel_Parser_Interface
-     * 
+     *
      * @param string $type Name of parser to instantiate
-     * 
+     *
      * @return mixed     Parser object which implements Cpanel_Parser_Interface
      * @throws Exception If $type cannot be tranlated to a valid classname for
      *                   instantiation
@@ -226,9 +226,9 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Store a parser object
-     * 
+     *
      * @param object $obj Parser object that implements Cpanel_Parser_Interface
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function setResponseParser($obj)
@@ -243,7 +243,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Retrieve the stored parser object
-     * 
+     *
      * @return mixed Object that implements Cpanel_Parser_Interface
      */
     public function getResponseParser()
@@ -252,7 +252,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Retrieve the response format type defined in this object
-     * 
+     *
      * @return string
      */
     public function getResponseFormatType()
@@ -261,9 +261,9 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Set oupt format for this object
-     * 
+     *
      * @param string $type Output format type
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function setOutputFormatType($type)
@@ -273,7 +273,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Retrieve this object's output format type
-     * 
+     *
      * @return string Output format type
      */
     public function getOutputFormatType()
@@ -282,15 +282,15 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Retrieve a representation of the server response as requested by $type
-     * 
+     *
      * The method, by default will return the response container, a
      * Cpanel_CpanelObject which is an iterable object.  Other options include:
      * 'array'  - An deeply nested array representation of the server response
      * "$type"  - Where $type is an RFT for which a parser can be instantiated,
      *   i.e. 'JSON' or 'XML', etc.
-     * 
+     *
      * @param string $type Response format type to return
-     * 
+     *
      * @return mixed  String, array, or object as requested by $type
      */
     public function getResponse($type = '')
@@ -311,16 +311,16 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Store error in internal error stack
-     * 
+     *
      * @param string|array $err Error message string or array of such strings
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     protected function setResponseError($err)
     {
         if (is_string($err)) {
             array_push($this->_responseErrors, $err);
-        } elseif (count($err)) {
+        } elseif (is_array($err) && count($err)) {
             foreach ($err as $e) {
                 array_push($this->_responseErrors, $e);
             }
@@ -329,7 +329,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Check if parser object reported errors
-     * 
+     *
      * @return bool Whether the parser object was able to parser server response
      */
     public function validResponse()
@@ -341,9 +341,9 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Retrieve all error reported by parser
-     *  
+     *
      * @param bool $flush Flush internal error stack.  Default is FALSE.
-     * 
+     *
      * @return array|void An array of error string, otherwise null if no errors
      *                    were reported by the parser object
      */
@@ -361,9 +361,9 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Set multiple key/value pairs in the query container
-     * 
+     *
      * @param array $obj An array of key/value pairs to set
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function setQuery($obj)
@@ -373,7 +373,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Retrieve the query container
-     * 
+     *
      * @return Cpanel_Core_Object
      */
     public function getQuery()
@@ -382,17 +382,17 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Parse and store a raw response
-     * 
+     *
      * This method is responsible for receiving a raw server response, storing
      * it, passing the raw response to the parser object and finally storing
      * the parse response.  If parsing errors occur, the value of the response
-     * contain will be empty and errors can be collected via 
+     * contain will be empty and errors can be collected via
      * {@link getResponseErrors()}
-     * 
+     *
      * @param string $raw The raw response string from the server
-     * 
+     *
      * @see    getResponseErrors()
-     * 
+     *
      * @return Cpanel_Core_Object
      */
     public function parse($raw)
@@ -409,7 +409,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
                         self::ERROR_RESPONSE . self::ERROR_PARSE
                     );
                     //@codeCoverageIgnoreEnd
-                    
+
                 } elseif (is_string($parsedResponse)) {
                     $this->setResponseError(
                         self::ERROR_RESPONSE . $parsedResponse
@@ -423,7 +423,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Trigger parser object's parse() against server's raw response
-     * 
+     *
      * @return array|string Array representation of raw response, otherwise a
      *                      string denoting error observed by parser
      * @throws Exception If parser object does not implement
@@ -440,9 +440,9 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Store key/value pairs in response container
-     * 
+     *
      * @param array $obj Array of key/value pairs to set
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function setResponse($obj)
@@ -452,7 +452,7 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Retrieve raw server response
-     * 
+     *
      * @return string Raw server response string
      */
     public function getRawResponse()
@@ -461,9 +461,9 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Store raw server response
-     * 
+     *
      * @param string $str String to store as the raw server response
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function setRawResponse($str = null)
@@ -477,13 +477,13 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Magic get accessor
-     * 
-     * If $key is 'query', the query container is returned.  This allows for 
+     *
+     * If $key is 'query', the query container is returned.  This allows for
      * effective chain calls like $rObj->query->ulitamteKeyDesired in calling
      * scripts.  Otherwise, $key will source from the response container
-     * 
+     *
      * @param string $key Key to search for
-     * 
+     *
      * @return mixed  Value sourced for $key within the response container, or
      *  the query container if $key is 'query'
      */
@@ -497,15 +497,15 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Magic set accessor
-     * 
+     *
      * The method will store key/value pairs within the response container. If
      * storage to the query contain is desired, use {@link setQuery()} or a
      * combination of magic {@__get()} methods, i.e. $rObj->query->key = value
-     * 
+     *
      * @param string $key   Key for storage
      * @param mixed  $value Value to associate with $key
-     * 
-     * @return void  
+     *
+     * @return void
      */
     public function __set($key, $value)
     {
@@ -517,11 +517,11 @@ class Cpanel_Query_Object extends Cpanel_Core_Object
     }
     /**
      * Magic toString method
-     * 
-     * This method will return a formatted representation of the response 
+     *
+     * This method will return a formatted representation of the response
      * container (i.e. a print_r style string) when this object is referenced as
      * or cased to a string
-     * 
+     *
      * @return string String representation of the response container object
      */
     public function __toString()

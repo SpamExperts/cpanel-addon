@@ -1,7 +1,7 @@
 <?php
 /**
  * Cpanel_Service_Abstract
- * 
+ *
  * Copyright (c) 2011, cPanel, Inc.
  * All rights reserved.
  * http://cpanel.net
@@ -27,25 +27,25 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * @category  Cpanel
  * @package   Cpanel_Service
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
 */
 /**
  * Abstract class for Service classes.
- * 
+ *
  * @class     Cpanel_Service_Abstract
  * @category  Cpanel
  * @package   Cpanel_Service
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
@@ -63,11 +63,11 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
      */
     protected $disabledAdapters = array();
     /**
-     * Type of array that API1 calls must adhere to 
+     * Type of array that API1 calls must adhere to
      */
     const API1ARGS = 'ordinal';
     /**
-     * Type of array that API2 calls must adhere to 
+     * Type of array that API2 calls must adhere to
      */
     const API2ARGS = 'associative';
     /**
@@ -84,9 +84,9 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     const ADAPTER_LIVE = 'live';
     /**
      * Constructor
-     * 
+     *
      * @param array $optsArray Option configuration data
-     * 
+     *
      * @return Cpanel_Service_Abstract
      */
     public function __construct($optsArray = array())
@@ -103,19 +103,19 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * For use by extending classes to retreive their default adapter name value
-     * 
-     * The method is specifically here to get around late static binding, which 
+     *
+     * The method is specifically here to get around late static binding, which
      * is only available in 5.3
-     * 
+     *
      * @return string
      */
     abstract public function getDefaultAdapterName();
     /**
      * Mark a particular adapter as disabled so that it cannot be explicitly or
      * implicitly used by the Service object instance
-     * 
+     *
      * @param string $type Adapter name to disable
-     * 
+     *
      * @return Cpanel_Service_Abstract
      * @throws Exception If $type is invalid
      */
@@ -132,9 +132,9 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Enable a previously disabled adapter with the Service object instance
-     * 
+     *
      * @param string $type Adapter name to enable
-     * 
+     *
      * @return Cpanel_Service_Abstract
      * @throws Exception If $type is invalid
      */
@@ -153,13 +153,13 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Initialize key parameters of a RemoteQuery based adpater
-     * 
+     *
      * This will attempt to set host, user, and authentication information, as
-     * well as port and protocol. User and authentication information may 
+     * well as port and protocol. User and authentication information may
      * retrieved from the environment context if that feature is enabled.
-     * 
+     *
      * @param Cpanel_Query_Http_Abstract $adapter Adapter to initialize
-     * 
+     *
      * @return Cpanel_Query_Http_Abstract Initialized adapter
      */
     protected function initAdapter(Cpanel_Query_Http_Abstract $adapter)
@@ -190,7 +190,7 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     /**
      * Fills an array, as necessary, with key/values pairs associated with the
      * initialization process based on the processes effective user.
-     * 
+     *
      * Will set the following key/value pairs if the input array has an empty or
      * undefined pair:
      * host => 127.0.0.1
@@ -198,13 +198,13 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
      * password => The password located in the script's environment (not $_ENV),
      *  if available
      * hash => Stored access hash value, if available
-     * 
-     * NOTE: because of the way {@link _getEUIDAuth} works, either hash or 
+     *
+     * NOTE: because of the way {@link _getEUIDAuth} works, either hash or
      * password or neither will be assigned a value
-     *  
+     *
      * @param array $vars The know initialization variables
-     * 
-     * @return array The complete, environment aware state of initialization 
+     *
+     * @return array The complete, environment aware state of initialization
      *               variables
      */
     private function _getEnvironmentContext($vars = array())
@@ -243,14 +243,14 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Fetch either hash or password for the effective user.
-     * 
+     *
      * Hash will be sourced from .accesshash in the user's home directory
      * Password will be sourced from the script's environment (not $_ENV) if
      *  it is visable and the script was spawned from cpsrvd.
-     *  
+     *
      * The returned array will have a 'hash' and 'password' key.  Either hash or
      * password or neither will have a value, but never both.
-     * 
+     *
      * @return array An array containing authentication information
      */
     private function _getEUIDAuth()
@@ -290,7 +290,7 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Simple check to see if the script is a LivePHP script, spawned by cpsrvd
-     * 
+     *
      * @return bool
      */
     public function isLocalQuery()
@@ -304,40 +304,40 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     /**
      * For use by extending classes to determine if an adapter type is valid for
      * the Service object instance, and if so, to normalize the name.
-     * 
-     * Implementing classes can use this to force the use of a particular 
+     *
+     * Implementing classes can use this to force the use of a particular
      * adapter as necessary. For example, if the script is being executed for
      * a local query, it might be advantage to force the use of a
-     * Cpanel_Abstract_LocalQuery based adapter, despite a request for a 
+     * Cpanel_Abstract_LocalQuery based adapter, despite a request for a
      * Cpanel_Abstract_RemoteQuery.
-     * 
-     * Implementing classes should return a string of the normalized name to 
+     *
+     * Implementing classes should return a string of the normalized name to
      * be used for adapter spawning and demarcation.  If the $type is invalid
      * the method should return false.
-     * 
+     *
      * @param string $type Adapter name to validate and, potentially, normalize
-     * 
+     *
      * @return string|bool normalized name or false if invalid for Service
      */
     abstract protected function validAdapter($type);
     /**
      * Stores the adapter name with a Cpanel_Query_Object
-     * 
-     * If $adapterName is not passed, {@link getDefaultAdapterName()} will 
+     *
+     * If $adapterName is not passed, {@link getDefaultAdapterName()} will
      * populate it.  If passed, {@link validAdapter()} will be called with that
      * as is input argument.
-     * 
-     * NOTE: if {@link isLocalQuery} returns true and a Live adapter has not 
+     *
+     * NOTE: if {@link isLocalQuery} returns true and a Live adapter has not
      * been computed as the adapter type and the Live adapter is not disabled,
      * the method will "optimize" by setting the adapter to a Live type and mark
      * such in the Cpanel_Query_Objects.
-     * 
+     *
      * @param Cpanel_Query_Object $rObj        Response object to update
      * @param string              $adapterName Adapter name to pin to $rObj
-     * 
+     *
      * @todo Consider implementing this only as the concrete service class level
      *       or make more robust concerning optimization
-     *         
+     *
      * @return Cpanel_Query_Object
      */
     protected function updateResponseObjectAdapter(Cpanel_Query_Object $rObj, $adapterName = '')
@@ -361,10 +361,10 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Generate a Cpanel_Query_Object for the Service object instance
-     * 
+     *
      * @param string $adapterName Optional adapterName to pin to the generated
      *                                          resposne object
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function genResponseObject($adapterName = '')
@@ -374,16 +374,16 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Retrieve or spawn an adapter from a given response object
-     * 
+     *
      * This is the primary method for retrieve the adapter for a query call.  It
      * first looks as the response object to see if an adapter name has been
-     * previously determine; if necessary pinning one 
-     * {@link updateResponseObjectAdpater()}.  Second it looks for the named 
+     * previously determine; if necessary pinning one
+     * {@link updateResponseObjectAdpater()}.  Second it looks for the named
      * adapter in storage; if not found it spawns one {@link spawnAdapter()} and
      * stores it. Lastly the adapter is returned
-     * 
+     *
      * @param Cpanel_Query_Object $rObj Response object
-     * 
+     *
      * @return mixed               An adapter for making queries
      * @throws Exception If pinned adapter in response object has been disabled
      */
@@ -407,32 +407,32 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     /**
      * For use by extending classes to generate an appropriate adapter object
      * based on name.
-     * 
+     *
      * @param string $adapterType Name of adapter to spawn.
-     * 
+     *
      * @see    Cpanel_Service_Abstract::getAdapter()
-     * 
+     *
      * @return mixed  An adapter for making queries
      */
     abstract protected function spawnAdapter($adapterType);
     /**
      * Validate query arguments for given service adapter name
-     * 
+     *
      * @param string $service A service adapter name to validate against
      * @param array  $mf      Array representing key parameters for the query call
      * @param array  $args    Array of arguments for the query call
      * @param string $method  Name of method invoking the method (for error msg)
      * @param string $argType Array type to valid $args against
-     * 
+     *
      * @return bool      True if all validation passes
      * @throws Exception If $service is not defined
      * @throws Exception If $mf is not defined
      * @throws Exception If $service is an invalid service adapter name
-     * @throws Exception If $service is Live and script is not local 
+     * @throws Exception If $service is Live and script is not local
      *                   {@link isLocalQuery()}
      * @throws Exception If whostmgr and $mf doesn't define module, function and
      *                   user
-     * @throws Exception If cpanel and $mf doesn't define module, function 
+     * @throws Exception If cpanel and $mf doesn't define module, function
      * @throws Exception If $args array is not observed to be of the same
      *                   type of array indicated by $argType
      */
@@ -464,7 +464,7 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
                 ),
                 array_keys($mf)
             );
-            if (count($matchedKeys) != 3) {
+            if (count($matchedKeys) !== 3) {
                 throw new Exception(
                     "{$method} requires both 'module','function', and 'user' "
                     . "be defined in module-function array"
@@ -478,7 +478,7 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
                 ),
                 array_keys($mf)
             );
-            if (count($matchedKeys) != 2) {
+            if (count($matchedKeys) !== 2) {
                 throw new Exception(
                     "{$method} requires both 'module' and 'function' "
                     . "be defined in module-function array"
@@ -500,9 +500,9 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     /**
      * Utility method for determining the array type (oridinal or asssociative)
      * of a given array
-     * 
+     *
      * @param array $arr Array to analysis
-     * 
+     *
      * @return string    Determine array type for given array
      * @throws Exception If $arr is not an array or is empty
      */
@@ -525,16 +525,16 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     /**
       * Legacy support for scripts that set the desired PHP structure for a given
       * query via a "set_output" method.
-      * 
+      *
       * This will only set the response format type for the generic adapter.
       * More sophisticated Service objects should have their calling scripts use
       * a more appropriate set of methods (available in the Service and Response
       * objects) and not this legacy support method.
-      * 
+      *
      * NOTE: This may be deprecated in future releases
-     * 
+     *
      * @param string $type Response format type desired from server.
-     * 
+     *
      * @return Cpanel_Service_Abstract
      */
     public function set_output($type)
@@ -551,9 +551,9 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Proxy accessor method for pushing user into adapters
-     * 
+     *
      * @param string $user Value to set
-     * 
+     *
      * @return Cpanel_Service_Abstract
      */
     public function setUser($user)
@@ -568,9 +568,9 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Proxy accessor method for pushing password into adapters
-     * 
+     *
      * @param string $password Value to set
-     * 
+     *
      * @return Cpanel_Service_Abstract
      */
     public function setPassword($password)
@@ -585,9 +585,9 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Proxy accessor method for pushing host into adapters
-     * 
+     *
      * @param string $host Value to set
-     * 
+     *
      * @return Cpanel_Service_Abstract
      */
     public function setHost($host)
@@ -602,9 +602,9 @@ abstract class Cpanel_Service_Abstract extends Cpanel_Core_Object
     }
     /**
      * Proxy accessor method for pushing hash into adapters
-     * 
+     *
      * @param string $hash Value to set
-     * 
+     *
      * @return Cpanel_Service_Abstract
      */
     public function setHash($hash)

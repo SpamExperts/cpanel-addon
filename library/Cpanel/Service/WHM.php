@@ -1,7 +1,7 @@
 <?php
 /**
  * Cpanel_Service_WHM
- * 
+ *
  * Copyright (c) 2011, cPanel, Inc.
  * All rights reserved.
  * http://cpanel.net
@@ -27,19 +27,19 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * @category  Cpanel
  * @package   Cpanel_Service
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
  */
-/** 
+/**
  * Whostmgr Service class
- * 
+ *
  * This class can be used by Cpanel_PublicAPI, another custom client, or as a
  * replacement to the legacy XML-API client class.
  *
@@ -47,8 +47,8 @@
  * @category  Cpanel
  * @package   Cpanel_Service
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
@@ -61,14 +61,14 @@ class Cpanel_Service_WHM extends Cpanel_Service_Abstract
     const ADAPTER_DEFAULT = 'whostmgr';
     /**
      * Constructor
-     * 
+     *
      * @param arrays $optsArray Option configuration data
-     * 
+     *
      * @return Cpanel_Service_WHM
      */
     public function __construct($optsArray = array())
     {
-        if (!count($optsArray)) {
+        if (!is_array($optsArray) || !count($optsArray)) {
             $opts = array();
         }
         if (array_key_exists('config', $optsArray)) {
@@ -87,9 +87,9 @@ class Cpanel_Service_WHM extends Cpanel_Service_Abstract
     }
     /**
      * Fetch default adapter name for WHM service
-     * 
+     *
      * @see    Cpanel_Service_Abstract::getDefaultAdapterName()
-     * 
+     *
      * @return string
      */
     public function getDefaultAdapterName()
@@ -98,13 +98,13 @@ class Cpanel_Service_WHM extends Cpanel_Service_Abstract
     }
     /**
      * Validate a given string corresponds to a usable adapter type
-     * 
+     *
      * NOTE: will normalize $type for use in other methods
-     * 
+     *
      * @param string $type service adapter name to validate
-     * 
+     *
      * @see    Cpanel_Service_Abstract::validAdapter()
-     * 
+     *
      * @return string|bool String of normalized $type, if valid, otherwise false
      */
     public function validAdapter($type)
@@ -120,11 +120,11 @@ class Cpanel_Service_WHM extends Cpanel_Service_Abstract
     }
     /**
      * Spawn a new adapter object based on valid service adapter name
-     * 
+     *
      * @param string $adapterType Valid service adapter name
-     * 
+     *
      * @see    Cpanel_Service_Abstract::spawnAdapter()
-     * 
+     *
      * @return Cpanel_Service_Adapter_WHMapi
      */
     protected function spawnAdapter($adapterType)
@@ -143,11 +143,11 @@ class Cpanel_Service_WHM extends Cpanel_Service_Abstract
     }
     /**
      * Direct URL query method for PublicAPI client
-     * 
+     *
      * @param string $uri          URL to query
      * @param array  $formdata     Array of URL parameters
      * @param array  $queryOptions Array of options for query mechanism
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     public function directURLQuery($uri, $formdata, $queryOptions = array())
@@ -171,13 +171,13 @@ class Cpanel_Service_WHM extends Cpanel_Service_Abstract
     /**
      * Get the current adapter, spawn if necessary, and call requested method on
      * it.
-     * 
+     *
      * NOTE: It's assumed that the adapter implements it's own measure to throw
      * if the method is undefined
      *
      * @param string $method Method to invoke on adapter
      * @param array  $args   Method arguments
-     * 
+     *
      * @return mixed   The result of the success adapter method call
      */
     public function __call($method, $args)

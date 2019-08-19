@@ -1,7 +1,7 @@
 <?php
 /**
  * Cpanel_Service_XmlapiClientClass
- * 
+ *
  * Copyright (c) 2011, cPanel, Inc.
  * All rights reserved.
  * http://cpanel.net
@@ -27,19 +27,19 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * @category  Cpanel
  * @package   Cpanel_Service
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
  */
 /**
  * Abstraction of the PHP XML-API client class
- * 
+ *
  * This class provides an abstraction layer for WHM and cPanel services adapters
  * such that they can support all query-based functions of the legacy XML-API
  * client class.
@@ -49,8 +49,8 @@
  * @package   Cpanel_Service
  * @author    David Neimeyer <david.neimeyer@cpanel.net>
  * @author    Matt Dees <matt@cpanel.net>
- * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net) 
- * @license   http://sdk.cpanel.net/license/bsd.html BSD License 
+ * @copyright Copyright (c) 2011, cPanel, Inc., All rights Reserved. (http://cpanel.net)
+ * @license   http://sdk.cpanel.net/license/bsd.html BSD License
  * @version   0.1.0
  * @link      http://sdk.cpanel.net
  * @since     0.1.0
@@ -59,45 +59,45 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
 {
     /**
      * Method for querying API1 via XML-API
-     * 
+     *
      * @param string $user     User to query against
      * @param string $module   API1 module to source
      * @param string $function API1 function of $module to invoke
      * @param array  $args     Arguments for $function
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     abstract public function api1_query($user, $module, $function, $args = array());
     /**
      * Method for querying API2 via XML-API
-     * 
+     *
      * @param string $user     User to query against
      * @param string $module   API2 module to source
      * @param string $function API2 function of $module to invoke
      * @param array  $args     Arguments for $function
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     abstract public function api2_query($user, $module, $function, $args = array());
     /**
      * Method for querying a native XML-API function
-     * 
+     *
      * @param string $function XML-API function to invoke
      * @param array  $args     Arguments for $function
-     * 
+     *
      * @return Cpanel_Query_Object
      */
     abstract public function xmlapi_query($function, $args = array());
     //###
     //  XML API Functions
     //###
-    
+
     /**
     * Return a list of available XML-API calls
     *
     * This function will return an array containing all applications available within the XML-API
     *
-    * 
+    *
     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListAvailableCalls XML API Call documentation
     */
@@ -108,21 +108,21 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     //###
     // Account functions
     //###
-    
+
     /**
     * Create a cPanel Account
     *
-    * This function will allow one to create an account, the $acctconf parameter requires that the follow 
+    * This function will allow one to create an account, the $acctconf parameter requires that the follow
     * three associations are defined:
     *   - username
     *   - password
     *   - domain
     *
-    * Failure to prive these will cause an error to be logged.  Any other key/value pairs as defined by the createaccount call 
+    * Failure to prive these will cause an error to be logged.  Any other key/value pairs as defined by the createaccount call
     * documentation are allowed parameters for this call.
-    * 
+    *
     * @param array $acctconf
-    * 
+    *
     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/CreateAccount XML API Call documentation
     */
@@ -131,14 +131,14 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
      * Insert description here
      *
      * @param $acctconf
-     *                    
-     * 
+     *
+     *
      * @return
-     *         
+     *
      * @access
      * @static
-     * @see   
-     * @since 
+     * @see
+     * @since
      */
     public function createacct($acctconf)
     {
@@ -152,13 +152,13 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     }
     /**
     * Change a cPanel Account's Password
-    * 
+    *
     * This function will allow you to change the password of a cpanel account
     *
     * @param string $username The username to change the password of
     * @param string $pass     The new password for the cPanel Account
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ChangePassword XML API Call documentation
     */
     public function passwd($username, $pass)
@@ -178,8 +178,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string $username The username of the cPanel account to modify
     * @param int    $bwlimit  The new bandwidth limit in megabytes
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/LimitBandwidth XML API Call documentation
     */
     public function limitbw($username, $bwlimit)
@@ -199,8 +199,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string $searchtype Type of account search to use, allowed values: domain, owner, user, ip or package
     * @param string $search     the string to search against
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListAccounts XML API Call documentation
     */
     public function listaccts($searchtype = null, $search = null)
@@ -221,9 +221,9 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string $username The username to modify
     * @param array  $args     the new values for the modified account (see {@link http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ModifyAccount modifyacct documentation})
-    * 
-     * @return mixed 
-    * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ModifyAccount XML API Call documentation 
+    *
+     * @return mixed
+    * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ModifyAccount XML API Call documentation
     */
     public function modifyacct($username, $args = array())
     {
@@ -231,7 +231,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
             throw new Exception("modifyacct requires that username is passed to it");
         }
         $args['user'] = $username;
-        if (sizeof($args) < 2) {
+        if (!is_array($args) || sizeof($args) < 2) {
             throw new Exception("modifyacct requires that at least one attribute is passed to it");
         }
         return $this->makeQuery('modifyacct', $args);
@@ -243,8 +243,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string $username The username of the account to modify the quota.
     * @param int    $quota    the new quota in megabytes
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/EditQuota XML API Call documentation
     */
     public function editquota($username, $quota)
@@ -271,8 +271,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * Please see the XML API Call documentation for more information on what is returned by this call
     *
     * @param string $username The username to retrieve a summary of
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ShowAccountInformation XML API Call documenation
     */
     public function accountsummary($username)
@@ -292,8 +292,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string $username The username to suspend
     * @param string $reason   The reason for the suspension
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SuspendAccount XML API Call documentation
     */
     public function suspendacct($username, $reason = null)
@@ -316,7 +316,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * This function will return an array containing all the suspended accounts on a server
     *
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListSuspended XML API Call documentation
     */
@@ -332,8 +332,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string $username The usename to delete
     * @param bool   $keepdns  When pass a true value, the DNS zone will be retained
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/TerminateAccount
     */
     public function removeacct($username, $keepdns = false)
@@ -357,8 +357,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * This XML API call will unsuspend an account
     *
     * @param string $username The username to unsuspend
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/UnsuspendAcount XML API Call documentation
     */
     public function unsuspendacct($username)
@@ -377,8 +377,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string $username the username to change the package of
     * @param string $pkg      The package to change the account to.
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ChangePackage XML API Call documentation
     */
     public function changepackage($username, $pkg)
@@ -395,7 +395,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * Return the privileges a reseller has in WHM
     *
     * This will return a list of the privileges that a reseller has to WHM
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ViewPrivileges XML API Call documentation
     */
@@ -405,12 +405,12 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     }
     /**
     * Display Data about a Virtual Host
-    * 
+    *
     * This function will return information about a specific domain.  This data is essentially a representation of the data
     * Contained in the httpd.conf VirtualHost for the domain.
     *
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @param string $domain The domain to fetch information for
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/DomainUserData
     */
@@ -419,14 +419,14 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
      * Insert description here
      *
      * @param $domain
-     *                  
-     * 
+     *
+     *
      * @return
-     *         
+     *
      * @access
      * @static
-     * @see   
-     * @since 
+     * @see
+     * @since
      */
     public function domainuserdata($domain)
     {
@@ -439,14 +439,14 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     }
     /**
     * Change a site's IP Address
-    * 
+    *
     * This function will allow you to change the IP address that a domain listens on.
     * In order to properly call this function Either $user or $domain parameters must be defined
     * @param string $ip     The $ip address to change the account or domain to
     * @param string $user   The username to change the IP of
     * @param string $domain The domain to change the IP of
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetSiteIp XML API Call documentation
     */
     public function setsiteip($ip, $user = null, $domain = null)
@@ -473,7 +473,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     // DNS Functions
     //###
     // This API function lets you create a DNS zone.
-    
+
     /**
     * Add a DNS Zone
     *
@@ -482,8 +482,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string $domain The DNS Domain that you wish to create a zone for
     * @param string $ip     The IP you want the domain to resolve to
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/AddDNSZone XML API Call documentation
     */
     public function adddns($domain, $ip)
@@ -499,14 +499,14 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     /**
     * Add a record to a zone
     *
-    * This will append a record to a DNS Zone.  The $args argument to this function 
-    * must be an associative array containing information about the DNS zone, please 
+    * This will append a record to a DNS Zone.  The $args argument to this function
+    * must be an associative array containing information about the DNS zone, please
     * see the XML API Call documentation for more info
     *
     * @param string $zone The DNS zone that you want to add the record to
     * @param array  $args Associative array representing the record to be added
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/AddZoneRecord XML API Call documentation
     */
     public function addzonerecord($zone, $args)
@@ -527,8 +527,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * @param string $zone The zone to edit
     * @param int    $line The line number of the zone to edit
     * @param array  $args An associative array representing the zone record
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/EditZoneRecord XML API Call documentation
     * @see    dumpzone()
     */
@@ -539,14 +539,14 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
      * @param $zone
      * @param $line
      * @param $args
-     *                
-     * 
+     *
+     *
      * @return
-     *         
+     *
      * @access
      * @static
-     * @see   
-     * @since 
+     * @see
+     * @since
      */
     public function editzonerecord($zone, $line, $args)
     {
@@ -560,12 +560,12 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     /**
     * Retrieve a DNS Record
     *
-    * This function will return a data structure representing a DNS record, to 
+    * This function will return a data structure representing a DNS record, to
     * retrieve all lines see dumpzone.
     * @param string $zone The zone that you want to retrieve a record from
     * @param string $line The line of the zone that you want to retrieve
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/GetZoneRecord XML API Call documentation
     */
     public function getzonerecord($zone, $line)
@@ -581,8 +581,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * This function will remove a DNS Zone from the server
     *
     * @param string $domain The domain to be remove
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/DeleteDNSZone XML API Call documentation
     */
     public function killdns($domain)
@@ -596,10 +596,10 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     }
     /**
     * Return a List of all DNS Zones on the server
-    * 
+    *
     * This XML API function will return an array containing all the DNS Zones on the server
     *
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListDNSZone XML API Call documentation
     */
@@ -612,8 +612,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * This function will return all records within a zone.
     * @param string $domain The domain to return the records from.
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListOneZone XML API Call documentation
     * @see    editdnsrecord()
     * @see    getdnsrecord()
@@ -633,8 +633,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * This function will return a nameserver's IP
     *
     * @param string $nameserver The nameserver to lookup
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/LookupIP XML API Call documentation
     */
     public function lookupnsip($nameserver)
@@ -669,8 +669,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * This function will reset a zone removing all custom records.  Subdomain records will be readded by scanning the userdata datastore.
     * @param string $domain the domain name of the zone to reset
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ResetZone XML API Call documentation
     */
     public function resetzone($domain)
@@ -685,16 +685,16 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     //###
     // Package Functions
     //###
-    
+
     /**
     * Add a new package
-    * 
+    *
     * This function will allow you to add a new package
     * This function should be passed an associative array containing elements that define package parameters.
-    * These variables map directly to the parameters for the XML-API Call, please refer to the link below for a complete 
+    * These variables map directly to the parameters for the XML-API Call, please refer to the link below for a complete
     * list of possible variable.  The "name" element is required.
     * @param array $pkg an associative array containing package parameters
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/AddPackage XML API Call documentation
     */
@@ -707,11 +707,11 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     }
     /**
     * Remove a package
-    * 
+    *
     * This function allow you to delete a package
     * @param string $pkgname The package you wish to delete
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/DeletePackage XML API Call documentation
     */
     public function killpkg($pkgname)
@@ -730,7 +730,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * the parameters for the package.  The keys within this array map directly to the XML-API call, please see the link
     * below for a list of possible keys within this package.  The name element is required.
     * @param array $pkg An associative array containing new parameters for the package
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/EditPackage XML API Call documentation
     */
@@ -745,7 +745,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * List Packages
     *
     * This function will list all packages available to the user
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListPackages XML API Call documentation
     */
@@ -756,7 +756,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     //###
     // Reseller functions
     //###
-    
+
     /**
     * Make a user a reseller
     *
@@ -765,8 +765,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * @param int    $makeowner Boolean 1 or 0 defining whether the account should own itself or not
     * @see    setacls()
     * @see    setresellerlimits()
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/AddResellerPrivileges XML API Call documentation
     */
     public function setupreseller($username, $makeowner = true)
@@ -792,7 +792,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * Associative Array containing the configuration information for this variable.  Please see the XML API Call documentation
     * For more information.  "acllist" is a required element within this array
     * @param array $acl an associative array describing the parameters for the ACL to be create
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/CreateResellerACLList XML API Call documentation
     */
@@ -807,7 +807,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * List available saved ACLs
     *
     * This function will return a list of Saved ACLs for reseller accounts
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListCurrentResellerACLLists XML API Call documentation
     */
@@ -819,7 +819,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * List Resellers
     *
     * This function will return a list of resellers on the server
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListResellerAccounts XML API Call documentation
     */
@@ -833,8 +833,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * This function will return general information on a reseller and all it's account individually such as disk usage and bandwidth usage
     *
     * @param string $username The reseller to be checked
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListResellersAccountsInformation XML API Call documentation
     */
     public function resellerstats($username)
@@ -852,8 +852,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * This function will remove an account's reseller privileges, this does not remove the account.
     *
     * @param string $username The username to remove reseller privileges from
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/RemoveResellerPrivileges XML API Call documentation
     */
     public function unsetupreseller($username)
@@ -872,7 +872,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * containing the privleges that this reseller should have access to.  These map directly to the parameters passed to the XML API Call
     * Please view the XML API Call documentation for more information.  "reseller" is the only required element within this array
     * @param array $acl An associative array containing all the ACL information for the reseller
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetResellersACLList XML API Call documentation
     */
@@ -890,10 +890,10 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * @param string  $reseller          the name of the reseller to terminate
     * @param boolean $terminatereseller Passing this as true will terminate the the reseller's account as well as all the accounts owned by the reseller
-    * 
-     * @return mixed  
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/TerminateResellerandAccounts XML API Call documentation
-    *         
+    *
     *         */
     public function terminatereseller($reseller, $terminatereseller = true)
     {
@@ -917,12 +917,12 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     /**
     * Set a reseller's dedicated IP addresses
     *
-    * This function will set a reseller's dedicated IP addresses.  If an IP is not passed to this function, 
+    * This function will set a reseller's dedicated IP addresses.  If an IP is not passed to this function,
     * it will reset the reseller to use the server's main shared IP address.
     * @param string $user The username of the reseller to change dedicated IPs for
     * @param string $ip   The IP to assign to the  reseller, this can be a comma-seperated list of IPs to allow for multiple IP addresses
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetResellerIps XML API Call documentation
     */
     public function setresellerips($user, $ip = null)
@@ -947,10 +947,10 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * Call, please refer to the XML API Call documentation for more information.  The only required parameters is "user"
     *
     * @param array $reseller_cfg An associative array containing configuration information for the specified reseller
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetResellerLimits XML API Call documentation
-    *         
+    *
     */
     public function setresellerlimits($reseller_cfg)
     {
@@ -966,8 +966,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * will be created on this IP
     * @param string $reseller the username of the reseller to change the main IP of
     * @param string $ip       The ip you would like this reseller to create accounts on by default
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetResellerMainIp XML API Call documentation
     */
     public function setresellermainip($reseller, $ip)
@@ -989,8 +989,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * @param string  $package  if $no_limit is false, then the package you wish to modify privileges for
     * @param boolean $allowed  if $no_limit is false, then defines if the reseller should have access to the package or not
     * @param int     $number   if $no_limit is false, then defines the number of account a reseller can create of a specific package
-    * 
-     * @return mixed  
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetResellerPkgLimit XML API Call documentation
     */
     public function setresellerpackagelimits($user, $no_limit, $package = null, $allowed = null, $number = null)
@@ -1028,8 +1028,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * This function, when called will suspend a reseller account and all account owned by said reseller
     * @param string $reseller The reseller account to be suspended
     * @param string $reason   (optional) The reason for suspending the reseller account
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SuspendReseller XML API Call documentation
     */
     public function suspendreseller($reseller, $reason = null)
@@ -1050,8 +1050,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * This function will unsuspend a reseller account and all accounts owned by the reseller in question
     * @param string $user The username of the reseller to be unsuspended
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/UnsuspendReseller XML API Call documentation
     */
     public function unsuspendreseller($user)
@@ -1068,8 +1068,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * This function will return the number of accounts owned by a reseller account, along with information such as the number of active, suspended and accounting limits
     * @param string $user The username of the reseller to get account information from
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/AcctCounts XML API Call documentation
     */
     public function acctcounts($user)
@@ -1088,8 +1088,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * If this function is not passed a $nameservers parameter, it will reset the nameservers for the reseller to the servers's default
     * @param string $user        The username of the reseller account to grab reseller accounts from
     * @param string $nameservers A comma seperate list of nameservers
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetResellerNameservers XML API Call documentation
     */
     public function setresellernameservers($user, $nameservers = null)
@@ -1108,12 +1108,12 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     //###
     // Server information
     //###
-    
+
     /**
     * Get a server's hostname
     *
     * This function will return a server's hostname
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/DisplayServerHostname XML API Call documentation
     */
@@ -1125,7 +1125,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * Get the version of cPanel running on the server
     *
     * This function will return the version of cPanel/WHM running on the remote system
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/DisplaycPanelWHMVersion XML API Call documentation
     */
@@ -1138,7 +1138,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * This function will return the loadavg of the remote system
     *
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/LoadAvg XML API Call documentation
     */
@@ -1150,10 +1150,10 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * Get a list of languages on the remote system
     *
     * This function will return a list of available langauges for the cPanel interface
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/GetLangList XML API Call documentation
-    *         
+    *
     */
     public function getlanglist()
     {
@@ -1162,14 +1162,14 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     //###
     // Server administration
     //###
-    
+
     /**
     * Reboot server
     *
     * This function will reboot the server
     * @param boolean $force This will determine if the server should be given a graceful or forceful reboot
-    * 
-     * @return mixed  
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/RebootServer XML API Call documentation
     */
     public function reboot($force = false)
@@ -1187,8 +1187,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * This function will add an IP alias to your server
     * @param string $ip      The IP to be added
     * @param string $netmask The netmask of the IP to be added
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/AddIPAddress XML API Call documentation
     */
     public function addip($ip, $netmask)
@@ -1202,7 +1202,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
         ));
     }
     // This function allows you to delete an IP address from your server.
-    
+
     /**
     * Delete an IP from a server
     *
@@ -1210,8 +1210,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * @param string $ip             The IP to remove
     * @param string $ethernetdev    The ethernet device that the IP is bound to
     * @param bool   $skipifshutdown Whether the function should remove the IP even if the ethernet interface is down
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/DeleteIPAddress XML API Call documentation
     */
     public function delip($ip, $ethernetdev = null, $skipifshutdown = false)
@@ -1231,7 +1231,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * List IPs
     *
     * This should return a list of IPs on a server
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/DeleteIPAddress XML API Call documentation
     */
@@ -1244,8 +1244,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * This function will allow you to set the hostname of the server
     * @param string $hostname the hostname that should be assigned to the serve
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetHostname XML API Call documentation
     */
     public function sethostname($hostname)
@@ -1259,14 +1259,14 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     }
     /**
     * Set the resolvers used by the server
-    * 
+    *
     * This function will set the resolvers in /etc/resolv.conf for the server
     * @param string $nameserver1 The IP of the first nameserver to use
     * @param string $nameserver2 The IP of the second namesever to use
     * @param string $nameserver3 The IP of the third nameserver to use
     * @param string $nameserver4 The IP of the forth nameserver to use
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/SetResolvers XML API Call documentation
     */
     public function setresolvers($nameserver1, $nameserver2 = null, $nameserver3 = null)
@@ -1291,7 +1291,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * The arguments for this can be passed in via an associative array, the elements of this array map directly to the
     * parameters of the call, please see the XML API Call documentation for more information
     * @param array $args The configuration for what bandwidth information to display
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ShowBw XML API Call documentation
     */
@@ -1306,16 +1306,16 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
      * nvset
      * Insert description here
      *
-     * @param $key  
+     * @param $key
      * @param $value
-     *                 
-     * 
+     *
+     *
      * @return
-     *         
+     *
      * @access
      * @static
-     * @see   
-     * @since 
+     * @see
+     * @since
      */
     public function nvset($key, $value)
     {
@@ -1328,20 +1328,20 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
         ));
     }
     // This function allows you to retrieve and view a non-volatile variable's value.
-    
+
     /**
      * nvget
      * Insert description here
      *
      * @param $key
-     *               
-     * 
+     *
+     *
      * @return
-     *         
+     *
      * @access
      * @static
-     * @see   
-     * @since 
+     * @see
+     * @since
      */
     public function nvget($key)
     {
@@ -1355,14 +1355,14 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     //###
     // Service functions
     //###
-    
+
     /**
     * Restart a Service
     *
     * This function allows you to restart a service on the server
     * @param string $service the service that you wish to restart please view the XML API Call documentation for acceptable values to this parameters
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/RestartService XML API Call documentation
     */
     public function restartsrv($service)
@@ -1378,7 +1378,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * Service Status
     *
     * This function will return the status of all services on the and whether they are running or not
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ServiceStatus XML API Call documentation
     */
@@ -1393,8 +1393,8 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * @param string $service   The service to be monitored
     * @param bool   $enabled   Whether the service should be enabled or not
     * @param bool   $monitored Whether the service should be monitored or not
-    * 
-     * @return mixed 
+    *
+     * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ConfigureService XML API Call documentation
     */
     public function configureservice($service, $enabled = true, $monitored = true)
@@ -1420,13 +1420,13 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     //###
     // SSL functions
     //###
-    
+
     /**
     * Display information on an SSL host
     *
     * This function will return information on an SSL Certificate, CSR, cabundle and SSL key for a specified domain
     * @param array $args Configuration information for the SSL certificate, please see XML API Call documentation for required values
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/FetchSSL XML API Call documentation
     */
@@ -1446,7 +1446,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     *
     * This function will generate an SSL Certificate, the arguments for this map directly to the call for the XML API call.  Please consult the XML API Call documentation for more information
     * @param array $args the configuration for the SSL Certificate being generated
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/GenerateSSL XML API Call documentation
     */
@@ -1460,10 +1460,10 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     /**
     * Install an SSL certificate
     *
-    * This function will allow you to install an SSL certificate that is uploaded via the $argument parameter to this call.  The arguments for this call map directly to the parameters for the XML API call, 
+    * This function will allow you to install an SSL certificate that is uploaded via the $argument parameter to this call.  The arguments for this call map directly to the parameters for the XML API call,
     * please consult the XML API Call documentation for more information.
     * @param array $args The configuration for the SSL certificate
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/InstallSSL XML API Call documentation
     */
@@ -1478,7 +1478,7 @@ abstract class Cpanel_Service_XmlapiClientClass extends Cpanel_Query_Http_Abstra
     * List SSL Certs
     *
     * This function will list all SSL certificates installed on the server
-    * 
+    *
      * @return mixed
     * @link   http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/ListSSL XML API Call documentation
     */

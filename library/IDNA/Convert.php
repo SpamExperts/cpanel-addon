@@ -315,7 +315,7 @@ class IDNA_Convert
             }
         }
         // Catch the rest of the string
-        if ($last_begin) {
+        if ($last_begin && is_array($decoded)) {
             $inp_len = sizeof($decoded);
             $encoded = '';
             $encoded = $this->_encode(array_slice($decoded, $last_begin, (($inp_len)-$last_begin)));
@@ -598,7 +598,7 @@ class IDNA_Convert
                 // the now redundant non-starter(s)
                 if ($out) {
                     $output[$last_starter] = $out;
-                    if (count($out) != $seq_len) {
+                    if (is_array($out) && count($out) !== $seq_len) {
                         for ($j = $i+1; $j < $out_len; ++$j) $output[$j-1] = $output[$j];
                         unset($output[$out_len]);
                     }
@@ -641,7 +641,7 @@ class IDNA_Convert
      */
     private function _hangul_compose($input)
     {
-        $inp_len = count($input);
+        $inp_len = is_array($input) ? count($input) : 0;
         if (!$inp_len) return array();
         $result = array();
         $last = (int) $input[0];
@@ -693,7 +693,7 @@ class IDNA_Convert
     private function _apply_cannonical_ordering($input)
     {
         $swap = true;
-        $size = count($input);
+        $size = is_array($input) ? count($input) : 0;
         while ($swap) {
             $swap = false;
             $last = $this->_get_combining_class(intval($input[0]));
@@ -724,10 +724,10 @@ class IDNA_Convert
      */
     private function _combine($input)
     {
-        $inp_len = count($input);
+        $inp_len = is_array($input) ? count($input) : 0;
         foreach ($this->NP['replacemaps'] as $np_src => $np_target) {
             if ($np_target[0] != $input[0]) continue;
-            if (count($np_target) != $inp_len) continue;
+            if (!is_array($np_target) || count($np_target) !== $inp_len) continue;
             $hit = false;
             foreach ($input as $k2 => $v2) {
                 if ($v2 == $np_target[$k2]) {

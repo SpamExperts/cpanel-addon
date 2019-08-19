@@ -236,7 +236,7 @@ class AdminController extends Zend_Controller_Action
                 $values         = $this->_request->getPost(); // Technically we should use *this*
                 if ($form->isValid($_POST)) {
                     $uploadedData = $form->getValues();
-                    
+
                     if (empty($uploadedData['brandicon'])) {
                         $values['brandicon'] = trim($this->_branding->getBrandIcon());
                         $this->_flashMessenger->addMessage(
@@ -298,7 +298,7 @@ class AdminController extends Zend_Controller_Action
         }
         $resellers = $this->_panel->getResellers();
 
-        if ((!isset($resellers)) || (empty($resellers)) || (count($resellers) == 0)) {
+        if ((!isset($resellers)) || (empty($resellers)) || (is_array($resellers) && count($resellers) === 0)) {
             $this->_flashMessenger->addMessage(
                 array('message' => $this->t->_('Unable to retrieve resellers.'), 'status' => 'error')
             );

@@ -43,7 +43,7 @@ if (!$this->hasAPIAccess) {
     </thead>
     <tbody>
         <?php
-        if (count($this->paginator) == 0) {
+        if ($this->paginator->count() === 0) {
             echo '<tr><td colspan="3">' . $this->t->_('There are no domains assigned to your account') . '</td></tr>';
         }
 

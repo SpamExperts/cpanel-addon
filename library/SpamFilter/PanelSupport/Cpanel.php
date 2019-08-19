@@ -410,7 +410,7 @@ class SpamFilter_PanelSupport_Cpanel
 
         // Remove all current MX records
         $this->removeMXRecords($domain);
-        
+
         // Setup DNS for $domain using array $records (key = priority);
         foreach ($records as $prio => $value) {
             if (!empty($value)) {
@@ -461,7 +461,7 @@ class SpamFilter_PanelSupport_Cpanel
         }
         return $spfrecord;
     }
-    
+
      /**
      * Setup SPF Record for specified domain
      *
@@ -476,9 +476,9 @@ class SpamFilter_PanelSupport_Cpanel
             $this->_logger->debug("Cannot add SPF Record. SPF Record is not set in settings.");
             return false;
         }
-        
+
         $args['domain'] = $params['domain'];
-        $args['api.version'] = '1';        
+        $args['api.version'] = '1';
         $spfrecord = $this->getSPFRecord($args);
         $response = array();
         // SPF Record found in DNS
@@ -502,7 +502,7 @@ class SpamFilter_PanelSupport_Cpanel
         }
         return ($response['metadata']['result'] == 1)? true : false;
     }
-    
+
     /**
      * Remove SPF Record for specified domain
      *
@@ -512,19 +512,19 @@ class SpamFilter_PanelSupport_Cpanel
      *
      * @access public
      */
-    public function RemoveSPF($domain){           
+    public function RemoveSPF($domain){
         $args['domain'] = $domain;
-        $args['api.version'] = '1';        
+        $args['api.version'] = '1';
         $spfrecord = $this->getSPFRecord($args);
         if(isset($spfrecord['txtdata']) && $spfrecord['txtdata'] == $this->_config->spf_record){
            $args['zone']    = $domain;
            $args['line']    = $spfrecord['Line'];
            $response = $this->_api->getWhm()->makeQuery('removezonerecord', $args)->getResponse('array');//check status
-           return ($response['metadata']['result'] == 1)? true : false;         
+           return ($response['metadata']['result'] == 1)? true : false;
         }
         return false;
     }
-  
+
      /**
      * Switches MX mode to a different mode.
      *
@@ -554,7 +554,7 @@ class SpamFilter_PanelSupport_Cpanel
         } else {
             $user = $params['user'];
         }
-        
+
         if ($user !== false) {
             $this->_logger->debug("Switching MX mode for '{$domain}' to '{$mode}'..");
             try {
@@ -935,7 +935,7 @@ class SpamFilter_PanelSupport_Cpanel
         // Return a unique array, since the OWNER= can also contain USER=
         $unique = $this->getUniqueDomains($localDomains);
 
-        $c = count($unique);
+        $c = is_array($unique) ? count($unique) : 0;
         $this->_logger->debug("Returning {$c} domains");
         return $unique;
     }
@@ -1006,17 +1006,17 @@ class SpamFilter_PanelSupport_Cpanel
         }
 
         $this->_logger->debug("ListAccts. Search: '{$search}' with value '{$searchby}'.");
-        
+
         try {
-            /** @var $response Cpanel_Query_Object */        
+            /** @var $response Cpanel_Query_Object */
             if ('^root$' == $searchby && $this->permitted('all')){
                 $response = $this->_api->whm_api('listaccts');
-                $arr = $response->getResponse('array');                
+                $arr = $response->getResponse('array');
             } else {
                 $response = $this->_api->whm_api('listaccts', array('search' => $search, 'searchby' => $searchby));
-            
+
                 $arr = $response->getResponse('array');
-                
+
                 // look for owner domains too.
                 if($search == 'owner'){
                     $this->_logger->debug("Search for owner '{$searchby}' account data.");
@@ -1024,9 +1024,9 @@ class SpamFilter_PanelSupport_Cpanel
                     $resellerArr = $resellerResponse->getResponse('array');
                     $arr['acct'][] = $resellerArr['acct'][0];
                 }
-            
+
             }
-            
+
             $this->_logger->info("Data returned: " . serialize($arr));
 
             if (isset($arr['data']) && isset($arr['data']['reason']) && isset($arr['data']['result'])
@@ -1270,7 +1270,7 @@ class SpamFilter_PanelSupport_Cpanel
     {
         $this->_logger->debug("Get local accounts");
         $accounts = $this->listaccts();
-        if (isset($accounts['acct'])) {
+        if (isset($accounts['acct']) && is_array($accounts['acct'])) {
             $c = count($accounts['acct']);
             $this->_logger->debug("Returning {$c} local accounts");
 
@@ -1397,16 +1397,16 @@ class SpamFilter_PanelSupport_Cpanel
         }
         return (!empty($result) ? $result : false);
     }
-    
+
     public function getSubDomains($username){
         $result = array();
-        $filename = "/var/cpanel/userdata/{$username}/main";     
+        $filename = "/var/cpanel/userdata/{$username}/main";
         if (!file_exists($filename) || !is_readable($filename)) {
             $this->_logger->warn("Failed to retrieve parked domains for '$username': unable to read '{$filename}'. Retrieving parked domains via API.");
             $params = array (   'cpanel_jsonapi_func'       => 'listsubdomains',
                                 'cpanel_jsonapi_apiversion' => 2,
                                 'cpanel_jsonapi_module'     => 'SubDomain',
-                                'user'                      => $username, 
+                                'user'                      => $username,
                             );
             $response = $this->_api->getWhm()->makeQuery('cpanel', $params);
             $domains = $response->getResponse('array');
@@ -1432,7 +1432,7 @@ class SpamFilter_PanelSupport_Cpanel
                 $sectionHasStarted = (0 === strpos($line, 'sub_domains:'));
             }
         }
-        return (!empty($result) ? $result : false);        
+        return (!empty($result) ? $result : false);
     }
 
     /**
@@ -1599,7 +1599,7 @@ class SpamFilter_PanelSupport_Cpanel
             }
         } catch (Exception $e) {
             $this->_logger->crit("Exception caught in " . __METHOD__ . " method : " . $e->getMessage());
-        }        
+        }
         $this->_logger->debug("Returning array of resellers: " . serialize($output));
 
         return $output;
@@ -1678,7 +1678,7 @@ class SpamFilter_PanelSupport_Cpanel
                 $domains[$key]['domain']   = $data['domain'];
                 $domains[$key]['username'] = $data['user'];
             }
-            
+
             return $domains;
         }
 
@@ -1860,7 +1860,7 @@ class SpamFilter_PanelSupport_Cpanel
             $this->_logger->debug("{$domain}'s MX mode guessing: the check is skipped due to empty user");
         }
 
-        $is_remote_flag = (array_sum($is_remote) > 0 || count($is_remote) == 0) ? true : false;
+        $is_remote_flag = (array_sum($is_remote) > 0 || count($is_remote) === 0) ? true : false;
 
         $this->_logger->debug("{$domain} is " . ((!$is_remote_flag) ? "NOT " : "") . "a remote domain");
 
@@ -1884,17 +1884,17 @@ class SpamFilter_PanelSupport_Cpanel
             return true;
         }
         if(!empty($ownerDomain) && SpamFilter_Domain::exists($ownerDomain)){
-            $this->_logger->debug("[isInFilter] Checking for alias of domain '{$ownerDomain}'");                
+            $this->_logger->debug("[isInFilter] Checking for alias of domain '{$ownerDomain}'");
             $SEAPI = new SpamFilter_ResellerAPI;
             $apiResponse = $SEAPI->domainalias()->list(array('domain' => $ownerDomain));
             foreach($apiResponse as $alias){
                 if($alias == $domain){
-                    $this->_logger->debug("[isInFilter] The domain '{$domain}' is alias of domain $ownerDomain.");                
+                    $this->_logger->debug("[isInFilter] The domain '{$domain}' is alias of domain $ownerDomain.");
                     return true;
                 }
             }
         }
-        
+
         $this->_logger->debug("[isInFilter] The domain '{$domain}' is NOT in the filter, or request failed.");
 
         return false;
@@ -1927,7 +1927,7 @@ class SpamFilter_PanelSupport_Cpanel
                     }
                 }
             }
-        }                
+        }
 
         $domain = strtolower($domain);
 
@@ -2145,8 +2145,8 @@ class SpamFilter_PanelSupport_Cpanel
                 shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme paper_lantern");
 
                 $this->_logger->debug("[Cpanel] Re-registering plugin for other themes & generating sprites.");
-                
-                // Creating dynamicui directory 
+
+                // Creating dynamicui directory
                 // @see https://trac.spamexperts.com/ticket/22354
                 if(!file_exists('/usr/local/cpanel/base/frontend/x3/dynamicui')){
                     mkdir('/usr/local/cpanel/base/frontend/x3/dynamicui');
@@ -2248,7 +2248,7 @@ class SpamFilter_PanelSupport_Cpanel
                                     );
                                 }
                             }
-                            
+
                             /*
                                 Add Addon Domains.
                             */
@@ -2270,10 +2270,10 @@ class SpamFilter_PanelSupport_Cpanel
                                     );
                                 }
                             }
-                            
+
                             /*
                                 Add Subomains.
-                            */                            
+                            */
                             if ($informer && isset($sessionManager)) {
                                 $sessionManager->bulkprotectinformer = 'Getting list of subdomains...';
                             }
@@ -2319,7 +2319,7 @@ class SpamFilter_PanelSupport_Cpanel
 
         if ($informer && isset($sessionManager)) {
             $sessionManager->bulkprotectinformerstatus = 'protecting';
-            if (0 < count($collectionDomains)) {
+            if (is_array($collectionDomains) && 0 < count($collectionDomains)) {
                 $sessionManager->bulkprotectinformer
                     = 'List of domains has completed. Starting the process of protecting...';
             }
@@ -2407,12 +2407,13 @@ class SpamFilter_PanelSupport_Cpanel
             $domains[] = $collectionDomain['name'];
         }
 
-        if (count($domains) > 0) {
+        $countDomains = count($domains);
+        if ($countDomains > 0) {
             $this->_logger->info("Starting migration.");
             $hook       = new SpamFilter_Hooks;
             $freelimit  = $hook->GetFreeLimit($username, $password);
             $is_success = false;
-            if ('unlimit' == $freelimit || $freelimit - count($domains) >= 0) {
+            if ('unlimit' == $freelimit || $freelimit - $countDomains >= 0) {
                 $limitdomain = null;
                 $notmoved    = array();
                 $moved       = array();
@@ -2587,7 +2588,7 @@ class SpamFilter_PanelSupport_Cpanel
 
         return false;
     }
-    
+
      /**
      * Returns domains matched with filter
      *
@@ -2596,7 +2597,7 @@ class SpamFilter_PanelSupport_Cpanel
      * @return array
      *
      * @access public
-     */        
+     */
     public function filterDomains($params){
             $filter = $params['filter'];
             $filteredDomains = array();
@@ -2718,7 +2719,7 @@ class SpamFilter_PanelSupport_Cpanel
         // Check if API request is successful
         // It is required for older versions of WHM & cPanel (below 11.46) where read_featurelist request is unavailble.
         // Check if feature is not avaible OR spamfilter is not on the feature lists.
-        if($arr['metadata']['result'] == 0 || !isset($arr['data']['features']['prospamfilter'])){    
+        if($arr['metadata']['result'] == 0 || !isset($arr['data']['features']['prospamfilter'])){
 		return true;
         }
         return $arr['data']['features']['prospamfilter'] == 1 ? true : false;
@@ -2757,7 +2758,7 @@ class SpamFilter_PanelSupport_Cpanel
 
         return $hasFeature;
     }
-    
+
      /**
      * Gather all Installed Hooks
      *
@@ -2773,11 +2774,11 @@ class SpamFilter_PanelSupport_Cpanel
         } else {
             die("Cannot gather hook list! Aborted!");
         }
-    } 
-    
+    }
+
      /**
      * Check if hook is already added into panel
-     * 
+     *
      * @hooks - array with data of hooks
      * @file - script file name
      *
@@ -2800,7 +2801,7 @@ class SpamFilter_PanelSupport_Cpanel
 
      /**
      * Adding or delete hook using manage_hook functionality
-     * 
+     *
      * @params - array with data of hooks
      * @see guide to standarized hooks at : https://documentation.cpanel.net/display/SDK/Guide+to+Standardized+Hooks+-+Hookable+Events
      *
@@ -2828,11 +2829,11 @@ class SpamFilter_PanelSupport_Cpanel
                 }
 
                 system($commandStr);
-            }                        
+            }
         }
         return "Done." . PHP_EOL;
-    } 
-    
+    }
+
     /**
      * Returns main domain of user.
      *

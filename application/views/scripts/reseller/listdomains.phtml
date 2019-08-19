@@ -43,9 +43,9 @@ if( !$this->isConfigured )
                 parentDocumentTitle = window.top.document.title;
                 if (parentDocumentTitle.indexOf(brandname) == -1) {
                     window.top.document.title = parentDocumentTitle + ' - ' +  brandname;
-                } 
+                }
             } catch(e) {
-        
+
             }
         });
     </script>
@@ -82,7 +82,7 @@ if( !$this->isConfigured )
         </thead>
         <tbody>
         <?php
-        if( count($this->paginator) == 0 )
+        if( $this->paginator->count() === 0 )
         {
 		echo '<tr><td colspan="5">'. $this->t->_('No content to display') . '</td></tr>';
         }
@@ -246,11 +246,11 @@ if( !$this->isConfigured )
                 window.location = goTo;
                 return false;
             });
-            
+
             $("#changeItems").click(function(event){
                 event.preventDefault();
                 changeItemsPerPage();
-            });            
+            });
 
             $("#toggleSelected").click(function(event) {
                 event.preventDefault();
@@ -264,7 +264,7 @@ if( !$this->isConfigured )
                 return false;
             });
 
-        
+
             $("#sortDomain").click(function() {
                 var pattern = /\b\/sortorder\/[^/]*/g;
                 var matches = pattern.exec(window.location.href);
@@ -342,7 +342,7 @@ if( !$this->isConfigured )
             if(items < 1 || items > 25){
                 $("#itemsPerPageInfo").html('The items per page parameter should be an integer greater than or equal to 1 and less than or equal to 25');
                 $("#itemsPerPageInfo").show(0);
-                $("html, body").animate({ scrollTop: 0 }, "slow");           
+                $("html, body").animate({ scrollTop: 0 }, "slow");
                 return false;
             }
             var pattern = /\b\/items\/[^/]*/g;
@@ -350,19 +350,19 @@ if( !$this->isConfigured )
             var goTo;
             if(matches){
                 goTo = window.location.href.replace(matches[0], "/items/"+ items);
-            } else {                       
-                goTo = prepareURI() + '/items/' + items;                              
-            }  
+            } else {
+                goTo = prepareURI() + '/items/' + items;
+            }
             window.location = goTo;
             return false;
         };
-        
+
         function toggleProtection(thisObj){
             thisObj.hide(0);
             thisObj.before(loading_html);
             protectionRequest(thisObj);
         }
-        
+
         function prepareURI(){
             var s = window.location.href;
             var pattern = /\?q=reseller\/listdomains/g;
@@ -388,7 +388,7 @@ if( !$this->isConfigured )
                 protectionRequest(selected[i]);
             }
         }
-    
+
         function disableButtons(){
             $('#sortDomain').addClass("disabled");
             $('.tableButtons').find('button').each(function() {

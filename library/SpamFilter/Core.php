@@ -85,7 +85,7 @@ class SpamFilter_Core
                 {
                     $bits = self::getBitType();
                 }
-            
+
             if ($bits == 64 && (file_exists(BASE_PATH . '/bin/getconfig64'))) {
                     #Zend_Registry::get('logger')->debug("[Core] Using 64-bits getconfig binary");
                     $binary = 'getconfig64';
@@ -132,7 +132,7 @@ class SpamFilter_Core
 
             return 'CPANEL';
         }
-                
+
         Zend_Registry::get('logger')->err("[Core] Paneltype cannot be determined.");
 
         return 'UNKNOWN';
@@ -335,14 +335,15 @@ class SpamFilter_Core
                     if ($perms != 6755) {
                         //$rv['reason'][] = "APIPass binary has incorrect permissions ({$perms}) instead of 6755. Unable to fix this automatically. Please execute: 'chmod 6755 {$configBinary}' via SSH to fix this.";
                         // Permissions are not correct
-                            $rv = trim( shell_exec( "chown root:root {$configBinary} && chmod +s {$configBinary} && echo \"OK\" || echo \"NOTOK\"") );
-                            if ($rv != "OK")
-                            {
-                                Zend_Registry::get('logger')->emerg("APIPass permissions are not correct ({$perms}). Please chmod it at with +s!");
-                                array_push($rv['reason'], "APIPass binary has incorrect permissions ({$perms}) instead of 6755. Unable to fix this automatically. Please execute: 'chmod +s {$configBinary}' via SSH to fix this.");
-                            } else {
-                                Zend_Registry::get('logger')->info("Fixed the permissions of APIPass, they were '{$perms}' but now changed to '+s'.");
-                            }
+                        $changed = trim( shell_exec( "chown root:root {$configBinary} && chmod +s {$configBinary} && echo \"OK\" || echo \"NOTOK\"") );
+                        if ($changed !== "OK") {
+                            Zend_Registry::get('logger')->emerg("APIPass permissions are not correct ({$perms}). Please chmod it at with +s!");
+                            array_push($rv['reason'],
+                                "APIPass binary has incorrect permissions ({$perms}) instead of 6755. Unable to fix this automatically. Please execute: 'chmod +s {$configBinary}' via SSH to fix this."
+                            );
+                        } else {
+                            Zend_Registry::get('logger')->info("Fixed the permissions of APIPass, they were '{$perms}' but now changed to '+s'.");
+                        }
                     }
                 }
             }
@@ -739,7 +740,7 @@ class SpamFilter_Core
     {
         return !empty($_SERVER['REQUEST_METHOD']);
     }
-    
+
     final static public function isWindows()
     {
         return stripos(PHP_OS, 'win') === 0;
