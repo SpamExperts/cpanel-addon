@@ -1953,7 +1953,7 @@ class SpamFilter_PanelSupport_Cpanel
 
             if (is_array($domains)) {
                 foreach ($domains as $d) {
-                    if ($d['domain'] == $domain && isset($d['owner_domain'])) {
+                    if ($d['domain'] !== $domain && isset($d['owner_domain'])) {
                         $domain = $toLower($d['owner_domain']);
 
                         break;
