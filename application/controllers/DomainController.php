@@ -118,11 +118,7 @@ class DomainController extends Zend_Controller_Action
 		$this->view->headTitle()->set($brandname);
 		$this->view->headTitle()->setSeparator(' | ');
 
-        // paper lantern uses his own bootstrap.
-        if (strpos($_SERVER['PHP_SELF'], '/paper_lantern/') === false){
-            $this->view->headStyle()->appendStyle( file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'bootstrap.min.css') );
-        }
-
+        $this->view->headStyle()->appendStyle( file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'bootstrap.min.css') );
 		$this->view->headStyle()->appendStyle( file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'bootstrap-responsive.min.css') );
 		$this->view->headStyle()->appendStyle( file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'addon.css') );
 		$this->view->headScript()->appendScript( file_get_contents(BASE_PATH . DS . 'public' . DS . 'js' . DS . 'jquery.min.js') );
