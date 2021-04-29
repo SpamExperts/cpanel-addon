@@ -1,0 +1,34 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 99
+  versioning-strategy: lockfile-only
+  allow:
+  - dependency-type: direct
+  - dependency-type: indirect
+  ignore:
+  - dependency-name: codeception/codeception
+    versions:
+    - 4.1.16
+    - 4.1.17
+    - 4.1.18
+    - 4.1.19
+  - dependency-name: guzzlehttp/psr7
+    versions:
+    - 1.7.0
+    - 1.8.1
+  - dependency-name: symfony/polyfill-mbstring
+    versions:
+    - 1.22.0
+  - dependency-name: squizlabs/php_codesniffer
+    versions:
+    - 3.5.8
+  - dependency-name: guzzlehttp/promises
+    versions:
+    - 1.4.0
+  - dependency-name: webmozart/assert
+    versions:
+    - 1.9.1
