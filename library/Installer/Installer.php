@@ -107,12 +107,12 @@ class Installer_Installer
 
         file_put_contents('/usr/local/cpanel/whostmgr/addonfeatures/prospamfilter', 'prospamfilter:SpamExperts');
 
-        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0")) {
-            mkdir("/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0");
+        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.6.0")) {
+            mkdir("/usr/local/cpanel/base/unprotected/libraries/jquery/3.6.0");
         }
 
-        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0/jquery-3.2.0.min.js")) {
-            copy("/usr/local/prospamfilter/public/js/jquery.min.js","/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0/jquery-3.2.0.min.js");
+        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.6.0/jquery-3.6.0.min.js")) {
+            copy("/usr/local/prospamfilter/public/js/jquery.min.js","/usr/local/cpanel/base/unprotected/libraries/jquery/3.6.0/jquery-3.6.0.min.js");
         }
 
         $this->setUpApiTokens();
