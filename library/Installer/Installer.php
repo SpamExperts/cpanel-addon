@@ -107,14 +107,6 @@ class Installer_Installer
 
         file_put_contents('/usr/local/cpanel/whostmgr/addonfeatures/prospamfilter', 'prospamfilter:SpamExperts');
 
-        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.6.0")) {
-            mkdir("/usr/local/cpanel/base/unprotected/libraries/jquery/3.6.0");
-        }
-
-        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.6.0/jquery-3.6.0.min.js")) {
-            copy("/usr/local/prospamfilter/public/js/jquery.min.js","/usr/local/cpanel/base/unprotected/libraries/jquery/3.6.0/jquery-3.6.0.min.js");
-        }
-
         $this->setUpApiTokens();
         $this->setUpdateCronjob();
         $this->setupSuidPermissions();
@@ -528,6 +520,13 @@ class Installer_Installer
             "/usr/local/prospamfilter/public/images", "/usr/local/prospamfilter/frontend/cpaneltags/psf"
         );
         $this->logger->info("[Install] Symlinking cPanel addon icons to webdir cpaneltags completed with {$ret_val}");
+
+        $this->output->info("Symlinking cPanel addon vendor js to webdir");
+        $ret_val = $this->filesystem->symlink(
+            "/usr/local/prospamfilter/public/js",
+            "/usr/local/prospamfilter/frontend/templatetoolkit/vendor"
+        );
+        $this->logger->info("[Install] Symlinking cPanel addon vendor js to webdir templatetoolkit completed with {$ret_val}");
 
         // Make it executable (requirement for .cgi file)
         $this->output->info("Making WHM addon executable");
