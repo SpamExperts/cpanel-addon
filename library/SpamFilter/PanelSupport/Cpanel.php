@@ -2139,10 +2139,11 @@ class SpamFilter_PanelSupport_Cpanel
                 }
 
                 // Re-register plugin
-                $this->_logger->debug("[Cpanel] Re-registering plugin for paper_lantern & generating sprites.");
+                $this->_logger->debug("[Cpanel] Re-registering plugin for paper_lantern + jupiter & generating sprites.");
 
                 $buttonConfig = '/usr/local/prospamfilter/bin/cpanel/paper_lantern/psf.tar.bz2';
                 shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme paper_lantern");
+                @shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme jupiter");
 
                 $this->_logger->debug("[Cpanel] Re-registering plugin for other themes & generating sprites.");
 
