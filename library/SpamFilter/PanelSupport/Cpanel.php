@@ -2159,6 +2159,8 @@ class SpamFilter_PanelSupport_Cpanel
                 $cgi = '/usr/local/prospamfilter/frontend/whm/prospamfilter.php';
                 if (file_exists($cgi)) {
                     shell_exec("sed -e 's/#WHMADDON:prospamfilter:.*/#WHMADDON:prospamfilter:{$brandname}/' -i {$cgi}");
+                    $appConfigFile = '/usr/local/prospamfilter/bin/cpanel/appconfig/prospamfilter_whm.conf';
+                    shell_exec("/usr/local/cpanel/bin/register_appconfig $appConfigFile");
                 } else {
                     $this->_logger->err("[Cpanel] Could not set brand name to sidemenu. {$cgi} doesn't exist");
                 }
