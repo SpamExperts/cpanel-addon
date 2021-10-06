@@ -2139,10 +2139,11 @@ class SpamFilter_PanelSupport_Cpanel
                 }
 
                 // Re-register plugin
-                $this->_logger->debug("[Cpanel] Re-registering plugin for paper_lantern & generating sprites.");
+                $this->_logger->debug("[Cpanel] Re-registering plugin for paper_lantern + jupiter & generating sprites.");
 
                 $buttonConfig = '/usr/local/prospamfilter/bin/cpanel/paper_lantern/psf.tar.bz2';
                 shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme paper_lantern");
+                @shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme jupiter");
 
                 $this->_logger->debug("[Cpanel] Re-registering plugin for other themes & generating sprites.");
 
@@ -2158,6 +2159,8 @@ class SpamFilter_PanelSupport_Cpanel
                 $cgi = '/usr/local/prospamfilter/frontend/whm/prospamfilter.php';
                 if (file_exists($cgi)) {
                     shell_exec("sed -e 's/#WHMADDON:prospamfilter:.*/#WHMADDON:prospamfilter:{$brandname}/' -i {$cgi}");
+                    $appConfigFile = '/usr/local/prospamfilter/bin/cpanel/appconfig/prospamfilter_whm.conf';
+                    shell_exec("/usr/local/cpanel/bin/register_appconfig $appConfigFile");
                 } else {
                     $this->_logger->err("[Cpanel] Could not set brand name to sidemenu. {$cgi} doesn't exist");
                 }

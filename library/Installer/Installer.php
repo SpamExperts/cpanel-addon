@@ -107,14 +107,6 @@ class Installer_Installer
 
         file_put_contents('/usr/local/cpanel/whostmgr/addonfeatures/prospamfilter', 'prospamfilter:SpamExperts');
 
-        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0")) {
-            mkdir("/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0");
-        }
-
-        if (!file_exists("/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0/jquery-3.2.0.min.js")) {
-            copy("/usr/local/prospamfilter/public/js/jquery.min.js","/usr/local/cpanel/base/unprotected/libraries/jquery/3.2.0/jquery-3.2.0.min.js");
-        }
-
         $this->setUpApiTokens();
         $this->setUpdateCronjob();
         $this->setupSuidPermissions();
@@ -477,7 +469,7 @@ class Installer_Installer
                 && !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
             ) {
                 $this->output->info("Symlinking cPanel addon to webdir {$eachDir}");
-                if ($eachDir == 'paper_lantern' && version_compare($cPanelVersion, '11.44.2') == 1) {
+                if (in_array($eachDir, ['paper_lantern', 'jupiter']) && version_compare($cPanelVersion, '11.44.2') == 1) {
                     $ret_val = $this->filesystem->symlink(
                         "/usr/local/prospamfilter/frontend/templatetoolkit/",
                         "{$cPanelWebdirsRoot}/{$eachDir}/prospamfilter"
@@ -528,6 +520,13 @@ class Installer_Installer
             "/usr/local/prospamfilter/public/images", "/usr/local/prospamfilter/frontend/cpaneltags/psf"
         );
         $this->logger->info("[Install] Symlinking cPanel addon icons to webdir cpaneltags completed with {$ret_val}");
+
+        $this->output->info("Symlinking cPanel addon vendor js to webdir");
+        $ret_val = $this->filesystem->symlink(
+            "/usr/local/prospamfilter/public/js",
+            "/usr/local/prospamfilter/frontend/templatetoolkit/vendor"
+        );
+        $this->logger->info("[Install] Symlinking cPanel addon vendor js to webdir templatetoolkit completed with {$ret_val}");
 
         // Make it executable (requirement for .cgi file)
         $this->output->info("Making WHM addon executable");
@@ -615,16 +614,6 @@ class Installer_Installer
                     }
                 } else {
                     $this->output->info("The Cpanel_{$eachDir} app in already registered in the AppConfig registry");
-                }
-
-                $buttonConfig = $binPath . '/cpanel/'. $eachDir .'/psf.tar.bz2';
-
-                // paper lantern added due to reseting brand @see https://trac.spamexperts.com/ticket/22825
-                if (! in_array($eachDir, array('x', 'x2', 'x3','x3mail', 'softaculous1', 'paper_lantern'))
-                    && file_exists('/usr/local/cpanel/scripts/install_plugin')
-                    && file_exists($buttonConfig)) {
-
-                    shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme {$eachDir}");
                 }
             }
         }

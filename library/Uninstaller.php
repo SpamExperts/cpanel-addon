@@ -183,8 +183,9 @@ class Uninstaller
         // Unregister cPanel addon (makes icon sprites)
         system("/usr/local/cpanel/bin/unregister_cpanelplugin /usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin");
 
-        // Removes DynamicUI for paper_lantern theme
+        // Removes DynamicUI for paper_lantern and jupiter themes
         @unlink("/usr/local/cpanel/base/frontend/paper_lantern/dynamicui/dynamicui_psf.conf");
+        @unlink("/usr/local/cpanel/base/frontend/jupiter/dynamicui/dynamicui_psf.conf");
 
         // Refresh cache (cPanel Bug: #1049678)
         system("touch /usr/local/cpanel/base/frontend/x3/dynamicui.conf");

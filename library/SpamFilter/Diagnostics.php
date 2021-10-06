@@ -318,8 +318,6 @@ class SpamFilter_Diagnostics
         switch ($this->_paneltype) {
             case "cpanel";
                 $files = array(
-                    "cPanel frontend (x3)"         => "/usr/local/cpanel/base/frontend/x3/prospamfilter",
-                    "cPanel frontend (x3mail)"     => "/usr/local/cpanel/base/frontend/x3mail/prospamfilter",
                     "WHM frontend"                 => "/usr/local/cpanel/whostmgr/docroot/cgi/addon_prospamfilter.cgi",
                     "WHM frontend - icon"          => "/usr/local/cpanel/whostmgr/docroot/themes/x/icons/prospamfilter.gif",
                 );
