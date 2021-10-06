@@ -41,13 +41,15 @@
 * @link      https://my.spamexperts.com/kb/34/Addons
 * @since     2.0
 */
-	// Include requires
-	require_once(realpath(dirname(__FILE__) . '/../') . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'bootstrap.php');
+// Include requires
+// phpcs:ignore PHPCS_SecurityAudit.Misc.IncludeMismatch.ErrMiscIncludeMismatchNoExt,PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
+require_once(realpath(dirname(__FILE__) . '/../') . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 define('DEST_PATH', '/usr/local/prospamfilter');
 define('BASE_PATH', '/usr/src/prospamfilter');
 define('CFG_PATH', '/etc/prospamfilter');
 
+// phpcs:disable PHPCS_SecurityAudit.Misc.IncludeMismatch.ErrMiscIncludeMismatchNoExt,PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI
 require_once DEST_PATH . DS . 'application'. DS .'bootstrap.php';
 require_once DEST_PATH . DS . 'library' . DS . 'SpamFilter' . DS . 'Core.php';
 require_once DEST_PATH . DS . 'library' . DS . 'Installer' . DS . 'InstallPaths.php';
@@ -57,6 +59,7 @@ require_once DEST_PATH . DS . 'library' . DS . 'Filesystem' . DS . 'WindowsFiles
 require_once DEST_PATH . DS . 'library' . DS . 'Output' . DS . 'OutputInterface.php';
 require_once DEST_PATH . DS . 'library' . DS . 'Output' . DS . 'ConsoleOutput.php';
 require_once DEST_PATH . DS . 'library' . DS . 'Uninstaller.php';
+// phpcs:disable PHPCS_SecurityAudit.Misc.IncludeMismatch.ErrMiscIncludeMismatchNoExt,PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI
 
 $paths = new Installer_InstallPaths();
 $paths->base = BASE_PATH;

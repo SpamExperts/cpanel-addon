@@ -63,6 +63,7 @@ class SpamFilter_Brand
 		}
 
 		$this->_configFile = CFG_PATH . DS . 'branding.conf';
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 		if( !is_readable( $this->_configFile ) ) {
 			Zend_Registry::get('logger')->err("[Brand] Cannot read my configfile. ({$this->_configFile})");
 			return false;

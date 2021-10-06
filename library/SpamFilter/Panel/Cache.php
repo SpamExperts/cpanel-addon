@@ -116,6 +116,7 @@ class SpamFilter_Panel_Cache
                 'automatic_serialization' => true,
             ),
             array(
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 'cache_dir' => (SpamFilter_Core::isWindows())? TMP_PATH . DS . 'cache' . DS : realpath(dirname(__FILE__) . '/../../..') . DS . 'tmp' . DS . 'cache' . DS
             )
         );
@@ -131,6 +132,7 @@ class SpamFilter_Panel_Cache
     private static function key($key)
     {
         /** @noinspection PhpUndefinedClassInspection */
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
         return __CLASS__ . $key . '_'. md5(SpamFilter_Core::getUsername());
     }
 

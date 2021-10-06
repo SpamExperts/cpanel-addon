@@ -63,7 +63,9 @@ if (null === $viewRenderer->view) {
     $viewRenderer->initView();
 }
 $view = $viewRenderer->view;
+// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
 echo $view->headStyle();
+// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
 echo $view->headScript();
 exit();
 ?>

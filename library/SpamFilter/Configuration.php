@@ -70,8 +70,9 @@ class SpamFilter_Configuration
         Zend_Registry::get('logger')->debug("[Config] Configuration constructed with filename '{$fileName}'");
         //Windows way to gather config data
         if(SpamFilter_Core::isWindows()){
-                $this->_fileName = $fileName;
-                if(isset($_SESSION['auth']['isAuthenticatedAsRoot']) && $_SESSION['auth']['isAuthenticatedAsRoot'] == true){
+            $this->_fileName = $fileName;
+            if(isset($_SESSION['auth']['isAuthenticatedAsRoot']) && $_SESSION['auth']['isAuthenticatedAsRoot'] == true){
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (is_readable($fileName)) {
                     Zend_Registry::get('logger')->debug("[Config] Using getconfig wrapper to obtain configuration");
                     $this->_configData = $this->_getBinaryContent();
@@ -82,6 +83,7 @@ class SpamFilter_Configuration
             }                    
         } else {
             // Check if we can read the file, if we can we use the normal featureset
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (is_readable($fileName)) {
                 Zend_Registry::get('logger')->debug("[Config] Using normal filename to obtain configuration");
                 $this->_configFile = $fileName;
@@ -164,17 +166,20 @@ class SpamFilter_Configuration
         $binary = SpamFilter_Core::getConfigBinary();
 
         // Check if it is executable
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!is_executable($binary)) {
             Zend_Registry::get('logger')->err("[Config] Unable to execute 'getconfig' binary.");
             
             return false;
         }
         if (SpamFilter_Core::isWindows()) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             $response = shell_exec('"' . $binary . '" --get "' . CFG_FILE . '"');            
             $configuration = str_replace(" ","\n",$response);
         } else {
             $command = "%s %s";
             $command = sprintf($command, $binary, "--config");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             $configuration = shell_exec($command);
         }
 
@@ -211,6 +216,7 @@ class SpamFilter_Configuration
         $binary = SpamFilter_Core::getConfigBinary();
 
         // Check if it is executable
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!is_executable($binary)) {
             Zend_Registry::get('logger')->err("[Config] Unable to execute 'getconfig' binary.");
 
@@ -220,6 +226,7 @@ class SpamFilter_Configuration
             foreach ($cfgData as $k => $v){
                 $str .= addslashes($k.'="'.$v.'"') . " ";
             }
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             shell_exec('"' . $binary . '" --save ' . CFG_FILE . ' "' . $str . '"');
             return true;
     }
@@ -239,6 +246,7 @@ class SpamFilter_Configuration
         $binary = SpamFilter_Core::getConfigBinary();
 
         // Check if it is executable
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!is_executable($binary)) {
             Zend_Registry::get('logger')->err("[Config] Unable to execute 'getconfig' binary.");
 
@@ -247,6 +255,7 @@ class SpamFilter_Configuration
 
         $command = "%s %s";
         $command = sprintf($command, $binary, "--accesstoken");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
         $hash    = shell_exec($command);
 
         // Check if the binary returned data
@@ -421,6 +430,7 @@ class SpamFilter_Configuration
 
             // Write values to the INI file
             try {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 file_put_contents($this->_configFile, $configStr);
             } catch (Exception $e) {
                 Zend_Registry::get('logger')->err($e->getMessage() . ' in ' . __FILE__ . ':' . __LINE__);

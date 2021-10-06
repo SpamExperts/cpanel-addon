@@ -18,6 +18,7 @@ class SpamFilter_Config_String extends Zend_Config_Ini
     static public function _parseIniFileContents($iniContents)
     {
         // TODO: use parse_ini_string() when support for php 5.2 is dropped
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $iniArray = self::parse_ini_string($iniContents, true); // Warnings and errors are suppressed
 
         // Check if there was a error while loading file
@@ -37,6 +38,7 @@ class SpamFilter_Config_String extends Zend_Config_Ini
      *
      * @return array
      */
+    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
     static private function parse_ini_string( $string )
     {
         $array = Array();

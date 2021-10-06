@@ -117,12 +117,14 @@ class Installer_Installer
 
     private function setUpApiTokens() {
         $accessTokenFile = "/root/.accesstoken";
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!file_exists($accessTokenFile) || !(trim(file_get_contents($accessTokenFile)))) {
             $this->createApiAuthToken($accessTokenFile);
         } else {
             $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_list --output=json");
             $tokensInfo = json_decode($jsonOutput, true);
             if (empty($tokensInfo['data']['tokens'][self::API_TOKEN_ID]['acls']['all'])) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                 shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=" . self::API_TOKEN_ID);
                 $this->createApiAuthToken($accessTokenFile);
             }
@@ -134,6 +136,7 @@ class Installer_Installer
 
     private function createApiAuthToken($accessTokenFile)
     {
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
         $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_create token_name=" . self::API_TOKEN_ID . " acl-1=all --output=json");
         $output = json_decode($jsonOutput, true);
 
@@ -144,9 +147,11 @@ class Installer_Installer
             } else {
                 $token = $output['data']['token'];
 
+                // phpcs:disable PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 $accessTokenFile = fopen($accessTokenFile, "w");
                 fwrite($accessTokenFile, $token);
                 fclose($accessTokenFile);
+                // phpcs:enable PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 
                 $this->logger->debug("Access token was successfully created.");
                 $this->output->info("Access token was successfully created.");
@@ -171,8 +176,10 @@ class Installer_Installer
                     $options['altconfig'] = "/etc/prospamfilter2/settings.conf";
                 }
             }
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         } elseif (file_exists($this->paths->destination . DS . 'application' . DS . 'version.txt')) {
             $this->logger->debug("[Install] New version file found post 3.0.0");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $this->currentVersion = trim(file_get_contents($this->paths->destination . DS . 'application' . DS . 'version.txt'));
         } else {
             $this->logger->debug("[Install] No version file found, must be new install.");
@@ -215,8 +222,10 @@ class Installer_Installer
             $this->logger->info("[Install] Current directory: {$curdir}");
             if (chdir("/usr/local/prospamfilter2/bin/")) {
                 $this->logger->info("[Install] Moved into /usr/local/prospamfilter2/bin");
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                 $lastline = system("./uninstall.php >/tmp/upgrade_psf 2>&1", $return_var); // run
                 $this->logger->info("[Install] Uninstaller last line: {$lastline}");
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 chdir($curdir); // Change back to previous directory
                 $this->logger->info("[Install] Changed back to {$curdir}");
                 $this->output->info("Removal of addon completed with exitcode: {$return_var}.");
@@ -246,15 +255,19 @@ class Installer_Installer
         $file_content[] = "header( \"refresh:5;url=/cgi/addon_prospamfilter.cgi\" );\n";
         $file_content[] = 'echo "You\'ll be redirected in about 5 secs. If not, click <a href=\\"/cgi/addon_prospamfilter.cgi\\">here</a>.";' . "\n";
         $file_content[] = "?>";
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $bw_status      = file_put_contents(
             "/usr/local/cpanel/whostmgr/docroot/cgi/addon_prospamfilter2.php", $file_content
         );
         $this->logger->debug("[Install] Creating backwards compatibility file resulted in code: {$bw_status}");
 
         // Merge config file with apipass file
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $passfile = file_get_contents($this->paths->config . "/apipass.conf");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (file_put_contents($this->paths->config . "/settings.conf", $passfile, FILE_APPEND)) {
             $this->output->info("Removing old password file..");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             unlink("/etc/prospamfilter/apipass.conf");
 
             $this->updateSettingsFilePermissions();
@@ -343,9 +356,13 @@ class Installer_Installer
     {
         // Cleanup dynamicui for old plugin
         $cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (is_dir($cPanelWebdirsRoot . '/' . $eachDir)) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (file_exists($cPanelWebdirsRoot . '/' . $eachDir . '/dynamicui/dynamicui_prospamfilter3.conf')) {
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     unlink($cPanelWebdirsRoot . '/' . $eachDir . '/dynamicui/dynamicui_prospamfilter3.conf');
                 }
             }
@@ -359,9 +376,11 @@ class Installer_Installer
 
         $cfgdir = $this->paths->config;
         // Settings file (world readable, root writable)
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         touch("{$cfgdir}" . DS . "settings.conf");
         $this->updateSettingsFilePermissions();
         // Create branding file
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         touch("{$cfgdir}" . DS . "branding.conf");
 
         $this->output->ok("Done");
@@ -371,9 +390,11 @@ class Installer_Installer
     {
         $directory = $this->paths->config;
 
+        // phpcs:disable PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!file_exists($directory)) {
             @mkdir("{$directory}" . DS, 0755, true);
             if (!file_exists($directory)) {
+                // phpcs:enable PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 die("[ERROR] Unable to create config folder!");
             }
         }
@@ -381,9 +402,11 @@ class Installer_Installer
 
     private function updateSettingsFilePermissions()
     {
+        // phpcs:disable PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         chown($this->paths->config . "/settings.conf", "root");
         chgrp($this->paths->config . "/settings.conf", "root");
         chmod($this->paths->config . "/settings.conf", 0660);
+        // phpcs:enable PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
     }
 
     private function getCpanelVersion(){
@@ -463,18 +486,23 @@ class Installer_Installer
         // Symlink cPanel indexes to webdirs.
         $cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
         $cPanelVersion = $this->getCpanelVersion();
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (is_dir("{$cPanelWebdirsRoot}/{$eachDir}")
                 && !in_array($eachDir, array('.', '..'))
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 && !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
             ) {
                 $this->output->info("Symlinking cPanel addon to webdir {$eachDir}");
                 if (in_array($eachDir, ['paper_lantern', 'jupiter']) && version_compare($cPanelVersion, '11.44.2') == 1) {
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     $ret_val = $this->filesystem->symlink(
                         "/usr/local/prospamfilter/frontend/templatetoolkit/",
                         "{$cPanelWebdirsRoot}/{$eachDir}/prospamfilter"
                     );
                 } else {
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     $ret_val = $this->filesystem->symlink(
                         "/usr/local/prospamfilter/frontend/cpaneltags/",
                         "{$cPanelWebdirsRoot}/{$eachDir}/prospamfilter"
@@ -485,11 +513,13 @@ class Installer_Installer
         }
 
         // Symlink cpanel folder to cpaneltags and templatetoolkit directories
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink
         $ret_val = $this->filesystem->symlink(
             "/usr/local/prospamfilter/frontend/cpanel/psf.php",
             "/usr/local/prospamfilter/frontend/cpaneltags/psf.php"
         );
         $this->logger->info("[Install] Symlinking to /usr/local/prospamfilter/frontend/cpaneltags/psf.php completed: " . $ret_val);
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink
         $ret_val = $this->filesystem->symlink(
             "/usr/local/prospamfilter/frontend/cpanel/psf.php",
             "/usr/local/prospamfilter/frontend/templatetoolkit/psf.php"
@@ -498,6 +528,7 @@ class Installer_Installer
 
         // Symlink WHM addon to CGI dir.
         $this->output->info("Symlinking WHM addon to webdir");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $ret_val = $this->filesystem->symlink(
             "/usr/local/prospamfilter/frontend/whm/prospamfilter.php",
             $whm_docroot . "/cgi/addon_prospamfilter.cgi"
@@ -506,22 +537,26 @@ class Installer_Installer
 
         // Symlink WHM icons to CGI dir.
         $this->output->info("Symlinking WHM addon icons to webdir");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $ret_val = $this->filesystem->symlink("/usr/local/prospamfilter/public/images", $whm_docroot . "/cgi/psf");
         $this->logger->info("[Install] Symlinking icons to webdir completed with {$ret_val}");
 
         // Symlink cPanel icons to CGI dir.
         $this->output->info("Symlinking cPanel addon icons to webdir");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink
         $ret_val = $this->filesystem->symlink(
             "/usr/local/prospamfilter/public/images", "/usr/local/prospamfilter/frontend/templatetoolkit/psf"
         );
         $this->logger->info("[Install] Symlinking cPanel addon icons to webdir templatetoolkit completed with {$ret_val}");
         $this->output->info("Symlinking cPanel addon icons to webdir");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink
         $ret_val = $this->filesystem->symlink(
             "/usr/local/prospamfilter/public/images", "/usr/local/prospamfilter/frontend/cpaneltags/psf"
         );
         $this->logger->info("[Install] Symlinking cPanel addon icons to webdir cpaneltags completed with {$ret_val}");
 
         $this->output->info("Symlinking cPanel addon vendor js to webdir");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink
         $ret_val = $this->filesystem->symlink(
             "/usr/local/prospamfilter/public/js",
             "/usr/local/prospamfilter/frontend/templatetoolkit/vendor"
@@ -530,10 +565,12 @@ class Installer_Installer
 
         // Make it executable (requirement for .cgi file)
         $this->output->info("Making WHM addon executable");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
         system("chmod +x {$whm_docroot}/cgi/addon_prospamfilter.cgi", $ret_val);
         $this->logger->info("[Install] Executable setting (addon_prospamfilter.cgi) returned with {$ret_val}");
 
         $this->output->info("Symlinking WHM icon to webdir");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $ret_val = $this->filesystem->symlink(
             "/usr/local/prospamfilter/public/images/prospamfilter.gif",
             $whm_docroot . "/themes/x/icons/prospamfilter.gif"
@@ -545,6 +582,7 @@ class Installer_Installer
     {
         $file = $this->paths->config.DS."settings.conf";
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if ((!file_exists($file)) || (filesize($file) == 0)) {
             $this->output->info("Configuration file '" . $file . "' does not exist (or is empty).");
             $this->output->info("Generating default configuration file..");
@@ -571,6 +609,7 @@ class Installer_Installer
         $statusAppConfig = trim(`/usr/local/cpanel/bin/is_registered_with_appconfig whostmgr prospamfilter_whm`);
         if ('0' == $statusAppConfig) {
             $appConfigFile = $this->getBinPath() . '/cpanel/appconfig/prospamfilter_whm.conf';
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             $appConfigRegisterResult = trim(shell_exec("/usr/local/cpanel/bin/register_appconfig $appConfigFile"));
 
             if (false === stripos($appConfigRegisterResult, 'prospamfilter_whm registered')) {
@@ -588,23 +627,30 @@ class Installer_Installer
         /** Register the Cpanel application in the AppConfig system */
         $binPath = $this->getBinPath();
         $cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (is_dir("{$cPanelWebdirsRoot}/{$eachDir}")
                 && !in_array($eachDir, array('.', '..', 'x3.bak'))
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 && !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
             ) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                 $statusAppConfig = trim(shell_exec(
                     "/usr/local/cpanel/bin/is_registered_with_appconfig cpanel prospamfilter_cpanel_{$eachDir}"
                 ));
                 if ('0' == $statusAppConfig) {
                     $appConfigFile = $binPath . '/cpanel/appconfig/prospamfilter_cpanel.conf';
 
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     file_put_contents(
                         $binPath . "/cpanel/appconfig/prospamfilter_cpanel_{$eachDir}.conf",
+                        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                         strtr(file_get_contents($appConfigFile), array('%template%' => $eachDir))
                     );
 
                     $appConfigFile = $binPath . "/cpanel/appconfig/prospamfilter_cpanel_{$eachDir}.conf";
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                     $appConfigRegisterResult = trim(shell_exec("/usr/local/cpanel/bin/register_appconfig $appConfigFile"));
 
                     if (false === stripos($appConfigRegisterResult, "prospamfilter_cpanel_{$eachDir} registered")) {
@@ -652,6 +698,7 @@ class Installer_Installer
             }
 
             foreach ($selfcheck['reason'] as $issue) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
                 echo " * {$issue}\n";
             }
 
@@ -690,7 +737,9 @@ class Installer_Installer
 
         // Make new destination folder
         $this->output->info("Creating new folder (" . $this->paths->destination . ")..");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if(!file_exists($this->paths->destination)){
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (!mkdir($this->paths->destination, 0777, true)) {
                 $this->output->error("Unable to create destination folder.");
                 exit(1);
@@ -735,6 +784,7 @@ class Installer_Installer
         $data .= "{$min} {$hour} * * {$dayOfWeek} root /usr/local/prospamfilter/bin/checkUpdate.php\n";
 
         // Write entry to crontab file.
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         file_put_contents($cronfile, $data);
         $this->output->ok("Done");
 
@@ -749,10 +799,12 @@ class Installer_Installer
         if (file_exists('/etc/init.d/crond')) {
             $this->output->info("Reloading cron via daemon reload (crond)");
             // In some cases, touching it does not work, so reloading must.
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             system('/etc/init.d/crond reload >/dev/null', $retval);
         } elseif (file_exists('/etc/init.d/cron')) {
             $this->output->info("Reloading cron via daemon reload (cron)");
             // In some cases, touching it does not work, so reloading must.
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             system('/etc/init.d/cron reload >/dev/null', $retval);
         }
         $this->output->info("Cron reload returned value {$retval}");
@@ -771,19 +823,29 @@ class Installer_Installer
     {
         $this->output->info("Setting up permissions for SUID binaries...");
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (file_exists($this->paths->destination . DS . "bin" . DS . "getconfig64")) {
             $this->output->info("64-bits...");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             chown($this->paths->destination . "/bin/getconfig64", "root");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             chgrp($this->paths->destination . "/bin/getconfig64", "root");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             system("chmod 755 " . $this->paths->destination . "/bin/getconfig64");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             system("chmod +s " . $this->paths->destination . "/bin/getconfig64");
         }
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (file_exists($this->paths->destination . "/bin/getconfig")) {
             $this->output->info("32-bits...");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             chown($this->paths->destination . "/bin/getconfig", "root");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             chgrp($this->paths->destination . "/bin/getconfig", "root");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             system("chmod 755 " . $this->paths->destination . "/bin/getconfig");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             system("chmod +s " . $this->paths->destination . "/bin/getconfig");
         }
 
@@ -810,6 +872,7 @@ class Installer_Installer
     private function removeInstallFileAndDisplaySuccessMessage()
     {
         // Remove installer as we do not need it anymore.
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         unlink($this->paths->destination . "/bin/install.php");
         $this->output->ok("\n\n***** Congratulations, Professional Spam Filter for Cpanel has been installed on your system! *****");
         $this->output->ok("If the addon is not configured yet, you should setup initial configuration in the admin part of the control panel before using its features.");
@@ -840,18 +903,21 @@ class Installer_Installer
 
         foreach($permissions as $permission => $files) {
             foreach($files as $file) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 @chmod($this->paths->destination . DS . $file, $permission);
             }
         }
 
         $this->output->info("Setting tmp folder permissions");
         // Chmod the tmp folder (and everything in it)
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
         system("chmod -R 1777 " . $this->paths->destination . DS . "tmp");
         $this->output->ok("Done");
     }
 
     private function getVersion()
     {
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         return trim(file_get_contents($this->paths->base . DS . "application" . DS . "version.txt"));
     }
 }

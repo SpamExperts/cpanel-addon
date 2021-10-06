@@ -357,6 +357,7 @@ class IDNA_Convert
             $this->_error('This is not a punycode string');
             return false;
         }
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.PregReplace.PregReplaceWeird
         $encode_test = preg_replace('!^'.preg_quote($this->_punycode_prefix, '!').'!', '', $encoded);
         // If nothing left after removing the prefix, it is hopeless
         if (!$encode_test) {

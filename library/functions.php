@@ -36,6 +36,7 @@
 	{
 		function wl($txt)
 		{
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
 			echo "{$wl}\n";
 		}
 	}
@@ -150,6 +151,7 @@
 			xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, "UTF-8"); # http://minutillo.com/steve/weblog/2004/6/17/php-xml-and-character-encodings-a-tale-of-sadness-rage-and-data-loss
 			xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
 			xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
+			// phpcs:ignore PHPCS_SecurityAudit.Drupal8.CVE20134113.CVE-2013-4113
 			xml_parse_into_struct($parser, trim($contents), $xml_values);
 			xml_parser_free($parser);
 
@@ -268,25 +270,32 @@ if( !function_exists( "smartCopy" ) )
     {
         $result=false;
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (is_file($source))
 		{
             if ($dest[strlen($dest)-1]== DS )
 			{
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (!file_exists($dest))
 				{
 					// PHP5 mkdir function supports recursive, so just use that
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 					mkdir($dest,$options['folderPermission'],true);
                 }
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 $__dest=$dest.DS.basename($source);
             }
 			else
 			{
                 $__dest=$dest;
             }
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $result=copy($source, $__dest);
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             chmod($__dest,$options['filePermission']);
 
         }
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 		elseif(is_dir($source))
 		{
             if ($dest[strlen($dest)-1]== DS )
@@ -298,7 +307,9 @@ if( !function_exists( "smartCopy" ) )
 				else
 				{
                     //Change parent itself and its contents
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     $dest=$dest.basename($source);
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     @mkdir($dest,$options['folderPermission']);
                 }
             }
@@ -307,15 +318,18 @@ if( !function_exists( "smartCopy" ) )
                 if ($source[strlen($source)-1]== DS )
 				{
                     //Copy parent directory with new name and all its content
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     @mkdir($dest,$options['folderPermission']);
                 }
 				else
 				{
                     //Copy parent directory with new name and all its content
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     @mkdir($dest,$options['folderPermission']);
                 }
             }
 
+			// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $dirHandle=opendir($source);
             while($file=readdir($dirHandle))
             {
@@ -346,8 +360,10 @@ if( !function_exists( "rrmdir" ) )
 	 function rrmdir($dir)
 	 {
          if (isWindows()) {
+             // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
              system("rmdir $dir /s /q");
          } else {
+             // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
              system("rm -rf $dir");
          }
 	 }
@@ -370,9 +386,11 @@ if( !function_exists( "file_perms" ) )
 {
 	function file_perms($file, $octal = false)
 	{
-		if(!file_exists($file)) return false;
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
+        if(!file_exists($file)) return false;
 		try {
-			$perms = fileperms($file);
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
+            $perms = fileperms($file);
 		} catch (Exception $e) {
 			// It failed. Horribly!
 			return false;
@@ -455,6 +473,7 @@ if( !function_exists( "array_sort" ) )
 // Workaround for [ZF-9088] and missing parse_ini_string for PHP < 5.3.0
 if( !function_exists('parse_ini_string') )
 {
+    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
     function parse_ini_string( $string )
 	{
         $array = Array();

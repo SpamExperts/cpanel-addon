@@ -113,6 +113,7 @@ class AjaxController extends Zend_Controller_Action
                 $config = Zend_Registry::get('general_config');
 
                 if (0 < $config->add_extra_alias && is_array($data)) {
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff
                     $input = array_filter($data, array($this, 'checkOwnerDomainNotSet'));
                     $data = array_values($input);
                 }
@@ -185,11 +186,13 @@ class AjaxController extends Zend_Controller_Action
                 $toggler = new SpamFilter_ProtectionManager();
                 $response = $toggler->toggleProtection($domain, $owner_domain, $type, $owner_user);
 
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
                 exit(Zend_Json::encode($response));
                 break;
         }
 
         // Return content
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
         echo Zend_Json::encode($data);
 
         exit(0);

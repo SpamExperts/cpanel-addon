@@ -185,6 +185,7 @@ class SpamFilter_Forms_AdminConfig extends Twitter_Form
 
         // remove languages that don't have translations available
         foreach ($languages as $language => $name) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if ("en" != $language && ! is_dir($compiledTransationsDirectory.DIRECTORY_SEPARATOR.$language)) {
                 unset($languages[$language]);
             }

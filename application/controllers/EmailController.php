@@ -81,6 +81,7 @@ class EmailController extends Zend_Controller_Action
 		
 		// @TODO: Remove me: Temp
 		$this->_helper->viewRenderer->setNoRender(true);
+		// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
 		echo $this->t->_("This access level is not yet available.");
 	}
 }

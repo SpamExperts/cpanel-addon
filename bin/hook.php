@@ -42,6 +42,7 @@
 * @since     2.0
 */
 
+// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 require_once dirname(__FILE__) . '/../application/bootstrap.php';
 
 $paneltype = SpamFilter_Core::getPanelType();
@@ -80,6 +81,7 @@ if (!empty($in)) { // Cpanel: STDIN used
             $addonDomains = $_panel->getAddonDomains($username);
 
             if ($addonDomains) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff
                 $addonDomains = array_map('getAliasFromArray', $addonDomains);
                 $domains = array_merge($domains, $addonDomains);
             }
@@ -87,6 +89,7 @@ if (!empty($in)) { // Cpanel: STDIN used
             $parkedDomains = $_panel->getParkedDomains($username);
 
             if ($parkedDomains) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff
                 $parkedDomains = array_map('getAliasFromArray', $parkedDomains);
                 $domains = array_merge($domains, $parkedDomains);
             }
@@ -354,6 +357,7 @@ if (isset($status['status'])) {
         $response = "1 " . $response;
     }
 
+    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
     echo $response;
 }
 

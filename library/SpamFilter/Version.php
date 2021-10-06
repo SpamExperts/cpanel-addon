@@ -151,6 +151,7 @@ class SpamFilter_Version
      */
     public static function getUsedVersion()
     {
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         return trim(file_get_contents(BASE_PATH . DS . "application" . DS . "version.txt"));
     }
 

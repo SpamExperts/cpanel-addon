@@ -406,6 +406,7 @@ class SpamFilter_Hooks
 
             SpamFilter_Panel_Cache::clear('collectiondomains');
             SpamFilter_Core::invalidateDomainsCaches();
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
             SpamFilter_Panel_Cache::clear('user_domains_' . md5(SpamFilter_Core::getUsername()));
 
             return $response;
@@ -455,7 +456,8 @@ class SpamFilter_Hooks
                     );
             $response = $this->_api->domainalias()->add( $domainData );
 
-                        SpamFilter_Panel_Cache::clear(strtolower('user_domains_' . md5(SpamFilter_Core::getUsername())));
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
+            SpamFilter_Panel_Cache::clear(strtolower('user_domains_' . md5(SpamFilter_Core::getUsername())));
             if(!is_array($response))
             {
                 $this->_logger->err("[Hook-AddAlias] Alias '{$alias}' received a failed response");
@@ -517,6 +519,7 @@ class SpamFilter_Hooks
             }
 
             // Success
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
             SpamFilter_Panel_Cache::clear(strtolower('user_domains_' . md5(SpamFilter_Core::getUsername())));
             $this->_logger->debug("[Hook] Alias removed: '{$alias}'");
 
@@ -959,6 +962,7 @@ class SpamFilter_Hooks
      */
     public function GetRoute( $domain )
     {
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
         $routes = SpamFilter_Panel_Cache::get(md5($domain) . '_routes');
         $info = array('additional' => '', 'reason' => '');
         if (empty($routes)) {
@@ -974,6 +978,7 @@ class SpamFilter_Hooks
              } else {
                 $info = array('additional' => $response["additional"], 'reason' => $response["reason"]);
              }
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
              SpamFilter_Panel_Cache::set(md5($domain) . '_routes', $routes, 10);
         }
 
@@ -1000,6 +1005,7 @@ class SpamFilter_Hooks
 
             // Sort existing MX records by line in DESC order to avoid attempting
             // entries with obsolete line reference
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff
             usort($existimgMxRecords, function ($a, $b) { return $b['Line'] > $a['Line'] ? 1 : -1; });
             foreach ($existimgMxRecords as $existimgMxRec) {
                 if (in_array($existimgMxRec['exchange'], $spamfilterMxRecords)) {

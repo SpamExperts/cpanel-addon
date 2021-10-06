@@ -98,6 +98,7 @@ if( (isset($path_override)) && ($path_override) )
 if(!defined('CFG_FILE')) define('CFG_FILE', CFG_PATH . DS . 'settings.conf');
 if(!defined('LIB_PATH')) define('LIB_PATH', BASE_PATH . DS . 'library' . DS);
 
+// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 if(file_exists(CFG_PATH . DS ."debug")) //<-- Only enable error logging when this file exists.
 {
 	$debug = true;
@@ -129,6 +130,7 @@ try {
 
     /** @see https://trac.spamexperts.com/ticket/16938 */
     if (!class_exists('Zend_Loader_Autoloader')) {
+// phpcs:ignore PHPCS_SecurityAudit.Misc.IncludeMismatch.ErrMiscIncludeMismatchNoExt,PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI
 	    require_once 'Zend' . DS . 'Loader' . DS . 'Autoloader.php';
     }
 
@@ -139,6 +141,7 @@ try {
 	$autoloader->registerNamespace('IDNA_');
 	$autoloader->registerNamespace('Twitter_');
 } catch (Exception $e) {
+    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
 	echo "Failed to initialize the autoloader (" . $e->getMessage() . ")";
 	exit( 1 );
 }
@@ -156,6 +159,7 @@ try {
 		if(!defined('PSF_DEBUG')) define("PSF_DEBUG", true );
 		$logger = SpamFilter_Core::initLogging( true, true);
 		$logger->debug("[Bootstrap] Debug logging enabled");
+        //phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 	} elseif(file_exists(CFG_PATH . DS ."logging")) {
 		if(!defined('PSF_DEBUG')) define("PSF_DEBUG", false );
 		$logger = SpamFilter_Core::initLogging( true, false );
@@ -199,6 +203,7 @@ if (SpamFilter_Core::isSessionInitRequired() && SpamFilter_Core::isCpanel()) {
                 $sessionfile = session_save_path() . '/' . "sess_" . $sid;
                 // Change permissions of session file, to be able to use it
                 Zend_Registry::get('logger')->debug("Changing permissions for '{$sessionfile}'... ");
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 @chmod($sessionfile, 0666);
             }
         }
@@ -221,6 +226,7 @@ Zend_Registry::set(
     'translator',
     new Zend_Translate(array(
             'adapter'        => 'gettext',
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             'content'        => is_file($languageFile) ? $languageFile : '',
             'locale'         => $language,
             'disableNotices' => true,

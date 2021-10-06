@@ -11,6 +11,7 @@ if ('root' != $processUsername) {
     die("This script can be executed by the root user only");
 }
 
+// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 require_once dirname(__FILE__) . '/../application/bootstrap.php';
 
 set_time_limit(0);

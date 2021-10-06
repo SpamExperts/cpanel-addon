@@ -117,12 +117,17 @@ class AdminController extends Zend_Controller_Action
 
         $this->view->headTitle()->set($brandname);
         $this->view->headTitle()->setSeparator(' | ');
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $this->view->headStyle()->appendStyle(file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'bootstrap.min.css'));
         $this->view->headStyle()->appendStyle(
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             file_get_contents(BASE_PATH . '/public' . DS . 'css' . DS . 'bootstrap-responsive.min.css')
         );
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $this->view->headStyle()->appendStyle(file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'addon.css'));
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $this->view->headScript()->appendScript(file_get_contents(BASE_PATH . DS . 'public' . DS . 'js' . DS . 'jquery.min.js'));
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $this->view->headScript()->appendScript(file_get_contents(BASE_PATH . DS . 'public' . DS . 'js' . DS . 'bootstrap.min.js'));
 
         $this->view->acl = $this->_acl;
@@ -244,6 +249,7 @@ class AdminController extends Zend_Controller_Action
                         );
                     } else {
                         $values['brandicon'] = trim(
+                            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions
                             base64_encode(file_get_contents(TMP_PATH . DS . $uploadedData['brandicon']))
                         );
                     }
@@ -258,6 +264,7 @@ class AdminController extends Zend_Controller_Action
 
                         ($icon_size > 0) ? $this->_flashMessenger->addMessage(
                             array('message' =>
+                                  // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                                   'Brand icon <img src="psf' . DS . 'brandicon.png?' . (filemtime('psf' . DS . 'brandicon.png')) . '">',
                                   'status'  => 'success')
                         ) : '';
@@ -343,6 +350,7 @@ class AdminController extends Zend_Controller_Action
              */
             if (SpamFilter_Core::isCpanel()) {
                 $phpBinary = str_replace('/', DIRECTORY_SEPARATOR, '/usr/local/cpanel/3rdparty/bin/php-cgi');
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (!file_exists($phpBinary) || !is_executable($phpBinary)) {
                     $this->_flashMessenger->addMessage(array(
                         'message' => sprintf($this->t->_("Your system seems to be quite outdated - the required binary (%s) cannot be found. The update process has been interrupted."), $phpBinary),

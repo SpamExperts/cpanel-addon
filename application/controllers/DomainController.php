@@ -118,10 +118,15 @@ class DomainController extends Zend_Controller_Action
 		$this->view->headTitle()->set($brandname);
 		$this->view->headTitle()->setSeparator(' | ');
 
+		// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 		$this->view->headStyle()->appendStyle( file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'bootstrap.min.css') );
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 		$this->view->headStyle()->appendStyle( file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'bootstrap-responsive.min.css') );
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 		$this->view->headStyle()->appendStyle( file_get_contents(BASE_PATH . DS . 'public' . DS . 'css' . DS . 'addon.css') );
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 		$this->view->headScript()->appendScript( file_get_contents(BASE_PATH . DS . 'public' . DS . 'js' . DS . 'jquery.min.js') );
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 		$this->view->headScript()->appendScript( file_get_contents(BASE_PATH . DS . 'public' . DS . 'js' . DS . 'bootstrap.min.js') );
 
 		$this->view->acl = $this->_acl;
@@ -174,6 +179,7 @@ class DomainController extends Zend_Controller_Action
         }
 
         // Proceed
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
         $cacheKey = strtolower('user_domains_' . md5(SpamFilter_Core::getUsername()));
         $domains = SpamFilter_Panel_Cache::get( $cacheKey );
 
@@ -295,6 +301,7 @@ class DomainController extends Zend_Controller_Action
                 $logouturl .= "{$_ENV['cp_security_token']}/";
             }
             if ($this->isValidUrl($logouturl)) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
                 $login_request['logouturl'] = base64_encode( $logouturl );
             } else {
                 Zend_Registry::get('logger')->debug("[DomainController] The logout URL is invalid. Failed to set the logout URL to '{$logouturl}' ");

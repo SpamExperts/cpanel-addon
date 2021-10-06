@@ -111,6 +111,7 @@ class SpamFilter_Diagnostics
 
         // Check all available PHP functions and return false if we don't have it (which is a problem!)
         foreach ($obligatoryExtensions as $ext => $functionToCheck) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FunctionHandlingFunctions.WarnFunctionHandling
             if (!function_exists($functionToCheck)) {
                 $this->_logger->err("Addon is missing support for {$functionToCheck}");
                 if ($functionToCheck == "openssl_open") {
@@ -141,14 +142,16 @@ class SpamFilter_Diagnostics
                 $configBinary .= "64";
             }
             $this->_logger->debug("Checking {$bit}bits binary - Located at '{$configBinary}'");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (!file_exists($configBinary)) {
                 $this->_logger->err("Configuration binary for {$bit}bit is missing!");
                 $return['critical'][]
                     = "Configuration binary for {$bit}bit is missing and should exist at '{$configBinary}'";
             } else {
                 // Check if the permissions for the apipass binary are in place.
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 $perms = fileperms($configBinary);
-	 	$perms = substr(sprintf('%o', $perms), -4);
+                $perms = substr(sprintf('%o', $perms), -4);
                 if ($perms != 6755) {
                     $return['critical'][]
                         = "APIPass binary for {$bit}bits has incorrect permissions ({$perms}) instead of 6755.";
@@ -164,6 +167,7 @@ class SpamFilter_Diagnostics
         $return = $this->set_initial_array();
 
         $settings_file = CFG_PATH . DS  . "settings.conf";
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (file_exists($settings_file)) {
             $perms = (int)file_perms($settings_file);
             if (!empty($perms)) {
@@ -217,12 +221,14 @@ class SpamFilter_Diagnostics
     {
         $return = $this->set_initial_array();
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!file_exists(BASE_PATH . DS .'application' . DS . 'hashes.json')) {
             $return['critical'][] = 'The file containing filehashes is missing, unable to check this in-depth.';
 
             return $this->return_result($return);
         }
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $hashfile = file_get_contents(BASE_PATH . DS .'application' . DS . 'hashes.json');
         if ((!isset($hashfile)) || (empty($hashfile))) {
             $return['critical'][] = 'The file containing filehashes is empty, unable to check this in-depth.';
@@ -230,6 +236,7 @@ class SpamFilter_Diagnostics
             return $this->return_result($return);
         }
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         chdir(BASE_PATH);
         $hashfiles = Zend_Json::decode($hashfile);
 
@@ -244,10 +251,12 @@ class SpamFilter_Diagnostics
                  * @see https://trac.spamexperts.com/ticket/17037
                  * @see https://trac.spamexperts.com/ticket/18107
                  */
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (in_array(strtolower(basename($filename)), array('brandicon.png', 'prospamfilter.gif', 'psf.tar.bz2', 'install.json', 'se-logo.png'))) {
                     continue;
                 }
 
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 $my_hash = sha1_file($file);
                 if (isset($hashfiles[$filename])) // file is monitored
                 {
@@ -295,9 +304,11 @@ class SpamFilter_Diagnostics
             foreach ($files as $hook => $file) {
                 $this->_logger->debug("Checking hook: '{$hook}' (file: '{$file}')");
                 // check if the file exists
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (!file_exists($file)) {
                     $this->_logger->debug("Missing hook: {$file}");
                     $return['critical'][] = "The hook '{$hook}' does not exist.";
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 } elseif(!SpamFilter_Core::isWindows() && !is_executable($file)) {  // In windows checking for executable must be disabled. There will be always returned false for *.php files.
                     $this->_logger->debug("The hook file '{$file}' is not executable.");
                     $return['critical'][] = "The hook '{$hook}' is not executable.";
@@ -335,6 +346,7 @@ class SpamFilter_Diagnostics
         // do check here
         foreach ($files as $symlink => $file) {
             // check if the symlink exists
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (!is_link($file) && !file_exists($file)) {
                 $this->_logger->debug("Missing symlink: {$file}");
                 $return['critical'][] = "The symlink for '{$symlink}' ({$file}) does not exist.";
@@ -414,6 +426,7 @@ class SpamFilter_Diagnostics
         $return = $this->set_initial_array();
 
         // check if the symlink exists
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if(SpamFilter_Core::isWindows() && !file_exists(DEST_PATH . DS . 'bin' . DS . 'prospamfilter_php')){
             $symlink = BASE_PATH . DS . 'bin' . DS . 'prospamfilter_php';
             $this->_logger->debug("Missing link to the PHP5 binary ($symlink)");

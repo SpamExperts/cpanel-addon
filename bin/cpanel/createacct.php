@@ -2,6 +2,7 @@
 
 die;
 
+// phpcs:ignore PHPCS_SecurityAudit.Misc.IncludeMismatch.ErrMiscIncludeMismatchNoExt,PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 require_once realpath(dirname(__FILE__) . '/../../') . '/application/bootstrap.php';
 
 $apiAccessHash = file_get_contents('/root/.accesshash');
@@ -35,6 +36,7 @@ $api = Cpanel_PublicAPI::getInstance(array(
 
 $zones = array('org', 'com', 'net', 'ru', 'de', 'nl', 'cc', 'me', 'co.uk');
 for ($i = 0; $i < 250; $i++) {
+    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
     $username = 'u' . substr(strtolower(md5(uniqid('u'))), 0, 7);
     $domain = "$username." . $zones[array_rand($zones)];
 
@@ -51,6 +53,7 @@ for ($i = 0; $i < 250; $i++) {
 
     if (!$response->validResponse()) {
         foreach ($response->getResponseErrors() as $err) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
             echo "$err\n";
         }
     }

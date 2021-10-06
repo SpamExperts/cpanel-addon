@@ -53,6 +53,7 @@ define('DEST_PATH', '/usr/local/prospamfilter');
 define('BASE_PATH', '/usr/src/prospamfilter');
 define('CFG_PATH', '/etc/prospamfilter');
 
+// phpcs:disable PHPCS_SecurityAudit.Misc.IncludeMismatch.ErrMiscIncludeMismatchNoExt,PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI
 require_once BASE_PATH . DS . 'library' . DS . 'functions.php';
 require_once BASE_PATH . DS . 'library' . DS . 'SpamFilter' . DS . 'Core.php';
 require_once BASE_PATH . DS . 'library' . DS . 'Installer' . DS . 'Installer.php';
@@ -63,6 +64,7 @@ require_once BASE_PATH . DS . 'library' . DS . 'Filesystem' . DS . 'WindowsFiles
 require_once BASE_PATH . DS . 'library' . DS . 'Output' . DS . 'OutputInterface.php';
 require_once BASE_PATH . DS . 'library' . DS . 'Output' . DS . 'ConsoleOutput.php';
 require_once BASE_PATH . DS . 'application' . DS . 'bootstrap.php';
+// phpcs:disable PHPCS_SecurityAudit.Misc.IncludeMismatch.ErrMiscIncludeMismatchNoExt,PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI
 
 $paths = new Installer_InstallPaths();
 $paths->base = BASE_PATH;

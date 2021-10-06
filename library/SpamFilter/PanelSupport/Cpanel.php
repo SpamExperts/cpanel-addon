@@ -162,6 +162,7 @@ class SpamFilter_PanelSupport_Cpanel
     public function __construct($options = array())
     {
         $this->_logger = Zend_Registry::get('logger');
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!file_exists(self::PANEL_FILESYSTEM_LOCATION)) {
             $this->_logger->crit("Wrong Panelsupport library loaded. This is not cPanel.");
             throw new Exception("Wrong Panelsupport library loaded");
@@ -1298,6 +1299,7 @@ class SpamFilter_PanelSupport_Cpanel
 
         $filename = "/var/cpanel/userdata/{$username}/main";
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!file_exists($filename)  || !is_readable($filename)) {
             $this->_logger->warn("Failed to retrieve parked domains for '$username': unable to read '{$filename}'. Retrieving addon domains via API.");
 
@@ -1316,6 +1318,7 @@ class SpamFilter_PanelSupport_Cpanel
 
         } else {
 
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES + FILE_TEXT);
 
             $mainDomain = '';
@@ -1364,6 +1367,7 @@ class SpamFilter_PanelSupport_Cpanel
     {
         $result = array();
         $filename = "/var/cpanel/userdata/{$username}/main";
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!file_exists($filename) || !is_readable($filename)) {
             $this->_logger->warn("Failed to retrieve parked domains for '$username': unable to read '{$filename}'. Retrieving parked domains via API.");
             $params = array (   'cpanel_jsonapi_func'       => 'listparkeddomains',
@@ -1377,6 +1381,7 @@ class SpamFilter_PanelSupport_Cpanel
                 $result[] = array ('alias' => $domain['domain']);
             }
         } else {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES + FILE_TEXT);
             $sectionHasStarted = false;
             foreach ($lines as $line) {
@@ -1401,6 +1406,7 @@ class SpamFilter_PanelSupport_Cpanel
     public function getSubDomains($username){
         $result = array();
         $filename = "/var/cpanel/userdata/{$username}/main";
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (!file_exists($filename) || !is_readable($filename)) {
             $this->_logger->warn("Failed to retrieve parked domains for '$username': unable to read '{$filename}'. Retrieving parked domains via API.");
             $params = array (   'cpanel_jsonapi_func'       => 'listsubdomains',
@@ -1414,6 +1420,7 @@ class SpamFilter_PanelSupport_Cpanel
                 $result[] = array ('alias' => $domain['domain']);
             }
         } else {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES + FILE_TEXT);
             $sectionHasStarted = false;
             foreach ($lines as $line) {
@@ -1479,6 +1486,7 @@ class SpamFilter_PanelSupport_Cpanel
 
             foreach ($lines as $line) {
                 if (preg_match("/^$user:/", $line)) {
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.PregReplace.PregReplaceDyn
                     $line  = preg_replace("/^$user:/", "", $line);
                     $perms = explode(",", $line);
                     foreach ($perms as $perm) {
@@ -1512,6 +1520,7 @@ class SpamFilter_PanelSupport_Cpanel
     {
         $domain = trim($domain);
         $this->_logger->debug("Checking if {$domain} is listed in /etc/localdomains");
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $domains = array_map('trim', (array)file('/etc/localdomains', FILE_IGNORE_NEW_LINES));
 
         if (is_array($domains) && in_array($domain, $domains)) {
@@ -2017,8 +2026,10 @@ class SpamFilter_PanelSupport_Cpanel
          * @see https://trac.spamexperts.com/ticket/17790#comment:2
          */
         if (!empty($aBrand['brandicon']) && function_exists('imagecreatefromstring') && function_exists('imagegif')) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
             $png = imagecreatefromstring(base64_decode($aBrand['brandicon']));
             if (false !== $png) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 imagegif($png, '/usr/local/cpanel/whostmgr/docroot/themes/x/icons/prospamfilter.gif');
                 imagedestroy($png);
             }
@@ -2099,8 +2110,10 @@ class SpamFilter_PanelSupport_Cpanel
 
             //update icon for the IE
             if (!empty($icon_content) && is_link("/usr/local/prospamfilter/frontend/cpanel/psf")) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 file_put_contents(
                     "/usr/local/prospamfilter/frontend/cpanel/psf/brandicon.png",
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
                     base64_decode($icon_content)
                 );
             }
@@ -2110,17 +2123,21 @@ class SpamFilter_PanelSupport_Cpanel
 
             // Write file content
             $this->_logger->debug("[Cpanel] Writing cpanelplugin content to plugin file.");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $written = file_put_contents($pluginfile, $file_content);
 
             $this->_logger->debug("[Cpanel] Writing paper_lantern new branding config.");
 
             // Write plugin file for paper_lantern
             if (!empty($icon_content)) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 file_put_contents(
                     "/usr/local/prospamfilter/bin/cpanel/paper_lantern/psf_button/" . $paper_brand['icon'],
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
                     base64_decode($icon_content)
                 );
             }
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             file_put_contents(
                 "/usr/local/prospamfilter/bin/cpanel/paper_lantern/psf_button/install.json",
                 '[' . json_encode($paper_brand, 128). ']'
@@ -2135,6 +2152,7 @@ class SpamFilter_PanelSupport_Cpanel
                 $this->_logger->debug("[Cpanel] Checking for leftover images blocking icon generation..");
                 foreach ($oldIcons as $filename) {
                     $this->_logger->debug("[Cpanel] Removing leftover: {$filename}.");
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     unlink($filename);
                 }
 
@@ -2142,7 +2160,9 @@ class SpamFilter_PanelSupport_Cpanel
                 $this->_logger->debug("[Cpanel] Re-registering plugin for paper_lantern + jupiter & generating sprites.");
 
                 $buttonConfig = '/usr/local/prospamfilter/bin/cpanel/paper_lantern/psf.tar.bz2';
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                 shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme paper_lantern");
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                 @shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme jupiter");
 
                 $this->_logger->debug("[Cpanel] Re-registering plugin for other themes & generating sprites.");
@@ -2152,14 +2172,18 @@ class SpamFilter_PanelSupport_Cpanel
                 if(!file_exists('/usr/local/cpanel/base/frontend/x3/dynamicui')){
                     mkdir('/usr/local/cpanel/base/frontend/x3/dynamicui');
                 }
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                 $status = shell_exec("/usr/local/cpanel/bin/register_cpanelplugin {$pluginfile}");
 
                 //@see https://trac.spamexperts.com/ticket/17098
                 $this->_logger->debug("[Cpanel] Setting up brand name for the side-menu");
                 $cgi = '/usr/local/prospamfilter/frontend/whm/prospamfilter.php';
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (file_exists($cgi)) {
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                     shell_exec("sed -e 's/#WHMADDON:prospamfilter:.*/#WHMADDON:prospamfilter:{$brandname}/' -i {$cgi}");
                     $appConfigFile = '/usr/local/prospamfilter/bin/cpanel/appconfig/prospamfilter_whm.conf';
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                     shell_exec("/usr/local/cpanel/bin/register_appconfig $appConfigFile");
                 } else {
                     $this->_logger->err("[Cpanel] Could not set brand name to sidemenu. {$cgi} doesn't exist");
@@ -2817,11 +2841,14 @@ class SpamFilter_PanelSupport_Cpanel
         $registeredHooks = $this->listHooks();
         $file = $params['file'];
         $do = $params['do'];
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if(!is_executable($file)){
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             shell_exec('chmod +x ' . $file);
         }
         foreach($params['hooks'] as $hook){
             if($do == 'add' && $this->isHookExists($registeredHooks, $hook['category'], $hook['event'], $hook['stage'], $file)){
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
                 echo 'Skipped hook ' . $hook['event'] . ' as it already exists.' . PHP_EOL;
                 continue;
             } else {
@@ -2831,6 +2858,7 @@ class SpamFilter_PanelSupport_Cpanel
 
                 }
 
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                 system($commandStr);
             }
         }

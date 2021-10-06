@@ -269,6 +269,7 @@ class SpamFilter_Session extends Zend_Session_Abstract
             return;
         }
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff
         session_set_save_handler(
             array(&$saveHandler, 'open'),
             array(&$saveHandler, 'close'),
@@ -463,6 +464,7 @@ class SpamFilter_Session extends Zend_Session_Abstract
 
             if (self::$_throwStartupExceptions) {
                 // require_once 'Zend/Session/Exception.php';
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff
                 set_error_handler(array('Zend_Session_Exception', 'handleSessionStartError'), $errorLevel);
             }
 
@@ -474,6 +476,7 @@ class SpamFilter_Session extends Zend_Session_Abstract
 
             if (!$startedCleanly || Zend_Session_Exception::$sessionStartError != null) {
                 if (self::$_throwStartupExceptions) {
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff
                     set_error_handler(array('Zend_Session_Exception', 'handleSilentWriteClose'), $errorLevel);
                 }
                 session_write_close();

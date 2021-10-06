@@ -116,6 +116,7 @@ class SpamFilter_Updater
         $updateLogFilePrefix = 'psf_update';
         foreach (scandir('/tmp') as $eachTmpFile) {
             if (preg_match("~^{$updateLogFilePrefix}.*\\.log\$~i", $eachTmpFile)) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 unlink('/tmp/'.$eachTmpFile);
             }
         }
@@ -124,6 +125,7 @@ class SpamFilter_Updater
         $cmd = 'nohup nice -n 10 /usr/local/prospamfilter/bin/installer/installer.sh -f'
             . ( $tier == "frozen" ? ' frozen' :
                 ( ($tier <> "stable") ? ' trunk' : '') ) . ' > ' . $updateLogFile . ' 2>&1 & echo $!';
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
         $pid = shell_exec($cmd);
 
         $logger->info("[Update] The installer.sh has been executed with the PID=$pid");
@@ -145,6 +147,7 @@ class SpamFilter_Updater
 
         $fullOut = '';
         $retCode = 0;
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
         exec($command, $fullOut, $retCode);
 
         $logger->debug("[Update] Alternative update exited with exit code $retCode. Output is: " . join(' ', $fullOut));

@@ -4,6 +4,7 @@ class Output_ConsoleOutput implements Output_OutputInterface
 {
     public function write($message, $prefix = null)
     {
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
         echo ($prefix) ? "[{$prefix}] {$message}\n" : "{$message}\n";
     }
 

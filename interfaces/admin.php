@@ -41,8 +41,10 @@
 * @since     3.0
 */
 
+// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
 define('ADDON_ROOT_FOLDER', realpath(dirname(__FILE__) . '/../'));
 
+// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyRFI.WarnEasyRFI
 require_once ADDON_ROOT_FOLDER . '/application/bootstrap.php';
 
 if (isset($_GET) && isset($_GET['q'])) {

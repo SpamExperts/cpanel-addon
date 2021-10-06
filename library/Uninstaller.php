@@ -79,12 +79,14 @@ class Uninstaller
         $this->output->write('');
 
         $file = __DIR__.'/../application/version.txt';
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         $version = file_get_contents($file);
         $this->output->write("This system will uninstall ProSpamFilter v{$version}");
     }
 
     private function checkRequirementsAreMet()
     {
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if(! file_exists($this->paths->destination)) {
             throw new Exception("ProSpamFilter is not installed");
         }
@@ -170,6 +172,7 @@ class Uninstaller
 
         foreach ($webDirs as $dir) {
             $this->output->info("Unlinking $dir");
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             @unlink($dir);
         }
 
@@ -274,9 +277,12 @@ class Uninstaller
         $cpanelAppsToUnregister = array();
         $cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (is_dir("{$cPanelWebdirsRoot}/{$eachDir}")
                 && !in_array($eachDir, array('.', '..', 'x3.bak'))
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 && !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
             ) {
                 $cpanelAppsToUnregister[] = "prospamfilter_cpanel_{$eachDir}";
@@ -284,17 +290,21 @@ class Uninstaller
         }
 
         foreach ($cpanelAppsToUnregister as $app) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             $isConfigured = trim(shell_exec("/usr/local/cpanel/bin/is_registered_with_appconfig cpanel $app"));
 
             if ('0' == $isConfigured) {
                 continue;
             }
 
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
             $output = trim(shell_exec("/usr/local/cpanel/bin/unregister_appconfig $app"));
 
             if (false === stripos($output, "$app unregistered")) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
                 echo "Failed to unregister $app: \n".$output."\n";
             } else {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
                 echo "$app unregistered successfully\n";
             }
         }
@@ -303,20 +313,27 @@ class Uninstaller
 
         $phpSymlink = '/usr/local/bin/prospamfilter_php';
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (is_link($phpSymlink)) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             unlink($phpSymlink);
         }
 
         $cPanelWebdirsRoot = '/usr/local/cpanel/base/frontend';
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         foreach (scandir($cPanelWebdirsRoot) as $eachDir) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             if (is_dir("{$cPanelWebdirsRoot}/{$eachDir}")
                 && !in_array($eachDir, array('.', '..'))
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 && !is_link("{$cPanelWebdirsRoot}/{$eachDir}")
             ) {
                 $link = "{$cPanelWebdirsRoot}/{$eachDir}/prospamfilter";
 
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (is_link($link)) {
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     unlink($link);
                 }
 
@@ -325,7 +342,9 @@ class Uninstaller
 
         $file = '/usr/local/cpanel/whostmgr/addonfeatures/prospamfilter';
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (file_exists($file)) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             unlink($file);
         }
     }

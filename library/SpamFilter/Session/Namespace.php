@@ -348,6 +348,7 @@ class SpamFilter_Session_Namespace extends Zend_Session_Abstract implements Iter
     {
         $arg_list = func_get_args();
         $arg_list[0] = $_SESSION[$this->_namespace];
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff,PHPCS_SecurityAudit.BadFunctions.FunctionHandlingFunctions.WarnFunctionHandling
         return call_user_func_array($callback, $arg_list);
     }
 
@@ -367,6 +368,7 @@ class SpamFilter_Session_Namespace extends Zend_Session_Abstract implements Iter
     {
         $arg_list = func_get_args();
         $arg_list[0] = $_SESSION[$this->_namespace];
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff,PHPCS_SecurityAudit.BadFunctions.FunctionHandlingFunctions.WarnFunctionHandling
         $result = call_user_func_array($callback, $arg_list);
         if (!is_array($result)) {
             /**

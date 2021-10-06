@@ -266,10 +266,12 @@ class Zend_View_Helper_Table extends Zend_View_Helper_Placeholder_Container_Stan
                     if (isset($this->_cellContent[$key])) {
 
                         $this->_currentRow = $r;    // reference current row for _replacePlaceholders callback
+                        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FunctionHandlingFunctions.WarnFunctionHandling
                         if (function_exists($this->_cellContent[$key])) {
                             $xhtml .= $this->_cellContent[$key]($this->_currentRow);
                         }
                         else {
+                            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CallbackFunctions.WarnFringestuff
                             $xhtml .= preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', array($this, "_replacePlaceholders"), stripslashes($this->_cellContent[$key]));
                         }
                     }

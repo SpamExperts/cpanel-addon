@@ -86,7 +86,8 @@ class SpamFilter_Core
                     $bits = self::getBitType();
                 }
 
-            if ($bits == 64 && (file_exists(BASE_PATH . '/bin/getconfig64'))) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
+                if ($bits == 64 && (file_exists(BASE_PATH . '/bin/getconfig64'))) {
                     #Zend_Registry::get('logger')->debug("[Core] Using 64-bits getconfig binary");
                     $binary = 'getconfig64';
                 } else {
@@ -239,6 +240,7 @@ class SpamFilter_Core
             throw new InvalidArgumentException('Current username should not be empty');
         }
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.CryptoFunctions.WarnCryptoFunc
         return 'alldomains_' . sha1($username);
     }
 
@@ -287,6 +289,7 @@ class SpamFilter_Core
 
         // Check all available PHP functions and return false if we don't have it (which is a problem!)
         foreach ($obligatoryExtensions as $ext => $functionToCheck) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FunctionHandlingFunctions.WarnFunctionHandling
             if (!function_exists($functionToCheck)) {
                 Zend_Registry::get('logger')->emerg("Addon is missing support for {$functionToCheck}");
                 if ($functionToCheck == "openssl_open") {
@@ -323,6 +326,7 @@ class SpamFilter_Core
             {
                 $configBinary = self::getConfigBinary();
                 // Check if the configuration binary is there.
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (!file_exists($configBinary)) {
                     // File does not exist!
                         Zend_Registry::get('logger')->emerg("Configuration binary is missing!");
@@ -330,11 +334,13 @@ class SpamFilter_Core
                     #return false;
                 } else {
                     // Check if the permissions for the apipass binary are in place.
+                    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                     $perms = fileperms( $configBinary );
                     $perms = substr(sprintf('%o', $perms), -4);
                     if ($perms != 6755) {
                         //$rv['reason'][] = "APIPass binary has incorrect permissions ({$perms}) instead of 6755. Unable to fix this automatically. Please execute: 'chmod 6755 {$configBinary}' via SSH to fix this.";
                         // Permissions are not correct
+                        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.SystemExecFunctions.WarnSystemExec
                         $changed = trim( shell_exec( "chown root:root {$configBinary} && chmod +s {$configBinary} && echo \"OK\" || echo \"NOTOK\"") );
                         if ($changed !== "OK") {
                             Zend_Registry::get('logger')->emerg("APIPass permissions are not correct ({$perms}). Please chmod it at with +s!");
@@ -351,6 +357,7 @@ class SpamFilter_Core
             // Security check, only for cPanel (now) since that doesnt lock users in their homedirs.
             if (self::isCpanel()) {
                 $apipasspath = CFG_PATH . "/settings.conf";
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 if (file_exists($apipasspath)) {
                     $perms = (int)file_perms( $apipasspath );
                     if (!empty($perms)) {
@@ -481,6 +488,7 @@ class SpamFilter_Core
      */
     public static function isTesting()
     {
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (file_exists(CFG_PATH . "/testing")) {
             // Manual override
             return true;
@@ -724,6 +732,7 @@ class SpamFilter_Core
 
     static public function php5BinaryLinkExists()
     {
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         return (file_exists(self::PHP5_BINARY_SYMLINK) && is_link(self::PHP5_BINARY_SYMLINK));
     }
 

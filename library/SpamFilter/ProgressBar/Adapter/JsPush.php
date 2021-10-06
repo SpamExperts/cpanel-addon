@@ -141,6 +141,7 @@ class SpamFilter_ProgressBar_Adapter_JsPush extends Zend_ProgressBar_Adapter
         // for Internet Explorer. The <br /> is required so Safari actually
         // executes the <script />
 	echo "<div style='display: none'>";
+	// phpcs:ignore PHPCS_SecurityAudit.BadFunctions.EasyXSS.EasyXSSwarn
         echo str_pad($data . '<br />', 1024, ' ', STR_PAD_RIGHT) . "\n";
 	echo "</div>";
 

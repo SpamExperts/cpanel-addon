@@ -21,17 +21,23 @@ abstract class Filesystem_AbstractFilesystem
      *
      * @return bool
      */
+    // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
     public function symlink($target, $link)
     {
         $new_link = null;
 
+        // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
         if (is_link($link)) {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $new_link = readlink($link);
             if ($target != $new_link) {
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 unlink($link);
+                // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
                 $new_link = symlink($target, $link);
             }
         } else {
+            // phpcs:ignore PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnSymlink,PHPCS_SecurityAudit.BadFunctions.FilesystemFunctions.WarnFilesystem
             $new_link = symlink($target, $link);
         }
 
