@@ -15,6 +15,7 @@ require_once dirname(__FILE__) . '/../application/bootstrap.php';
 
 set_time_limit(0);
 ignore_user_abort(0);
+error_reporting(0);
 
 /** @var SpamFilter_Logger $logger */
 $logger = Zend_Registry::get('logger');
