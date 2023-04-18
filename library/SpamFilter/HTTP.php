@@ -128,16 +128,6 @@ class SpamFilter_HTTP
             if (isset($rawData)) {
                 // Rawdata is set, so we are going to POST
                 $obj_client->setRawData($rawData, 'text/xml');
-
-                if (isset($paneltype) && strtolower($paneltype) == 'plesk') {
-                    $headers = array(
-                        'HTTP_AUTH_LOGIN'   => $config->apiuser,
-                        'HTTP_AUTH_PASSWD'  => $config->apipass,
-                        'HTTP_PRETTY_PRINT' => true
-                    );
-                    $obj_client->setHeaders($headers);
-                }
-
                 $obj_client->request('POST');
             } else {
                 $obj_client->request('GET');

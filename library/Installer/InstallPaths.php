@@ -8,5 +8,4 @@ class Installer_InstallPaths
     public $base;
     public $config;
     public $destination;
-    public $plesk;
 }

@@ -188,7 +188,7 @@ class SpamFilter_Core
         return $conf;
     }
 
-    final static public function getUsername()
+    public static function getUsername()
     {
         /** @var $logger SpamFilter_Logger */
         /** @noinspection PhpUndefinedClassInspection */
@@ -212,16 +212,8 @@ class SpamFilter_Core
             $logger->debug("[Core] Returning username ({$_SERVER['USERNAME']}) retrieved from $_SERVER (username)");
 
             return $_SERVER['USERNAME'];
-        } elseif (isset($GLOBALS['session']->_login) && (!empty($GLOBALS['session']->_login))) {
-            $logger->debug("[Core] Returning username ({$GLOBALS['session']->_login}) retrieved from GLOBALS (Plesk)");
-
-            return $GLOBALS['session']->_login;
         } elseif ('cli' == PHP_SAPI && self::isCpanel()) {
             $logger->debug("[Core] Returning username (root) as all CLI scripts in cPanel are executed for the 'root' user");
-
-            return 'root';
-        } elseif (!empty($_SESSION['auth']['isAuthenticatedAsRoot'])) {
-            $logger->debug("[Core] Returning username (root) as I see the ['auth']['isAuthenticatedAsRoot'] variable is set in Plesk");
 
             return 'root';
         }
@@ -231,7 +223,7 @@ class SpamFilter_Core
         return false;
     }
 
-    final static public function getDomainsCacheId()
+    public static function getDomainsCacheId()
     {
         $username = self::getUsername();
 
@@ -242,14 +234,14 @@ class SpamFilter_Core
         return 'alldomains_' . sha1($username);
     }
 
-    final static public function invalidateDomainsCaches()
+    public static function invalidateDomainsCaches()
     {
         self::clearCacheWithPrefix('alldomains_');
         self::clearCacheWithPrefix('user_domains_');
         SpamFilter_Panel_Cache::clear('collectiondomains');
     }
 
-    final static private function clearCacheWithPrefix($prefix = null)
+    private static function clearCacheWithPrefix($prefix = null)
     {
         foreach (SpamFilter_Panel_Cache::listMatches("$prefix") as $cacheId) {
             SpamFilter_Panel_Cache::clear($cacheId, false);
@@ -736,12 +728,12 @@ class SpamFilter_Core
      * @access public
      * @return bool
      */
-    final static public function isSessionInitRequired()
+    public static function isSessionInitRequired()
     {
         return !empty($_SERVER['REQUEST_METHOD']);
     }
 
-    final static public function isWindows()
+    public static function isWindows()
     {
         return stripos(PHP_OS, 'win') === 0;
     }

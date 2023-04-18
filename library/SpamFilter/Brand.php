@@ -50,9 +50,7 @@
 */
 class SpamFilter_Brand
 {
-    const ICON_PATH_PLESK = '/usr/local/psa/admin/htdocs/images/custom_buttons/prospamfilter.png';
-
-	private $_configData;
+    private $_configData;
 	private $_configFile;
 	private $_productList;
 
@@ -332,11 +330,6 @@ class SpamFilter_Brand
 			case "cpanel":
 				// cPanel/WHM is one exception we have to make.
 				$panel = new SpamFilter_PanelSupport( 'cpanel' );
-			break;
-
-			case "plesk":
-				// cPanel/WHM is one exception we have to make.
-				$panel = new SpamFilter_PanelSupport( 'plesk' );
 			break;
 
 			default:
