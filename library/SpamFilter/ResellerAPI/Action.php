@@ -402,7 +402,7 @@ class SpamFilter_ResellerAPI_Action
             // get response if not null and have no messages
             if (!empty($data['result'])) {
                 $logger->debug(
-                    "[API] . Response: " . (is_array($data['result'])) ? @implode(',', $data['result']) : $data['result']
+                    "[API] . Response: " . (is_array($data['result']) ? @implode(',', $data['result']) : $data['result'])
                 );
 
                 return $data['result'];
