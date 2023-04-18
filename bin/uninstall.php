@@ -42,7 +42,7 @@
 * @since     2.0
 */
 // Include requires
-require_once(realpath(dirname(__FILE__) . '/../') . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'bootstrap.php');
+require_once(dirname(__DIR__) . '/' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 defined('DEST_PATH') or define('DEST_PATH', '/usr/local/prospamfilter');
 defined('BASE_PATH') or define('BASE_PATH', '/usr/src/prospamfilter');
