@@ -350,7 +350,7 @@ class Uninstaller
 
     private function revokeApiToken()
     {
-        $this->output->info("Rewoke api token...");
+        $this->output->info("Revoke api token...");
 
         $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=prospamfilter --output=json");
         $output = json_decode($jsonOutput, true);
