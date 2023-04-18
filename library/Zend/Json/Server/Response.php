@@ -15,20 +15,25 @@
  * @category   Zend
  * @package    Zend_Json
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Response.php 24464 2011-09-24 14:06:34Z mcleod@spaceweb.nl $
+ * @version    $Id$
  */
 
 /**
  * @category   Zend
  * @package    Zend_Json
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Json_Server_Response
 {
+    /**
+     * @var string
+     */
+    protected $_args;
+
     /**
      * Response error
      * @var null|Zend_Json_Server_Error
@@ -144,13 +149,14 @@ class Zend_Json_Server_Response
      */
     public function setVersion($version)
     {
-        $version = (string) $version;
-        if ('2.0' == $version) {
+        $version = is_array($version)
+            ? implode(' ', $version)
+            : $version;
+        if ((string)$version == '2.0') {
             $this->_version = '2.0';
         } else {
             $this->_version = null;
         }
-
         return $this;
     }
 
@@ -172,22 +178,22 @@ class Zend_Json_Server_Response
     public function toJson()
     {
         if ($this->isError()) {
-            $response = array(
+            $response = [
                 'error'  => $this->getError()->toArray(),
                 'id'     => $this->getId(),
-            );
+            ];
         } else {
-            $response = array(
+            $response = [
                 'result' => $this->getResult(),
                 'id'     => $this->getId(),
-            );
+            ];
         }
 
         if (null !== ($version = $this->getVersion())) {
             $response['jsonrpc'] = $version;
         }
 
-        // require_once 'Zend/Json.php';
+        require_once 'Zend/Json.php';
         return Zend_Json::encode($response);
     }
 

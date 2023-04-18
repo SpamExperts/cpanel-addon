@@ -15,16 +15,16 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage Writer
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Syslog.php 23953 2011-05-03 05:47:39Z ralph $
+ * @version    $Id$
  */
 
 /** Zend_Log */
-// require_once 'Zend/Log.php';
+require_once 'Zend/Log.php';
 
 /** Zend_Log_Writer_Abstract */
-// require_once 'Zend/Log/Writer/Abstract.php';
+require_once 'Zend/Log/Writer/Abstract.php';
 
 /**
  * Writes log messages to syslog
@@ -32,7 +32,7 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage Writer
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
@@ -42,7 +42,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
      *
      * @var array
      */
-    protected $_priorities = array(
+    protected $_priorities = [
         Zend_Log::EMERG  => LOG_EMERG,
         Zend_Log::ALERT  => LOG_ALERT,
         Zend_Log::CRIT   => LOG_CRIT,
@@ -51,7 +51,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
         Zend_Log::NOTICE => LOG_NOTICE,
         Zend_Log::INFO   => LOG_INFO,
         Zend_Log::DEBUG  => LOG_DEBUG,
-    );
+    ];
 
     /**
      * The default log priority - for unmapped custom priorities
@@ -93,7 +93,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
      *
      * @var array
      */
-    protected $_validFacilities = array();
+    protected $_validFacilities = [];
 
     /**
      * Class constructor
@@ -101,7 +101,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
      * @param  array $params Array of options; may include "application" and "facility" keys
      * @return void
      */
-    public function __construct(array $params = array())
+    public function __construct(array $params = [])
     {
         if (isset($params['application'])) {
             $this->_application = $params['application'];
@@ -136,7 +136,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
      */
     protected function _initializeValidFacilities()
     {
-        $constants = array(
+        $constants = [
             'LOG_AUTH',
             'LOG_AUTHPRIV',
             'LOG_CRON',
@@ -156,7 +156,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
             'LOG_SYSLOG',
             'LOG_USER',
             'LOG_UUCP'
-        );
+        ];
 
         foreach ($constants as $constant) {
             if (defined($constant)) {
@@ -195,14 +195,14 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
         }
 
         if (!in_array($facility, $this->_validFacilities)) {
-            // require_once 'Zend/Log/Exception.php';
+            require_once 'Zend/Log/Exception.php';
             throw new Zend_Log_Exception('Invalid log facility provided; please see http://php.net/openlog for a list of valid facility values');
         }
 
         if ('WIN' == strtoupper(substr(PHP_OS, 0, 3))
             && ($facility !== LOG_USER)
         ) {
-            // require_once 'Zend/Log/Exception.php';
+            require_once 'Zend/Log/Exception.php';
             throw new Zend_Log_Exception('Only LOG_USER is a valid log facility on Windows');
         }
 

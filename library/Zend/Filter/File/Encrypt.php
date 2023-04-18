@@ -14,22 +14,22 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Encrypt.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Filter_Encrypt
  */
-// require_once 'Zend/Filter/Encrypt.php';
+require_once 'Zend/Filter/Encrypt.php';
 
 /**
  * Encrypts a given file and stores the encrypted file content
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Filter_File_Encrypt extends Zend_Filter_Encrypt
@@ -55,7 +55,7 @@ class Zend_Filter_File_Encrypt extends Zend_Filter_Encrypt
      * Sets the new filename where the content will be stored
      *
      * @param  string $filename (Optional) New filename to set
-     * @return Zend_Filter_File_Encryt
+     * @return Zend_Filter_File_Encrypt
      */
     public function setFilename($filename = null)
     {
@@ -74,7 +74,7 @@ class Zend_Filter_File_Encrypt extends Zend_Filter_Encrypt
     public function filter($value)
     {
         if (!file_exists($value)) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception("File '$value' not found");
         }
 
@@ -82,14 +82,14 @@ class Zend_Filter_File_Encrypt extends Zend_Filter_Encrypt
             $this->_filename = $value;
         }
 
-        if (file_exists($this->_filename) and !is_writable($this->_filename)) {
-            // require_once 'Zend/Filter/Exception.php';
+        if (file_exists($this->_filename) && !is_writable($this->_filename)) {
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception("File '{$this->_filename}' is not writable");
         }
 
         $content = file_get_contents($value);
         if (!$content) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception("Problem while reading file '$value'");
         }
 
@@ -97,7 +97,7 @@ class Zend_Filter_File_Encrypt extends Zend_Filter_Encrypt
         $result    = file_put_contents($this->_filename, $encrypted);
 
         if (!$result) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception("Problem while writing file '{$this->_filename}'");
         }
 

@@ -14,20 +14,20 @@
  *
  * @category   Zend
  * @package    Zend_Validate
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Validate.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Validate_Interface
  */
-// require_once 'Zend/Validate/Interface.php';
+require_once 'Zend/Validate/Interface.php';
 
 /**
  * @category   Zend
  * @package    Zend_Validate
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Validate implements Zend_Validate_Interface
@@ -37,21 +37,21 @@ class Zend_Validate implements Zend_Validate_Interface
      *
      * @var array
      */
-    protected $_validators = array();
+    protected $_validators = [];
 
     /**
      * Array of validation failure messages
      *
      * @var array
      */
-    protected $_messages = array();
+    protected $_messages = [];
 
     /**
      * Default Namespaces
      *
      * @var array
      */
-    protected static $_defaultNamespaces = array();
+    protected static $_defaultNamespaces = [];
 
     /**
      * Array of validation failure message codes
@@ -59,7 +59,7 @@ class Zend_Validate implements Zend_Validate_Interface
      * @var array
      * @deprecated Since 1.5.0
      */
-    protected $_errors = array();
+    protected $_errors = [];
 
     /**
      * Adds a validator to the end of the chain
@@ -69,14 +69,14 @@ class Zend_Validate implements Zend_Validate_Interface
      *
      * @param  Zend_Validate_Interface $validator
      * @param  boolean                 $breakChainOnFailure
-     * @return Zend_Validate Provides a fluent interface
+     * @return $this
      */
     public function addValidator(Zend_Validate_Interface $validator, $breakChainOnFailure = false)
     {
-        $this->_validators[] = array(
+        $this->_validators[] = [
             'instance' => $validator,
             'breakChainOnFailure' => (boolean) $breakChainOnFailure
-            );
+            ];
         return $this;
     }
 
@@ -90,8 +90,8 @@ class Zend_Validate implements Zend_Validate_Interface
      */
     public function isValid($value)
     {
-        $this->_messages = array();
-        $this->_errors   = array();
+        $this->_messages = [];
+        $this->_errors   = [];
         $result = true;
         foreach ($this->_validators as $element) {
             $validator = $element['instance'];
@@ -153,7 +153,7 @@ class Zend_Validate implements Zend_Validate_Interface
     public static function setDefaultNamespaces($namespace)
     {
         if (!is_array($namespace)) {
-            $namespace = array((string) $namespace);
+            $namespace = [(string) $namespace];
         }
 
         self::$_defaultNamespaces = $namespace;
@@ -168,7 +168,7 @@ class Zend_Validate implements Zend_Validate_Interface
     public static function addDefaultNamespaces($namespace)
     {
         if (!is_array($namespace)) {
-            $namespace = array((string) $namespace);
+            $namespace = [(string) $namespace];
         }
 
         self::$_defaultNamespaces = array_unique(array_merge(self::$_defaultNamespaces, $namespace));
@@ -192,13 +192,13 @@ class Zend_Validate implements Zend_Validate_Interface
      * @return boolean
      * @throws Zend_Validate_Exception
      */
-    public static function is($value, $classBaseName, array $args = array(), $namespaces = array())
+    public static function is($value, $classBaseName, array $args = [], $namespaces = [])
     {
-        $namespaces = array_merge((array) $namespaces, self::$_defaultNamespaces, array('Zend_Validate'));
+        $namespaces = array_merge((array) $namespaces, self::$_defaultNamespaces, ['Zend_Validate']);
         $className  = ucfirst($classBaseName);
         try {
             if (!class_exists($className, false)) {
-                // require_once 'Zend/Loader.php';
+                require_once 'Zend/Loader.php';
                 foreach($namespaces as $namespace) {
                     $class = $namespace . '_' . $className;
                     $file  = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
@@ -240,7 +240,7 @@ class Zend_Validate implements Zend_Validate_Interface
             // fallthrough and continue for missing validation classes
         }
 
-        // require_once 'Zend/Validate/Exception.php';
+        require_once 'Zend/Validate/Exception.php';
         throw new Zend_Validate_Exception("Validate class not found from basename '$classBaseName'");
     }
 
@@ -251,7 +251,7 @@ class Zend_Validate implements Zend_Validate_Interface
      */
     public static function getMessageLength()
     {
-        // require_once 'Zend/Validate/Abstract.php';
+        require_once 'Zend/Validate/Abstract.php';
         return Zend_Validate_Abstract::getMessageLength();
     }
 
@@ -262,7 +262,7 @@ class Zend_Validate implements Zend_Validate_Interface
      */
     public static function setMessageLength($length = -1)
     {
-        // require_once 'Zend/Validate/Abstract.php';
+        require_once 'Zend/Validate/Abstract.php';
         Zend_Validate_Abstract::setMessageLength($length);
     }
 
@@ -273,7 +273,7 @@ class Zend_Validate implements Zend_Validate_Interface
      */
     public static function getDefaultTranslator($translator = null)
     {
-        // require_once 'Zend/Validate/Abstract.php';
+        require_once 'Zend/Validate/Abstract.php';
         return Zend_Validate_Abstract::getDefaultTranslator();
     }
 
@@ -284,7 +284,7 @@ class Zend_Validate implements Zend_Validate_Interface
      */
     public static function setDefaultTranslator($translator = null)
     {
-        // require_once 'Zend/Validate/Abstract.php';
+        require_once 'Zend/Validate/Abstract.php';
         Zend_Validate_Abstract::setDefaultTranslator($translator);
     }
 }

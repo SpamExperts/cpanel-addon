@@ -15,25 +15,25 @@
  * @category   Zend
  * @package    Zend_Queue
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Activemq.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Queue_Adapter_AdapterAbstract
  */
-// require_once 'Zend/Queue/Adapter/AdapterAbstract.php';
+require_once 'Zend/Queue/Adapter/AdapterAbstract.php';
 
 /**
  * @see Zend_Queue_Adapter_Stomp_Client
  */
-// require_once 'Zend/Queue/Stomp/Client.php';
+require_once 'Zend/Queue/Stomp/Client.php';
 
 /**
  * @see Zend_Queue_Adapter_Stomp_Frame
  */
-// require_once 'Zend/Queue/Stomp/Frame.php';
+require_once 'Zend/Queue/Stomp/Frame.php';
 
 /**
  * Class for using Stomp to talk to an Stomp compliant server
@@ -41,7 +41,7 @@
  * @category   Zend
  * @package    Zend_Queue
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
@@ -58,13 +58,13 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
     /**
      * @var array
      */
-    private $_subscribed = array();
+    private $_subscribed = [];
 
     /**
      * Constructor
      *
      * @param  array|Zend_Config $config An array having configuration data
-     * @param  Zend_Queue The Zend_Queue object that created this class
+     * @param  Zend_Queue $queue The Zend_Queue object that created this class
      * @return void
      */
     public function __construct($options, Zend_Queue $queue = null)
@@ -98,12 +98,18 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
             $connect->setHeader('passcode', $options['password']);
         }
 
+        // Support for durable subscriptions
+        // Must send client-id header in CONNECT AND activemq.subscriptionName in SUBSCRIBE
+        if(isset($options['client-id'])) {
+            $connect->setHeader('client-id', $options['client-id']);
+        }
+
         $response = $this->_client->send($connect)->receive();
 
         if ((false !== $response)
             && ($response->getCommand() != 'CONNECTED')
         ) {
-            // require_once 'Zend/Queue/Exception.php';
+            require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception("Unable to authenticate to '".$options['scheme'].'://'.$options['host'].':'.$options['port']."'");
         }
     }
@@ -132,7 +138,7 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
      */
     public function create($name, $timeout=null)
     {
-        // require_once 'Zend/Queue/Exception.php';
+        require_once 'Zend/Queue/Exception.php';
         throw new Zend_Queue_Exception('create() is not supported in ' . get_class($this));
     }
 
@@ -145,7 +151,7 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
      */
     public function delete($name)
     {
-        // require_once 'Zend/Queue/Exception.php';
+        require_once 'Zend/Queue/Exception.php';
         throw new Zend_Queue_Exception('delete() is not supported in ' . get_class($this));
     }
 
@@ -177,7 +183,7 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
      */
     public function getQueues()
     {
-        // require_once 'Zend/Queue/Exception.php';
+        require_once 'Zend/Queue/Exception.php';
         throw new Zend_Queue_Exception('getQueues() is not supported in this adapter');
     }
 
@@ -204,6 +210,14 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
         $frame->setCommand('SUBSCRIBE');
         $frame->setHeader('destination', $queue->getName());
         $frame->setHeader('ack', 'client');
+
+        // Support for durable subscriptions
+        // If a client-id is configured in the driver options,
+        // set the activemq.subscriptionName header with client-id as the value
+        if(isset($this->_options['driverOptions']['client-id'])) {
+            $frame->setHeader('activemq.subscriptionName', $this->_options['driverOptions']['client-id']);
+        }
+
         $this->_client->send($frame);
         $this->_subscribed[$queue->getName()] = true;
     }
@@ -229,7 +243,7 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
         }
 
         // read
-        $data = array();
+        $data = [];
 
         // signal that we are reading
         if (!$this->_isSubscribed($queue)){
@@ -243,33 +257,33 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
 
                     switch ($response->getCommand()) {
                         case 'MESSAGE':
-                            $datum = array(
+                            $datum = [
                                 'message_id' => $response->getHeader('message-id'),
                                 'handle'     => $response->getHeader('message-id'),
                                 'body'       => $response->getBody(),
                                 'md5'        => md5($response->getBody())
-                            );
+                            ];
                             $data[] = $datum;
                             break;
                         default:
                             $block = print_r($response, true);
-                            // require_once 'Zend/Queue/Exception.php';
+                            require_once 'Zend/Queue/Exception.php';
                             throw new Zend_Queue_Exception('Invalid response received: ' . $block);
                     }
                 }
             }
         }
 
-        $options = array(
+        $options = [
             'queue'        => $queue,
             'data'         => $data,
             'messageClass' => $queue->getMessageClass()
-        );
+        ];
 
         $classname = $queue->getMessageSetClass();
 
         if (!class_exists($classname)) {
-            // require_once 'Zend/Loader.php';
+            require_once 'Zend/Loader.php';
             Zend_Loader::loadClass($classname);
         }
         return new $classname($options);
@@ -292,24 +306,30 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
         $frame->setCommand('SEND');
         $frame->setHeader('destination', $queue->getName());
         $frame->setHeader('content-length', strlen($message));
+
+        // If persistent driver option is present, set the persistent header
+        if(isset($this->_options['driverOptions']['persistent'])) {
+            $frame->setHeader('persistent', $this->_options['driverOptions']['persistent']);
+        }
+
         $frame->setBody((string) $message);
         $this->_client->send($frame);
 
-        $data = array(
+        $data = [
             'message_id' => null,
             'body'       => $message,
             'md5'        => md5($message),
             'handle'     => null
-        );
+        ];
 
-        $options = array(
+        $options = [
             'queue' => $queue,
             'data'  => $data
-        );
+        ];
 
         $classname = $queue->getMessageClass();
         if (!class_exists($classname)) {
-            // require_once 'Zend/Loader.php';
+            require_once 'Zend/Loader.php';
             Zend_Loader::loadClass($classname);
         }
         return new $classname($options);
@@ -322,9 +342,10 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
      * @return integer
      * @throws Zend_Queue_Exception (not supported)
      */
+    #[\ReturnTypeWillChange]
     public function count(Zend_Queue $queue=null)
     {
-        // require_once 'Zend/Queue/Exception.php';
+        require_once 'Zend/Queue/Exception.php';
         throw new Zend_Queue_Exception('count() is not supported in this adapter');
     }
 
@@ -337,7 +358,7 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
      */
     public function isExists($name)
     {
-        // require_once 'Zend/Queue/Exception.php';
+        require_once 'Zend/Queue/Exception.php';
         throw new Zend_Queue_Exception('isExists() is not supported in this adapter');
     }
 
@@ -352,7 +373,7 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
      */
     public function getCapabilities()
     {
-        return array(
+        return [
             'create'        => false,
             'delete'        => false,
             'send'          => true,
@@ -361,6 +382,6 @@ class Zend_Queue_Adapter_Activemq extends Zend_Queue_Adapter_AdapterAbstract
             'getQueues'     => false,
             'count'         => false,
             'isExists'      => false,
-        );
+        ];
     }
 }

@@ -15,21 +15,21 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HtmlElement.php 24399 2011-08-26 08:20:07Z padraic $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_View_Helper_Abstract
  */
-// require_once 'Zend/View/Helper/Abstract.php';
+require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_View_Helper_HtmlElement extends Zend_View_Helper_Abstract
@@ -76,6 +76,17 @@ abstract class Zend_View_Helper_HtmlElement extends Zend_View_Helper_Abstract
     }
 
     /**
+     * Is doctype HTML5?
+     *
+     * @return boolean
+     */
+    protected function _isHtml5()
+    {
+        $doctype = $this->view->doctype();
+        return $doctype->isHtml5();
+    }
+
+    /**
      * Is doctype strict?
      *
      * @return boolean
@@ -85,7 +96,7 @@ abstract class Zend_View_Helper_HtmlElement extends Zend_View_Helper_Abstract
         $doctype = $this->view->doctype();
         return $doctype->isStrict();
     }
-    
+
     /**
      * Converts an associative array to a string of tag attributes.
      *
@@ -106,7 +117,7 @@ abstract class Zend_View_Helper_HtmlElement extends Zend_View_Helper_Abstract
                 // Don't escape event attributes; _do_ substitute double quotes with singles
                 if (!is_scalar($val)) {
                     // non-scalar data should be cast to JSON first
-                    // require_once 'Zend/Json.php';
+                    require_once 'Zend/Json.php';
                     $val = Zend_Json::encode($val);
                 }
                 // Escape single quotes inside event attribute values.

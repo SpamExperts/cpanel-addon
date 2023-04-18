@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Http_UserAgent
  * @subpackage UserAgent
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -31,7 +31,7 @@
  * @category   Zend
  * @package    Zend_Http_UserAgent
  * @subpackage UserAgent
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Http_UserAgent implements Serializable
@@ -80,7 +80,7 @@ class Zend_Http_UserAgent implements Serializable
      *
      * @var array
      */
-    protected $_browserTypeClass = array();
+    protected $_browserTypeClass = [];
 
     /**
      * Array to store config
@@ -90,12 +90,12 @@ class Zend_Http_UserAgent implements Serializable
      *
      * @var array
      */
-    protected $_config = array(
+    protected $_config = [
         'identification_sequence' => self::DEFAULT_IDENTIFICATION_SEQUENCE,
-        'storage'                 => array(
+        'storage'                 => [
             'adapter'             => self::DEFAULT_PERSISTENT_STORAGE_ADAPTER,
-        ),
-    );
+        ],
+    ];
 
     /**
      * Identified device
@@ -122,20 +122,20 @@ class Zend_Http_UserAgent implements Serializable
      * Plugin loaders
      * @var array
      */
-    protected $_loaders = array();
+    protected $_loaders = [];
 
     /**
      * Valid plugin loader types
      * @var array
      */
-    protected $_loaderTypes = array('storage', 'device');
+    protected $_loaderTypes = ['storage', 'device'];
 
     /**
      * Trace of items matched to identify the browser type
      *
      * @var array
      */
-    protected $_matchLog = array();
+    protected $_matchLog = [];
 
     /**
      * Server variable
@@ -169,18 +169,23 @@ class Zend_Http_UserAgent implements Serializable
      *
      * @return string
      */
-    public function serialize()
+    public function serialize(): ?string
+    {
+        return serialize($this->__serialize());
+    }
+
+    public function __serialize(): array
     {
         $device = $this->getDevice();
-        $spec = array(
+        $spec = [
             'browser_type' => $this->_browserType,
             'config'       => $this->_config,
             'device_class' => get_class($device),
             'device'       => $device->serialize(),
             'user_agent'   => $this->getServerValue('http_user_agent'),
             'http_accept'  => $this->getServerValue('http_accept'),
-        );
-        return serialize($spec);
+        ];
+        return $spec;
     }
 
     /**
@@ -189,10 +194,13 @@ class Zend_Http_UserAgent implements Serializable
      * @param  string $serialized
      * @return void
      */
-    public function unserialize($serialized)
+    public function unserialize($serialized): void
     {
-        $spec = unserialize($serialized);
+        $this->__unserialize(unserialize($serialized));
+    }
 
+    public function __unserialize(array $spec): void
+    {
         $this->setOptions($spec);
 
         // Determine device class and ensure the class is loaded
@@ -224,7 +232,7 @@ class Zend_Http_UserAgent implements Serializable
             && !$options instanceof ArrayAccess
             && !$options instanceof Traversable
         ) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(sprintf(
                 'Invalid argument; expected array, Zend_Config object, or object implementing ArrayAccess and Traversable; received %s',
                 (is_object($options) ? get_class($options) : gettype($options))
@@ -249,7 +257,7 @@ class Zend_Http_UserAgent implements Serializable
         }
 
         // And then loop through the remaining options
-        $config = array();
+        $config = [];
         foreach ($options as $key => $value) {
             switch (strtolower($key)) {
                 case 'browser_type':
@@ -296,7 +304,7 @@ class Zend_Http_UserAgent implements Serializable
 
         // Call match method on device class
         return call_user_func(
-            array($deviceClass, 'match'),
+            [$deviceClass, 'match'],
             $userAgent,
             $this->getServer()
         );
@@ -323,7 +331,7 @@ class Zend_Http_UserAgent implements Serializable
             if (is_array($deviceConfig) && isset($deviceConfig['classname'])) {
                 $device = (string) $deviceConfig['classname'];
                 if (!class_exists($device)) {
-                    // require_once 'Zend/Http/UserAgent/Exception.php';
+                    require_once 'Zend/Http/UserAgent/Exception.php';
                     throw new Zend_Http_UserAgent_Exception(sprintf(
                         'Invalid classname "%s" provided in device configuration for browser type "%s"',
                         $device,
@@ -432,7 +440,7 @@ class Zend_Http_UserAgent implements Serializable
                 $adapter = $loader->load($adapter);
                 $loader = $this->getPluginLoader('storage');
             }
-            $options = array('browser_type' => $browser);
+            $options = ['browser_type' => $browser];
             if (isset($config['options'])) {
                 $options = array_merge($options, $config['options']);
             }
@@ -450,7 +458,7 @@ class Zend_Http_UserAgent implements Serializable
     public function setStorage(Zend_Http_UserAgent_Storage $storage)
     {
         if ($this->_immutable) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(
                 'The User-Agent device object has already been retrieved; the storage object is now immutable'
             );
@@ -500,7 +508,7 @@ class Zend_Http_UserAgent implements Serializable
      * @param  mixed $config (option) Config array
      * @return Zend_Http_UserAgent
      */
-    public function setConfig($config = array())
+    public function setConfig($config = [])
     {
         if ($config instanceof Zend_Config) {
             $config = $config->toArray();
@@ -508,7 +516,7 @@ class Zend_Http_UserAgent implements Serializable
 
         // Verify that Config parameters are in an array.
         if (!is_array($config) && !$config instanceof Traversable) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(sprintf(
                 'Config parameters must be in an array or a Traversable object; received "%s"',
                 (is_object($config) ? get_class($config) : gettype($config))
@@ -516,7 +524,7 @@ class Zend_Http_UserAgent implements Serializable
         }
 
         if ($config instanceof Traversable) {
-            $tmp = array();
+            $tmp = [];
             foreach ($config as $key => $value) {
                 $tmp[$key] = $value;
             }
@@ -589,7 +597,7 @@ class Zend_Http_UserAgent implements Serializable
     public function setBrowserType($browserType)
     {
         if ($this->_immutable) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(
                 'The User-Agent device object has already been retrieved; the browser type is now immutable'
             );
@@ -625,20 +633,20 @@ class Zend_Http_UserAgent implements Serializable
      * data that will be introspected.
      *
      * @param  array|ArrayAccess $server
-     * @return void
+     * @return Zend_Http_UserAgent
      * @throws Zend_Http_UserAgent_Exception on invalid parameter
      */
     public function setServer($server)
     {
         if ($this->_immutable) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(
                 'The User-Agent device object has already been retrieved; the server array is now immutable'
             );
         }
 
         if (!is_array($server) && !$server instanceof Traversable) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(sprintf(
                 'Expected an array or object implementing Traversable; received %s',
                 (is_object($server) ? get_class($server) : gettype($server))
@@ -649,7 +657,7 @@ class Zend_Http_UserAgent implements Serializable
         if ($server instanceof ArrayObject) {
             $server = $server->getArrayCopy();
         } elseif ($server instanceof Traversable) {
-            $tmp = array();
+            $tmp = [];
             foreach ($server as $key => $value) {
                 $tmp[$key] = $value;
             }
@@ -687,12 +695,12 @@ class Zend_Http_UserAgent implements Serializable
      *
      * @param  string|int|float $key
      * @param  mixed $value
-     * @return void
+     * @return Zend_Http_UserAgent
      */
     public function setServerValue($key, $value)
     {
         if ($this->_immutable) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(
                 'The User-Agent device object has already been retrieved; the server array is now immutable'
             );
@@ -717,19 +725,19 @@ class Zend_Http_UserAgent implements Serializable
 
         if (is_string($loader)) {
             if (!class_exists($loader)) {
-                // require_once 'Zend/Loader.php';
+                require_once 'Zend/Loader.php';
                 Zend_Loader::loadClass($loader);
             }
             $loader = new $loader();
         } elseif (!is_object($loader)) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(sprintf(
                 'Expected a plugin loader class or object; received %s',
                 gettype($loader)
             ));
         }
         if (!$loader instanceof Zend_Loader_PluginLoader) {
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(sprintf(
                 'Expected an object extending Zend_Loader_PluginLoader; received %s',
                 get_class($loader)
@@ -763,7 +771,7 @@ class Zend_Http_UserAgent implements Serializable
     {
         $type = $this->_validateLoaderType($type);
         if (!isset($this->_loaders[$type])) {
-            // require_once 'Zend/Loader/PluginLoader.php';
+            require_once 'Zend/Loader/PluginLoader.php';
             $this->setPluginLoader($type, new Zend_Loader_PluginLoader());
         }
         return $this->_loaders[$type];
@@ -785,7 +793,7 @@ class Zend_Http_UserAgent implements Serializable
         if (!in_array($type, $this->_loaderTypes)) {
             $types = implode(', ', $this->_loaderTypes);
 
-            // require_once 'Zend/Http/UserAgent/Exception.php';
+            require_once 'Zend/Http/UserAgent/Exception.php';
             throw new Zend_Http_UserAgent_Exception(sprintf(
                 'Expected one of "%s" for plugin loader type; received "%s"',
                 $types,
@@ -799,7 +807,7 @@ class Zend_Http_UserAgent implements Serializable
      * Run the identification sequence to match the right browser type according to the
      * user agent
      *
-     * @return Zend_Http_UserAgent_Result
+     * @return string
      */
     protected function _matchUserAgent()
     {

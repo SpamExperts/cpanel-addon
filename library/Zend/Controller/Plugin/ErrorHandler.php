@@ -15,12 +15,12 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage Plugins
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /** Zend_Controller_Plugin_Abstract */
-// require_once 'Zend/Controller/Plugin/Abstract.php';
+require_once 'Zend/Controller/Plugin/Abstract.php';
 
 /**
  * Handle exceptions that bubble up based on missing controllers, actions, or
@@ -30,9 +30,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage Plugins
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ErrorHandler.php 24241 2011-07-14 08:09:41Z bate $
+ * @version    $Id$
  */
 class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstract
 {
@@ -55,12 +55,6 @@ class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstrac
      * Const - Other Exception; exceptions thrown by application controllers
      */
     const EXCEPTION_OTHER = 'EXCEPTION_OTHER';
-
-    /**
-     * Const - Config exceptions; exceptions thrown when configuration file does not exist
-     */
-    const EXCEPTION_NO_CONFIG = 'EXCEPTION_NO_CONFIG';
-
 
     /**
      * Module to use for errors; defaults to default module in dispatcher
@@ -103,7 +97,7 @@ class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstrac
      * @param  Array $options
      * @return void
      */
-    public function __construct(Array $options = array())
+    public function __construct(Array $options = [])
     {
         $this->setErrorHandler($options);
     }
@@ -114,7 +108,7 @@ class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstrac
      * @param  array $options
      * @return Zend_Controller_Plugin_ErrorHandler
      */
-    public function setErrorHandler(Array $options = array())
+    public function setErrorHandler(Array $options = [])
     {
         if (isset($options['module'])) {
             $this->setErrorHandlerModule($options['module']);
@@ -217,7 +211,7 @@ class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstrac
     {
         $this->_handleError($request);
     }
-	
+
     /**
      * Post dispatch hook -- check for exceptions and dispatch error handler if
      * necessary
@@ -261,7 +255,7 @@ class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstrac
             $this->_isInsideErrorHandlerLoop = true;
 
             // Get exception information
-            $error            = new ArrayObject(array(), ArrayObject::ARRAY_AS_PROPS);
+            $error            = new ArrayObject([], ArrayObject::ARRAY_AS_PROPS);
             $exceptions       = $response->getException();
             $exception        = $exceptions[0];
             $exceptionType    = get_class($exception);
@@ -273,9 +267,6 @@ class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstrac
                     } else {
                         $error->type = self::EXCEPTION_OTHER;
                     }
-                    break;
-                case 'Zend_Controller_Plugin_Exception':
-                    $error->type = self::EXCEPTION_NO_CONFIG;
                     break;
                 case 'Zend_Controller_Dispatcher_Exception':
                     $error->type = self::EXCEPTION_NO_CONTROLLER;
