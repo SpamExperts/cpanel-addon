@@ -131,9 +131,9 @@ class Cpanel_Service_WHM extends Cpanel_Service_Abstract
     {
         $c = 'Cpanel_Service_Adapter_WHMapi';
         switch ($adapterType) {
-        case parent::ADAPTER_WHM:
-            $c = 'Cpanel_Service_Adapter_WHMapi';
-            break;
+            case parent::ADAPTER_WHM:
+                $c = 'Cpanel_Service_Adapter_WHMapi';
+                break;
         }
         $adapter = new $c;
         if ($this->listner) {
@@ -191,8 +191,7 @@ class Cpanel_Service_WHM extends Cpanel_Service_Abstract
                 $a,
                 $method
             ),
-            $args
+            array_values($args)
         );
     }
 }
-?>
