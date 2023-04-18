@@ -57,6 +57,12 @@ class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstrac
     const EXCEPTION_OTHER = 'EXCEPTION_OTHER';
 
     /**
+     * Const - Config exceptions; exceptions thrown when configuration file does not exist
+     */
+    const EXCEPTION_NO_CONFIG = 'EXCEPTION_NO_CONFIG';
+
+
+    /**
      * Module to use for errors; defaults to default module in dispatcher
      * @var string
      */
@@ -267,6 +273,9 @@ class Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_Abstrac
                     } else {
                         $error->type = self::EXCEPTION_OTHER;
                     }
+                    break;
+                case 'Zend_Controller_Plugin_Exception':
+                    $error->type = self::EXCEPTION_NO_CONFIG;
                     break;
                 case 'Zend_Controller_Dispatcher_Exception':
                     $error->type = self::EXCEPTION_NO_CONTROLLER;
