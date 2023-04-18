@@ -188,8 +188,12 @@ class Uninstaller
         @unlink("/usr/local/cpanel/base/frontend/jupiter/dynamicui/dynamicui_psf.conf");
 
         // Refresh cache (cPanel Bug: #1049678)
-        @system("touch /usr/local/cpanel/base/frontend/x3/dynamicui.conf");
-        @system("touch /usr/local/cpanel/base/frontend/x3mail/dynamicui.conf");
+        if (is_dir('/usr/local/cpanel/base/frontend/x3')) {
+            system("touch /usr/local/cpanel/base/frontend/x3/dynamicui.conf");
+        }
+        if (is_dir('/usr/local/cpanel/base/frontend/x3mail')) {
+            system("touch /usr/local/cpanel/base/frontend/x3mail/dynamicui.conf");
+        }
     }
 
     private function removeHooks()

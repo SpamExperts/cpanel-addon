@@ -2160,8 +2160,12 @@ class SpamFilter_PanelSupport_Cpanel
                 $this->_logger->debug("[Cpanel] Re-registering plugin for paper_lantern + jupiter & generating sprites.");
 
                 $buttonConfig = '/usr/local/prospamfilter/bin/cpanel/paper_lantern/psf.tar.bz2';
-                @shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme paper_lantern");
-                @shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme jupiter");
+                if (is_dir('/usr/local/cpanel/base/frontend/paper_lantern')) {
+                    shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme paper_lantern");
+                }
+                if (is_dir('/usr/local/cpanel/base/frontend/jupiter')) {
+                    shell_exec("/usr/local/cpanel/scripts/install_plugin {$buttonConfig} --theme jupiter");
+                }
 
                 $this->_logger->debug("[Cpanel] Re-registering plugin for other themes & generating sprites.");
 
