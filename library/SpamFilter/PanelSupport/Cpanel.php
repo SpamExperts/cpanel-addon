@@ -2171,7 +2171,9 @@ class SpamFilter_PanelSupport_Cpanel
 
                 // Creating dynamicui directory
                 // @see https://trac.spamexperts.com/ticket/22354
-                if (!file_exists('/usr/local/cpanel/base/frontend/x3/dynamicui')) {
+                if (is_dir('/usr/local/cpanel/base/frontend/x3')
+                    && !is_dir('/usr/local/cpanel/base/frontend/x3/dynamicui')
+                ) {
                     mkdir('/usr/local/cpanel/base/frontend/x3/dynamicui');
                 }
                 $status = shell_exec("/usr/local/cpanel/bin/register_cpanelplugin {$pluginfile}");
