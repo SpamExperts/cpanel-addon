@@ -486,7 +486,8 @@ class SpamFilter_PanelSupport_Cpanel
             return false;
         }
 
-        $args['domain'] = $params['domain'];
+        $idn = new IDNA_Convert();
+        $args['domain'] = $idn->encode($params['domain']);
         $args['api.version'] = '1';
         $spfrecord = $this->getSPFRecord($args);
         $response = array();
@@ -501,7 +502,7 @@ class SpamFilter_PanelSupport_Cpanel
             $response = $this->_api->getWhm()->makeQuery('editzonerecord', $args)->getResponse('array'); //check status
         } else {
             //No existing spf so we create new one
-            $args['name'] = $args['domain'] . ".";
+            $args['name'] = $idn->encode($args['domain']) . ".";
             $args['class'] = 'IN';
             $args['ttl'] = '14400';
             $args['type'] = 'TXT';
@@ -522,7 +523,8 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function RemoveSPF($domain)
     {
-        $args['domain'] = $domain;
+        $idn = new IDNA_Convert();
+        $args['domain'] = $idn->encode($domain);
         $args['api.version'] = '1';
         $spfrecord = $this->getSPFRecord($args);
         if (isset($spfrecord['txtdata']) && $spfrecord['txtdata'] == $this->_config->spf_record) {
@@ -546,17 +548,15 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function SwitchMXmode($params)
     {
-        if (!empty($params['domain'])) {
-            $domain = $params['domain'];
-        } else {
+        if (empty($params['domain'])) {
             $this->_logger->debug("Domain can't be empty.");
-
             return false;
         }
+        $domain = $params['domain'];
 
         $mode = (empty($params['mode'])) ? 'local' : $params['mode'];
 
-        if (empty($user)) {
+        if (empty($params['user'])) {
             // If the user is not given, we have to look it up ourselves.
             // Please note: The user *must* be the one assigned to the domain else the call will not provide data.
             $user = $this->getDomainUser($domain);
@@ -564,11 +564,14 @@ class SpamFilter_PanelSupport_Cpanel
             $user = $params['user'];
         }
 
+        $idn = new IDNA_Convert();
+        $encodedDomain = $idn->encode($domain);
+
         if ($user !== false) {
             $this->_logger->debug("Switching MX mode for '{$domain}' to '{$mode}'..");
             try {
                 $response = $this->_api->getWhm()
-                    ->api2_query($user, 'Email', 'setalwaysaccept', array('domain' => $domain, 'mxcheck' => $mode));
+                    ->api2_query($user, 'Email', 'setalwaysaccept', array('domain' => $encodedDomain, 'mxcheck' => $mode));
                 $arr = $response->getResponse('array');
             } catch (Exception $e) {
                 $this->_logger->crit("Exception caught in " . __METHOD__ . " method : " . $e->getMessage());
@@ -596,18 +599,18 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function GetMXmode($params)
     {
-        if (!empty($params['domain'])) {
-            $domain = $params['domain'];
-        } else {
+        if (empty($params['domain'])) {
             $this->_logger->debug("Domain can't be empty.");
-
             return false;
         }
+        $idn = new IDNA_Convert();
+        $domain = $params['domain'];
+        $encodedDomain = $idn->encode($domain);
 
         if (empty($params['user'])) {
             // If the user is not given, we have to look it up ourselves.
             // Please note: The user *must* be the one assigned to the domain else the call will not provide data.
-            $user = $this->getDomainUser($domain);
+            $user = $this->getDomainUser($encodedDomain);
         } else {
             $user = $params['user'];
         }
@@ -618,7 +621,7 @@ class SpamFilter_PanelSupport_Cpanel
                 /** @see https://trac.spamexperts.com/ticket/21273#comment:11 */
                 if (in_array(strtolower($user), array('root', 'admin'))) {
                     /** @var $response Cpanel_Query_Object */
-                    $response = $this->_api->whm_api('domainuserdata', array('domain' => $domain));
+                    $response = $this->_api->whm_api('domainuserdata', array('domain' => $encodedDomain));
                     $responseData = $response->getResponse('array');
 
                     if (!empty($responseData['userdata']['user'])) {
@@ -626,7 +629,7 @@ class SpamFilter_PanelSupport_Cpanel
                     }
                 }
 
-                $response = $this->_api->getWhm()->api2_query($user, 'Email', 'listmxs', array('domain' => $domain));
+                $response = $this->_api->getWhm()->api2_query($user, 'Email', 'listmxs', array('domain' => $encodedDomain));
                 $arr = $response->getResponse('array');
 
                 $this->_logger->debug("GetMXmode returned: " . serialize($arr));
@@ -1067,9 +1070,10 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function getMxRecords($domain)
     {
+        $idn = new IDNA_Convert();
         $args = array(
             'api.version' => 1,
-            'domain' => $domain,
+            'domain' => $idn->encode($domain),
         );
 
         try {
@@ -1098,9 +1102,10 @@ class SpamFilter_PanelSupport_Cpanel
     public function removeDNSRecord($domain, $line)
     {
         $this->_logger->debug("Removing DNS line '{$line}' for domain '{$domain}' ... ");
+        $idn = new IDNA_Convert();
         try {
             /** @var Cpanel_Query_Object $response */
-            $response = $this->_api->whm_api('removezonerecord', array('zone' => $domain, 'Line' => $line));
+            $response = $this->_api->whm_api('removezonerecord', array('zone' => $idn->encode($domain), 'Line' => $line));
             $arr = $response->getResponse('array');
 
             $this->_logger->debug(
@@ -1224,10 +1229,12 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function addMxRecord($domain, $priority, $server)
     {
+        $idn = new IDNA_Convert();
+        $encodedDomain = $idn->encode($domain);
         $args = array(
             //'api.version'	=> 1,		// Only when doing savemxs
             //'domain'	=> $domain,		// Only when doing savemxs
-            'name' => $domain . '.',
+            'name' => $encodedDomain . '.',
             // Don't forget the trailing dot, else it will be a subdomain
             'exchange' => $server,
             // Destination server as normal
@@ -1242,7 +1249,7 @@ class SpamFilter_PanelSupport_Cpanel
         );
         try {
             /** @var Cpanel_Query_Object $response */
-            $response = $this->_api->whm_api('addzonerecord', array('zone' => $domain, 'args' => $args));
+            $response = $this->_api->whm_api('addzonerecord', array('zone' => $encodedDomain, 'args' => $args));
             $arr = $response->getResponse('array');
 
             $this->_logger->debug(
@@ -1947,7 +1954,8 @@ class SpamFilter_PanelSupport_Cpanel
             }
         }
 
-        $domain = strtolower($domain);
+        $idn = new IDNA_Convert();
+        $domain = strtolower($idn->encode($domain));
 
         /**
          * Perhaps it isn't an account domain?
@@ -2649,7 +2657,7 @@ class SpamFilter_PanelSupport_Cpanel
      *
      * @return array
      */
-    static final public function multidimArrayUnique(array $array, $uniqueField)
+    final public static function multidimArrayUnique(array $array, $uniqueField)
     {
         $addedValues = $result = array();
 
@@ -2674,7 +2682,8 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function getDomainPackage($domain)
     {
-        $args['domain'] = $domain;
+        $idn = new IDNA_Convert();
+        $args['domain'] = $idn->encode($domain);
         try {
             $response = $this->_api->getWhm()->makeQuery('accountsummary', $args);
             $arr = $response->getResponse('array');
