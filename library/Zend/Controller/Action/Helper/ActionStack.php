@@ -15,15 +15,15 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage Zend_Controller_Action_Helper
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ActionStack.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Controller_Action_Helper_Abstract
  */
-// require_once 'Zend/Controller/Action/Helper/Abstract.php';
+require_once 'Zend/Controller/Action/Helper/Abstract.php';
 
 /**
  * Add to action stack
@@ -32,7 +32,7 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage Zend_Controller_Action_Helper
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Controller_Action_Helper_ActionStack extends Zend_Controller_Action_Helper_Abstract
@@ -56,7 +56,7 @@ class Zend_Controller_Action_Helper_ActionStack extends Zend_Controller_Action_H
             /**
              * @see Zend_Controller_Plugin_ActionStack
              */
-            // require_once 'Zend/Controller/Plugin/ActionStack.php';
+            require_once 'Zend/Controller/Plugin/ActionStack.php';
             $this->_actionStack = new Zend_Controller_Plugin_ActionStack();
             $front->registerPlugin($this->_actionStack, 97);
         } else {
@@ -68,7 +68,7 @@ class Zend_Controller_Action_Helper_ActionStack extends Zend_Controller_Action_H
      * Push onto the stack
      *
      * @param  Zend_Controller_Request_Abstract $next
-     * @return Zend_Controller_Action_Helper_ActionStack Provides a fluent interface
+     * @return $this
      */
     public function pushStack(Zend_Controller_Request_Abstract $next)
     {
@@ -86,7 +86,7 @@ class Zend_Controller_Action_Helper_ActionStack extends Zend_Controller_Action_H
      * @throws Zend_Controller_Action_Exception
      * @return Zend_Controller_Action_Helper_ActionStack
      */
-    public function actionToStack($action, $controller = null, $module = null, array $params = array())
+    public function actionToStack($action, $controller = null, $module = null, array $params = [])
     {
         if ($action instanceof Zend_Controller_Request_Abstract) {
             return $this->pushStack($action);
@@ -94,7 +94,7 @@ class Zend_Controller_Action_Helper_ActionStack extends Zend_Controller_Action_H
             /**
              * @see Zend_Controller_Action_Exception
              */
-            // require_once 'Zend/Controller/Action/Exception.php';
+            require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception('ActionStack requires either a request object or minimally a string action');
         }
 
@@ -104,7 +104,7 @@ class Zend_Controller_Action_Helper_ActionStack extends Zend_Controller_Action_H
             /**
              * @see Zend_Controller_Action_Exception
              */
-            // require_once 'Zend/Controller/Action/Exception.php';
+            require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception('Request object not set yet');
         }
 
@@ -114,7 +114,7 @@ class Zend_Controller_Action_Helper_ActionStack extends Zend_Controller_Action_H
         /**
          * @see Zend_Controller_Request_Simple
          */
-        // require_once 'Zend/Controller/Request/Simple.php';
+        require_once 'Zend/Controller/Request/Simple.php';
         $newRequest = new Zend_Controller_Request_Simple($action, $controller, $module, $params);
 
         return $this->pushStack($newRequest);
@@ -129,9 +129,9 @@ class Zend_Controller_Action_Helper_ActionStack extends Zend_Controller_Action_H
      * @param  string $controller
      * @param  string $module
      * @param  array $params
-     * @return boolean
+     * @return Zend_Controller_Action_Helper_ActionStack
      */
-    public function direct($action, $controller = null, $module = null, array $params = array())
+    public function direct($action, $controller = null, $module = null, array $params = [])
     {
         return $this->actionToStack($action, $controller, $module, $params);
     }

@@ -15,14 +15,14 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Decorator
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /**
  * @see Zend_Form_Decorator_Abstract
  */
-// require_once 'Zend/Form/Decorator/Abstract.php';
+require_once 'Zend/Form/Decorator/Abstract.php';
 
 /**
  * Zend_Form_Decorator_Element_HtmlTag
@@ -43,9 +43,9 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Decorator
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HtmlTag.php 24428 2011-09-02 14:10:03Z matthew $
+ * @version    $Id$
  */
 class Zend_Form_Decorator_HtmlTag extends Zend_Form_Decorator_Abstract
 {
@@ -92,7 +92,7 @@ class Zend_Form_Decorator_HtmlTag extends Zend_Form_Decorator_Abstract
                     $val = implode(' ', $val);
                 }
             }
-            $val    = htmlspecialchars($val, ENT_COMPAT, $enc);
+            $val    = htmlspecialchars((string) $val, ENT_COMPAT, $enc);
             $xhtml .= " $key=\"$val\"";
         }
         return $xhtml;
@@ -109,9 +109,9 @@ class Zend_Form_Decorator_HtmlTag extends Zend_Form_Decorator_Abstract
     public function normalizeTag($tag)
     {
         if (!isset($this->_tagFilter)) {
-            // require_once 'Zend/Filter.php';
-            // require_once 'Zend/Filter/Alnum.php';
-            // require_once 'Zend/Filter/StringToLower.php';
+            require_once 'Zend/Filter.php';
+            require_once 'Zend/Filter/Alnum.php';
+            require_once 'Zend/Filter/StringToLower.php';
             $this->_tagFilter = new Zend_Filter();
             $this->_tagFilter->addFilter(new Zend_Filter_Alnum())
                              ->addFilter(new Zend_Filter_StringToLower());

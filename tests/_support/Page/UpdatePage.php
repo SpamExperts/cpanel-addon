@@ -19,9 +19,4 @@ class UpdatePage
 
     const CLICK_TO_UPGRADE_BTN_XPATH = "//input[@id='submit']";
     const CLICK_TO_UPGRADE_BTN_CSS   = "#submit";
-
-    const WIN_DESCRIPTION_A = "Download the following file:";
-    const WIN_DESCRIPTION_URL = "http://download.seinternal.com/integration/installers/plesk-windows/installer.bat";
-    const WIN_DESCRIPTION_B = "From the command line run the following command:";
-    const WIN_DESCRIPTION_COMMAND = "cmd /k installer.bat";
 }

@@ -15,16 +15,16 @@
  * @category   Zend
  * @package    Zend_Json
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Request.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @category   Zend
  * @package    Zend_Json
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Json_Server_Request
@@ -57,7 +57,7 @@ class Zend_Json_Server_Request
      * Request parameters
      * @var array
      */
-    protected $_params = array();
+    protected $_params = [];
 
     /**
      * JSON-RPC version of request
@@ -126,7 +126,7 @@ class Zend_Json_Server_Request
      */
     public function setParams(array $params)
     {
-        $this->_params = array();
+        $this->_params = [];
         return $this->addParams($params);
     }
 
@@ -247,7 +247,7 @@ class Zend_Json_Server_Request
      */
     public function loadJson($json)
     {
-        // require_once 'Zend/Json.php';
+        require_once 'Zend/Json.php';
         $options = Zend_Json::decode($json);
         $this->setOptions($options);
     }
@@ -259,9 +259,9 @@ class Zend_Json_Server_Request
      */
     public function toJson()
     {
-        $jsonArray = array(
+        $jsonArray = [
             'method' => $this->getMethod()
-        );
+        ];
         if (null !== ($id = $this->getId())) {
             $jsonArray['id'] = $id;
         }
@@ -273,7 +273,7 @@ class Zend_Json_Server_Request
             $jsonArray['jsonrpc'] = '2.0';
         }
 
-        // require_once 'Zend/Json.php';
+        require_once 'Zend/Json.php';
         return Zend_Json::encode($jsonArray);
     }
 

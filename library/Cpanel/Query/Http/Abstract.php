@@ -781,7 +781,7 @@ abstract class Cpanel_Query_Http_Abstract extends Cpanel_Core_Object
      */
     protected function curlExec($curl)
     {
-        if (!is_resource($curl)) {
+        if (!is_resource($curl) && !($curl instanceof CurlHandle)) {
             throw new Exception('Invalid cURL resource');
         }
         $result = curl_exec($curl);
@@ -813,7 +813,7 @@ abstract class Cpanel_Query_Http_Abstract extends Cpanel_Core_Object
      */
     protected function addCurlPostFields($curl, $postdata)
     {
-        if (!is_resource($curl)) {
+        if (!is_resource($curl) && !($curl instanceof CurlHandle)) {
             throw new Exception('Invalid cURL resource');
         }
 
@@ -1073,4 +1073,3 @@ abstract class Cpanel_Query_Http_Abstract extends Cpanel_Core_Object
         return $r;
     }
 }
-?>

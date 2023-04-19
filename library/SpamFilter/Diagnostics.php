@@ -148,7 +148,7 @@ class SpamFilter_Diagnostics
             } else {
                 // Check if the permissions for the apipass binary are in place.
                 $perms = fileperms($configBinary);
-	 	$perms = substr(sprintf('%o', $perms), -4);
+                $perms = substr(sprintf('%o', $perms), -4);
                 if ($perms != 6755) {
                     $return['critical'][]
                         = "APIPass binary for {$bit}bits has incorrect permissions ({$perms}) instead of 6755.";
@@ -271,38 +271,32 @@ class SpamFilter_Diagnostics
 
         switch(strtolower($this->_paneltype)){
             case "cpanel":
-            $panel = new SpamFilter_PanelSupport_Cpanel;
-            $registeredHooks = $panel->listHooks();
-            $file = BASE_PATH . '/bin/hook.php';
-            $files = array('hook.php' => BASE_PATH . '/bin/hook.php');
-            $hooks =  SpamFilter_PanelSupport_Cpanel::getHooksList();
+                $panel = new SpamFilter_PanelSupport_Cpanel;
+                $registeredHooks = $panel->listHooks();
+                $file = BASE_PATH . '/bin/hook.php';
+                $files = array('hook.php' => BASE_PATH . '/bin/hook.php');
+                $hooks =  SpamFilter_PanelSupport_Cpanel::getHooksList();
 
-            foreach ($hooks as $hook) {
-                if (isset($hook['category']) && isset($hook['event'])
-                    && !$panel->isHookExists($registeredHooks, $hook['category'], $hook['event'], $hook['stage'], $file)) {
-                    $return['critical'][] = "The hook '" . $hook['category'] . "::" . $hook['event'] . "' does not exist.";
+                foreach ($hooks as $hook) {
+                    if (isset($hook['category']) && isset($hook['event'])
+                        && !$panel->isHookExists($registeredHooks, $hook['category'], $hook['event'], $hook['stage'], $file)) {
+                        $return['critical'][] = "The hook '" . $hook['category'] . "::" . $hook['event'] . "' does not exist.";
+                    }
                 }
-            }
-            break;
-            case "plesk":
-                $files = array(
-                    'EventListener'            => PLESK_DIR . 'admin' . DS . 'plib' . DS . 'registry' . DS . 'EventListener' . DS . 'prospamfilter.php',
-                );
                 break;
-
         }
 
-            foreach ($files as $hook => $file) {
-                $this->_logger->debug("Checking hook: '{$hook}' (file: '{$file}')");
-                // check if the file exists
-                if (!file_exists($file)) {
-                    $this->_logger->debug("Missing hook: {$file}");
-                    $return['critical'][] = "The hook '{$hook}' does not exist.";
-                } elseif(!SpamFilter_Core::isWindows() && !is_executable($file)) {  // In windows checking for executable must be disabled. There will be always returned false for *.php files.
-                    $this->_logger->debug("The hook file '{$file}' is not executable.");
-                    $return['critical'][] = "The hook '{$hook}' is not executable.";
-                }
+        foreach ($files as $hook => $file) {
+            $this->_logger->debug("Checking hook: '{$hook}' (file: '{$file}')");
+            // check if the file exists
+            if (!file_exists($file)) {
+                $this->_logger->debug("Missing hook: {$file}");
+                $return['critical'][] = "The hook '{$hook}' does not exist.";
+            } elseif(!SpamFilter_Core::isWindows() && !is_executable($file)) {  // In windows checking for executable must be disabled. There will be always returned false for *.php files.
+                $this->_logger->debug("The hook file '{$file}' is not executable.");
+                $return['critical'][] = "The hook '{$hook}' is not executable.";
             }
+        }
 
         // do check here
         return $this->return_result($return);
@@ -322,14 +316,6 @@ class SpamFilter_Diagnostics
                     "WHM frontend - icon"          => "/usr/local/cpanel/whostmgr/docroot/themes/x/icons/prospamfilter.gif",
                 );
                 break;
-
-            case "plesk":
-                $files = array(
-                    "EventListener"             => PLESK_DIR . 'admin' . DS . 'plib' . DS . 'registry' . DS . 'EventListener' . DS . 'prospamfilter.php',
-                    "Plesk Frontend"            => PLESK_DIR . DS . 'admin' . DS . 'htdocs' . DS . 'modules' . DS . 'prospamfilter',
-                );
-                break;
-
         }
 
         // do check here

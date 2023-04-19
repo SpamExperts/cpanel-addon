@@ -14,22 +14,22 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Tar.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Filter_Compress_CompressAbstract
  */
-// require_once 'Zend/Filter/Compress/CompressAbstract.php';
+require_once 'Zend/Filter/Compress/CompressAbstract.php';
 
 /**
  * Compression adapter for Tar
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
@@ -43,11 +43,11 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
      *
      * @var array
      */
-    protected $_options = array(
+    protected $_options = [
         'archive'  => null,
         'target'   => '.',
         'mode'     => null,
-    );
+    ];
 
     /**
      * Class constructor
@@ -57,11 +57,11 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
     public function __construct($options = null)
     {
         if (!class_exists('Archive_Tar')) {
-            // require_once 'Zend/Loader.php';
+            require_once 'Zend/Loader.php';
             try {
                 Zend_Loader::loadClass('Archive_Tar');
             } catch (Zend_Exception $e) {
-                // require_once 'Zend/Filter/Exception.php';
+                require_once 'Zend/Filter/Exception.php';
                 throw new Zend_Filter_Exception('This filter needs PEARs Archive_Tar', 0, $e);
             }
         }
@@ -87,7 +87,7 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
      */
     public function setArchive($archive)
     {
-        $archive = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $archive);
+        $archive = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $archive);
         $this->_options['archive'] = (string) $archive;
 
         return $this;
@@ -112,11 +112,11 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
     public function setTarget($target)
     {
         if (!file_exists(dirname($target))) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception("The directory '$target' does not exist");
         }
 
-        $target = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $target);
+        $target = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $target);
         $this->_options['target'] = (string) $target;
         return $this;
     }
@@ -139,17 +139,17 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
     {
         $mode = ucfirst(strtolower($mode));
         if (($mode != 'Bz2') && ($mode != 'Gz')) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception("The mode '$mode' is unknown");
         }
 
         if (($mode == 'Bz2') && (!extension_loaded('bz2'))) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception('This mode needs the bz2 extension');
         }
 
         if (($mode == 'Gz') && (!extension_loaded('zlib'))) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception('This mode needs the zlib extension');
         }
     }
@@ -171,7 +171,7 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
 
             $result = file_put_contents($file, $content);
             if ($result === false) {
-                // require_once 'Zend/Filter/Exception.php';
+                require_once 'Zend/Filter/Exception.php';
                 throw new Zend_Filter_Exception('Error creating the temporary file');
             }
 
@@ -195,7 +195,7 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
 
         $result  = $archive->create($content);
         if ($result === false) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception('Error creating the Tar archive');
         }
 
@@ -212,9 +212,9 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
     {
         $archive = $this->getArchive();
         if (file_exists($content)) {
-            $archive = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, realpath($content));
+            $archive = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, realpath($content));
         } elseif (empty($archive) || !file_exists($archive)) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception('Tar Archive not found');
         }
 
@@ -226,7 +226,7 @@ class Zend_Filter_Compress_Tar extends Zend_Filter_Compress_CompressAbstract
 
         $result = $archive->extract($target);
         if ($result === false) {
-            // require_once 'Zend/Filter/Exception.php';
+            require_once 'Zend/Filter/Exception.php';
             throw new Zend_Filter_Exception('Error while extracting the Tar archive');
         }
 

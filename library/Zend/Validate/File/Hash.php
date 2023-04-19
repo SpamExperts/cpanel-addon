@@ -14,22 +14,22 @@
  *
  * @category  Zend
  * @package   Zend_Validate
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: Hash.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version   $Id$
  */
 
 /**
  * @see Zend_Validate_Abstract
  */
-// require_once 'Zend/Validate/Abstract.php';
+require_once 'Zend/Validate/Abstract.php';
 
 /**
  * Validator for the hash of given files
  *
  * @category  Zend
  * @package   Zend_Validate
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Validate_File_Hash extends Zend_Validate_Abstract
@@ -44,11 +44,11 @@ class Zend_Validate_File_Hash extends Zend_Validate_Abstract
     /**
      * @var array Error message templates
      */
-    protected $_messageTemplates = array(
+    protected $_messageTemplates = [
         self::DOES_NOT_MATCH => "File '%value%' does not match the given hashes",
         self::NOT_DETECTED   => "A hash could not be evaluated for the given file",
         self::NOT_FOUND      => "File '%value%' is not readable or does not exist"
-    );
+    ];
 
     /**
      * Hash of the file
@@ -61,16 +61,16 @@ class Zend_Validate_File_Hash extends Zend_Validate_Abstract
      * Sets validator options
      *
      * @param  string|array $options
-     * @return void
+     * @throws Zend_Validate_Exception
      */
     public function __construct($options)
     {
         if ($options instanceof Zend_Config) {
             $options = $options->toArray();
         } elseif (is_scalar($options)) {
-            $options = array('hash1' => $options);
+            $options = ['hash1' => $options];
         } elseif (!is_array($options)) {
-            // require_once 'Zend/Validate/Exception.php';
+            require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception('Invalid options to validator provided');
         }
 
@@ -84,7 +84,7 @@ class Zend_Validate_File_Hash extends Zend_Validate_Abstract
     /**
      * Returns the set hash values as array, the hash as key and the algorithm the value
      *
-     * @return array
+     * @return string
      */
     public function getHash()
     {
@@ -95,7 +95,7 @@ class Zend_Validate_File_Hash extends Zend_Validate_Abstract
      * Sets the hash for one or multiple files
      *
      * @param  string|array $options
-     * @return Zend_Validate_File_Hash Provides a fluent interface
+     * @return $this
      */
     public function setHash($options)
     {
@@ -109,14 +109,15 @@ class Zend_Validate_File_Hash extends Zend_Validate_Abstract
      * Adds the hash for one or multiple files
      *
      * @param  string|array $options
-     * @return Zend_Validate_File_Hash Provides a fluent interface
+     * @throws Zend_Validate_Exception
+     * @return $this
      */
     public function addHash($options)
     {
         if (is_string($options)) {
-            $options = array($options);
+            $options = [$options];
         } else if (!is_array($options)) {
-            // require_once 'Zend/Validate/Exception.php';
+            require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception("False parameter given");
         }
 
@@ -129,7 +130,7 @@ class Zend_Validate_File_Hash extends Zend_Validate_Abstract
         }
 
         if (!in_array($algorithm, $known)) {
-            // require_once 'Zend/Validate/Exception.php';
+            require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception("Unknown algorithm '{$algorithm}'");
         }
 
@@ -152,7 +153,7 @@ class Zend_Validate_File_Hash extends Zend_Validate_Abstract
     public function isValid($value, $file = null)
     {
         // Is file readable ?
-        // require_once 'Zend/Loader.php';
+        require_once 'Zend/Loader.php';
         if (!Zend_Loader::isReadable($value)) {
             return $this->_throw($file, self::NOT_FOUND);
         }

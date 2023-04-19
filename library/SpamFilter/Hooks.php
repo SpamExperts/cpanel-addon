@@ -745,52 +745,6 @@ class SpamFilter_Hooks
         }
     }
 
-    //
-    public function psa_CheckMxRecords( $domain )
-    {
-        $this->_logger->info("[Hook] Checking {$domain}'s records (for Plesk)");
-        return $this->_panel->removeForeignMXRecords( $domain );
-/*
-
-        // Retrieve MX records and compare with the templated ones.
-        $mxr = $this->_panel->GetMXRecordContent( $domain );
-        if( (!empty($mxr)) && ($mxr !== false) )
-        {
-            $my_rr[] = $this->_config->mx1;
-            if(!empty($this->_config->mx2)){ $my_rr[] = $this->_config->mx2; }
-            if(!empty($this->_config->mx3)){ $my_rr[] = $this->_config->mx3; }
-            $myRRCount = count($my_rr);
-            $foundRR = 0;
-
-            // Check if they aren't already pointing to the filter cluster.
-            foreach ($mxr as $r)
-            {
-                // $r = record
-                if(in_array($r, $my_rr))
-                {
-                    $foundRR++;
-                    // Record $r exists in array $my_rr
-                }
-            }
-
-            $c1 = count($mxr);
-            if( $c1 > $myRRCount )
-            {
-                $this->_logger->debug("More records found ({$c1}) than required ({$myRRCount}). Re-running DNS setup");
-                return SpamFilter_DNS::ConfigureDNS($domain);
-            }
-
-            // Second check
-            $diff = array_diff($my_rr, $mxr);
-            if( (count($diff) > 0) && (!in_array($my_rr, $diff)) )
-            {
-                $this->_logger->debug("Second level check required. Difference: " . serialize($diff) );
-            }
-        }
-*/
-    }
-    //
-
     /**
      * Check a domain added or not
      *

@@ -68,7 +68,6 @@ $paths = new Installer_InstallPaths();
 $paths->base = BASE_PATH;
 $paths->destination = DEST_PATH;
 $paths->config = CFG_PATH;
-$paths->plesk = PLESK_DIR;
 
 $filesystem = Filesystem_AbstractFilesystem::createFilesystem();
 $output = new Output_ConsoleOutput();

@@ -14,22 +14,22 @@
  *
  * @category  Zend
  * @package   Zend_Validate
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: ExcludeMimeType.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version   $Id$
  */
 
 /**
  * @see Zend_Validate_File_MimeType
  */
-// require_once 'Zend/Validate/File/MimeType.php';
+require_once 'Zend/Validate/File/MimeType.php';
 
 /**
  * Validator for the mime type of a file
  *
  * @category  Zend
  * @package   Zend_Validate
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Validate_File_ExcludeMimeType extends Zend_Validate_File_MimeType
@@ -37,6 +37,15 @@ class Zend_Validate_File_ExcludeMimeType extends Zend_Validate_File_MimeType
     const FALSE_TYPE   = 'fileExcludeMimeTypeFalse';
     const NOT_DETECTED = 'fileExcludeMimeTypeNotDetected';
     const NOT_READABLE = 'fileExcludeMimeTypeNotReadable';
+
+    /**
+     * @var array Error message templates
+     */
+    protected $_messageTemplates = [
+        self::FALSE_TYPE   => "File '%value%' has a false mimetype of '%type%'",
+        self::NOT_DETECTED => "The mimetype of file '%value%' could not be detected",
+        self::NOT_READABLE => "File '%value%' is not readable or does not exist",
+    ];
 
     /**
      * Defined by Zend_Validate_Interface
@@ -52,39 +61,22 @@ class Zend_Validate_File_ExcludeMimeType extends Zend_Validate_File_MimeType
     public function isValid($value, $file = null)
     {
         if ($file === null) {
-            $file = array(
+            $file = [
                 'type' => null,
                 'name' => $value
-            );
+            ];
         }
 
         // Is file readable ?
-        // require_once 'Zend/Loader.php';
+        require_once 'Zend/Loader.php';
         if (!Zend_Loader::isReadable($value)) {
             return $this->_throw($file, self::NOT_READABLE);
         }
 
-        $mimefile = $this->getMagicFile();
-        if (class_exists('finfo', false)) {
-            $const = defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME;
-            if (!empty($mimefile)) {
-                $mime = new finfo($const, $mimefile);
-            } else {
-                $mime = new finfo($const);
-            }
+        $this->_type = $this->_detectMimeType($value);
 
-            if (!empty($mime)) {
-                $this->_type = $mime->file($value);
-            }
-            unset($mime);
-        }
-
-        if (empty($this->_type)) {
-            if (function_exists('mime_content_type') && ini_get('mime_magic.magicfile')) {
-                $this->_type = mime_content_type($value);
-            } elseif ($this->_headerCheck) {
-                $this->_type = $file['type'];
-            }
+        if (empty($this->_type) && $this->_headerCheck) {
+            $this->_type = $file['type'];
         }
 
         if (empty($this->_type)) {

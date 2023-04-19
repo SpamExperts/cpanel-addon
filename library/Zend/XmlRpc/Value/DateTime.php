@@ -15,23 +15,23 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Value
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DateTime.php 24292 2011-07-28 21:25:22Z matthew $
+ * @version    $Id$
  */
 
 
 /**
  * Zend_XmlRpc_Value_Scalar
  */
-// require_once 'Zend/XmlRpc/Value/Scalar.php';
+require_once 'Zend/XmlRpc/Value/Scalar.php';
 
 
 /**
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Value
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_XmlRpc_Value_DateTime extends Zend_XmlRpc_Value_Scalar
@@ -71,7 +71,7 @@ class Zend_XmlRpc_Value_DateTime extends Zend_XmlRpc_Value_Scalar
         } else {
             $timestamp = new DateTime($value);
             if ($timestamp === false) { // cannot convert the value to a timestamp
-                // require_once 'Zend/XmlRpc/Value/Exception.php';
+                require_once 'Zend/XmlRpc/Value/Exception.php';
                 throw new Zend_XmlRpc_Value_Exception('Cannot convert given value \''. $value .'\' to a timestamp');
             }
 
@@ -82,7 +82,7 @@ class Zend_XmlRpc_Value_DateTime extends Zend_XmlRpc_Value_Scalar
     /**
      * Return the value of this object as iso8601 dateTime value
      *
-     * @return int As a Unix timestamp
+     * @return string As a Unix timestamp
      */
     public function getValue()
     {

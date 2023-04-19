@@ -41,66 +41,38 @@
 * @since     2.0
 */
 // Override maximum execution time.
-ini_set ('session.auto_start', '0' );
+ini_set('session.auto_start', '0');
 $lim = ini_get('max_execution_time');
 if ( $lim > 0 && $lim < 300 )
 {
-	@set_time_limit(300);
-	@ini_set('max_execution_time', 300);
+    @set_time_limit(300);
+    @ini_set('max_execution_time', 300);
 }
 
 // Setup default timezone (as we might be skipping php.ini)
 $tz = ini_get('date.timezone');
-$tz = ($tz) ? $tz : 'UTC';
+$tz = $tz ?: 'UTC';
 date_default_timezone_set($tz);
-
-$isWindows = stripos(PHP_OS, 'win') === 0;
 
 // Setup some global defines.
 if( (isset($path_override)) && ($path_override) )
 {
-	// Do nothing
+    // Do nothing
 } else {
-        if(!defined('DS')){
-            define('DS', DIRECTORY_SEPARATOR);
-        }
-        if(isset($_ENV['plesk_dir']) && $isWindows){
-            if(!defined('PLESK_DIR')){
-                define('PLESK_DIR', $_ENV['plesk_dir']);
-            }
-            if(!defined('BASE_PATH')){
-                // App Installation Directory
-                define('BASE_PATH', $_ENV['ProgramFiles'] . DS . "SpamExperts" . DS . "Professional Spam Filter");
-            }
-            if(!defined('CFG_PATH')){
-                //App Settings Directory
-                define('CFG_PATH', $_ENV['ProgramData'] . DS . "SpamExperts" . DS . "config");
-            }
-            if(!defined('TMP_PATH')){
-                // Temporary directory
-                define('TMP_PATH', $_ENV['ProgramData'] . DS . "SpamExperts" . DS . "tmp");
-            }
-     } else {
+    defined('DS') or define('DS', DIRECTORY_SEPARATOR);
+    defined('BASE_PATH') or define("BASE_PATH", '/usr/local/prospamfilter');
+    defined('TMP_PATH') or define('TMP_PATH', BASE_PATH . "/tmp/");
 
-            if(!defined('BASE_PATH')) define("BASE_PATH", '/usr/local/prospamfilter' );
-
-            if(!defined('TMP_PATH')){
-                define('TMP_PATH', BASE_PATH . "/tmp/");
-            }
-
-            // One global config path.
-            if(!defined('CFG_PATH')) define("CFG_PATH", '/etc/prospamfilter');
-        }
-
-    defined('PLESK_DIR') or define('PLESK_DIR', '/usr/local/psa/');
+    // One global config path.
+    defined('CFG_PATH') or define("CFG_PATH", '/etc/prospamfilter');
 }
 
-if(!defined('CFG_FILE')) define('CFG_FILE', CFG_PATH . DS . 'settings.conf');
-if(!defined('LIB_PATH')) define('LIB_PATH', BASE_PATH . DS . 'library' . DS);
+defined('CFG_FILE') or define('CFG_FILE', CFG_PATH . DS . 'settings.conf');
+defined('LIB_PATH') or define('LIB_PATH', BASE_PATH . DS . 'library' . DS);
 
 if(file_exists(CFG_PATH . DS ."debug")) //<-- Only enable error logging when this file exists.
 {
-	$debug = true;
+    $debug = true;
     defined('E_DEPRECATED')
         ? error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED )
         : error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT );
@@ -111,63 +83,52 @@ if(file_exists(CFG_PATH . DS ."debug")) //<-- Only enable error logging when thi
 }
 
 // Extend include path
-if (defined('IS_PLESK') && IS_PLESK) {
-    // Custom override to fix problems with their code.
-    $new_path = str_replace(array(                                  //?? TODO ??
-         ':/opt/psa/admin/htdocs/domains/databases/phpMyAdmin',
-         ':/opt/psa/admin/htdocs/domains/databases/phpPgAdmin',
-         ':/usr/local/psa/admin/htdocs/domains/databases/phpMyAdmin',
-         ':/usr/local/psa/admin/htdocs/domains/databases/phpPgAdmin',
-    ), '', get_include_path());
-    set_include_path($new_path . PATH_SEPARATOR . LIB_PATH);
-} else {
-    set_include_path(LIB_PATH);
-}
+set_include_path(LIB_PATH);
 
 // Include Zend_Autolooader
 try {
 
     /** @see https://trac.spamexperts.com/ticket/16938 */
     if (!class_exists('Zend_Loader_Autoloader')) {
-	    require_once 'Zend' . DS . 'Loader' . DS . 'Autoloader.php';
+        require_once 'Zend' . DS . 'Loader' . DS . 'Autoloader.php';
     }
 
-	// Configure the autoloader to include our namespaces
-	$autoloader = Zend_Loader_Autoloader::getInstance();
-	$autoloader->setFallbackAutoloader(true);
-	$autoloader->registerNamespace('SpamFilter_');
-	$autoloader->registerNamespace('IDNA_');
-	$autoloader->registerNamespace('Twitter_');
+    // Configure the autoloader to include our namespaces
+    $autoloader = Zend_Loader_Autoloader::getInstance();
+    $autoloader->setFallbackAutoloader(true);
+    $autoloader->registerNamespace('SpamFilter_');
+    $autoloader->registerNamespace('IDNA_');
+    $autoloader->registerNamespace('Twitter_');
 } catch (Exception $e) {
-	echo "Failed to initialize the autoloader (" . $e->getMessage() . ")";
-	exit( 1 );
+    echo "Failed to initialize the autoloader (" . $e->getMessage() . ")";
+    exit( 1 );
 }
 
 if( (isset($debug_enabled)) && ($debug_enabled) )
 {
-	// Enable debug.
-	$debug = true;
+    // Enable debug.
+    $debug = true;
 }
 
 try {
-	#$logger = SpamFilter_Core::initLogging( );
-	if( $debug ) //<-- Only enable debug logging when this has been enabled.
-	{
-		if(!defined('PSF_DEBUG')) define("PSF_DEBUG", true );
-		$logger = SpamFilter_Core::initLogging( true, true);
-		$logger->debug("[Bootstrap] Debug logging enabled");
-	} elseif(file_exists(CFG_PATH . DS ."logging")) {
-		if(!defined('PSF_DEBUG')) define("PSF_DEBUG", false );
-		$logger = SpamFilter_Core::initLogging( true, false );
-		$logger->debug("[Bootstrap] Normal logging enabled");
-	} else {
-		if(!defined('PSF_DEBUG')) define("PSF_DEBUG", false );
-		$logger = SpamFilter_Core::initLogging( false, false );
-		// No point in writing "logging disabled" if we do not log.
-	}
+    #$logger = SpamFilter_Core::initLogging( );
+    if( $debug ) //<-- Only enable debug logging when this has been enabled.
+    {
+        defined('PSF_DEBUG') or define("PSF_DEBUG", true );
+        $logger = SpamFilter_Core::initLogging( true, true);
+        $logger->debug("[Bootstrap] Debug logging enabled");
+    } elseif(file_exists(CFG_PATH . DS ."logging")) {
+        defined('PSF_DEBUG') or define("PSF_DEBUG", false );
+        $logger = SpamFilter_Core::initLogging( true, false );
+        $logger->debug("[Bootstrap] Normal logging enabled");
+    } else {
+        defined('PSF_DEBUG') or define("PSF_DEBUG", false );
+        $logger = SpamFilter_Core::initLogging( false, false );
+        // No point in writing "logging disabled" if we do not log.
+    }
 } catch (Exception $e) {
-	echo "Failed to initialize logging core";
-	exit( 1 );
+    echo "Failed to initialize logging core";
+    exit( 1 );
 }
 
 /** @noinspection PhpUndefinedClassInspection */
@@ -206,11 +167,11 @@ if (SpamFilter_Core::isSessionInitRequired() && SpamFilter_Core::isCpanel()) {
 }
 
 try {
-	$conf = SpamFilter_Core::initConfig( CFG_FILE );
+    $conf = SpamFilter_Core::initConfig( CFG_FILE );
 } catch (Exception $e) {
-	echo "Failed to initialize configuration core";
-	Zend_Registry::get('logger')->err("Failed to initialize configuration core");
-	exit( 1 );
+    echo "Failed to initialize configuration core";
+    Zend_Registry::get('logger')->err("Failed to initialize configuration core");
+    exit( 1 );
 }
 
 $config       = $conf->GetConfig();

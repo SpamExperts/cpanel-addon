@@ -41,14 +41,14 @@
 * @link      https://my.spamexperts.com/kb/34/Addons
 * @since     2.0
 */
-	// Include requires
-	require_once(realpath(dirname(__FILE__) . '/../') . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'bootstrap.php');
+// Include requires
+require_once(dirname(__DIR__) . '/' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-define('DEST_PATH', '/usr/local/prospamfilter');
-define('BASE_PATH', '/usr/src/prospamfilter');
-define('CFG_PATH', '/etc/prospamfilter');
+defined('DEST_PATH') or define('DEST_PATH', '/usr/local/prospamfilter');
+defined('BASE_PATH') or define('BASE_PATH', '/usr/src/prospamfilter');
+defined('CFG_PATH') or define('CFG_PATH', '/etc/prospamfilter');
 
-require_once DEST_PATH . DS . 'application'. DS .'bootstrap.php';
+require_once DEST_PATH . DS . 'application' . DS . 'bootstrap.php';
 require_once DEST_PATH . DS . 'library' . DS . 'SpamFilter' . DS . 'Core.php';
 require_once DEST_PATH . DS . 'library' . DS . 'Installer' . DS . 'InstallPaths.php';
 require_once DEST_PATH . DS . 'library' . DS . 'Filesystem' . DS . 'AbstractFilesystem.php';

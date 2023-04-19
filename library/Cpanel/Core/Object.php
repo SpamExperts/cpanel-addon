@@ -108,8 +108,8 @@ class Cpanel_Core_Object implements IteratorAggregate
             return $this;
         } elseif (is_array($optsArray)) {
             foreach ($optsArray as $key => $value) {
-                if (($override && array_key_exists($key, $this->dataContainer))
-                    || (!array_key_exists($key, $this->dataContainer))
+                if (($override && array_key_exists($key, $this->dataContainer->getArrayCopy()))
+                    || (!array_key_exists($key, $this->dataContainer->getArrayCopy()))
                 ) {
                     if (is_array($value)) {
                         $this->dataContainer[$key] = new Cpanel_Core_Object($value);

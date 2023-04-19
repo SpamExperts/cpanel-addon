@@ -400,20 +400,20 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
         $classname;
         $storageName;
         switch ($type) {
-        case 'whm':
-        case 'whostmgr':
-        case 'xmlapi':
-        case 'jsonapi':
-            $storageName = 'whm';
-            $classname = 'Cpanel_Service_WHM';
-            break;
+            case 'whm':
+            case 'whostmgr':
+            case 'xmlapi':
+            case 'jsonapi':
+                $storageName = 'whm';
+                $classname = 'Cpanel_Service_WHM';
+                break;
 
-        case 'cpanel':
-        case 'livephp':
-        case 'live':
-            $storageName = 'cpanel';
-            $classname = 'Cpanel_Service_cPanel';
-            break;
+            case 'cpanel':
+            case 'livephp':
+            case 'live':
+                $storageName = 'cpanel';
+                $classname = 'Cpanel_Service_cPanel';
+                break;
             // TODO: custom service loading
 
         }
@@ -526,10 +526,9 @@ class Cpanel_PublicAPI extends Cpanel_Core_Object
                     $obj,
                     $func
                 ),
-                $args_to_pass
+                array_values($args_to_pass)
             );
         }
         throw new Exception("Invalid method: {$method}");
     }
 }
-?>

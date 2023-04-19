@@ -14,26 +14,26 @@
  *
  * @category   Zend
  * @package    Zend_Mail
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Message.php 24163 2011-06-29 15:24:10Z adamlundrigan $
+ * @version    $Id$
  */
 
 
 /**
  * Zend_Mail_Part
  */
-// require_once 'Zend/Mail/Part.php';
+require_once 'Zend/Mail/Part.php';
 
 /**
  * Zend_Mail_Message_Interface
  */
-// require_once 'Zend/Mail/Message/Interface.php';
+require_once 'Zend/Mail/Message/Interface.php';
 
 /**
  * @category   Zend
  * @package    Zend_Mail
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Mail_Message extends Zend_Mail_Part implements Zend_Mail_Message_Interface
@@ -42,7 +42,7 @@ class Zend_Mail_Message extends Zend_Mail_Part implements Zend_Mail_Message_Inte
      * flags for this message
      * @var array
      */
-    protected $_flags = array();
+    protected $_flags = [];
 
     /**
      * Public constructor
@@ -63,12 +63,13 @@ class Zend_Mail_Message extends Zend_Mail_Part implements Zend_Mail_Message_Inte
                     /**
                      * @see Zend_Mail_Exception
                      */
-                    // require_once 'Zend/Mail/Exception.php';
+                    require_once 'Zend/Mail/Exception.php';
                     throw new Zend_Mail_Exception('could not open file');
                 }
             } else {
                 $params['raw'] = stream_get_contents($params['file']);
             }
+            $params['raw'] = preg_replace("/(?<!\r)\n/", "\r\n", $params['raw']);
         }
 
         if (!empty($params['flags'])) {

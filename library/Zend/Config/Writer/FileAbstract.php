@@ -15,20 +15,20 @@
  * @category   Zend
  * @package    Zend_Config
  * @package    Writer
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-// require_once "Zend/Config/Writer.php";
+require_once "Zend/Config/Writer.php";
 
 /**
  * Abstract File Writer
  *
  * @category   Zend
  * @package    Zend_package
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FileAbstract.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 class Zend_Config_Writer_FileAbstract extends Zend_Config_Writer
 {
@@ -50,7 +50,7 @@ class Zend_Config_Writer_FileAbstract extends Zend_Config_Writer
      * Set the target filename
      *
      * @param  string $filename
-     * @return Zend_Config_Writer_Array
+     * @return Zend_Config_Writer_FileAbstract
      */
     public function setFilename($filename)
     {
@@ -63,7 +63,7 @@ class Zend_Config_Writer_FileAbstract extends Zend_Config_Writer
      * Set wether to exclusively lock the file or not
      *
      * @param  boolean     $exclusiveLock
-     * @return Zend_Config_Writer_Array
+     * @return Zend_Config_Writer_FileAbstract
      */
     public function setExclusiveLock($exclusiveLock)
     {
@@ -95,12 +95,12 @@ class Zend_Config_Writer_FileAbstract extends Zend_Config_Writer
         }
 
         if ($this->_filename === null) {
-            // require_once 'Zend/Config/Exception.php';
+            require_once 'Zend/Config/Exception.php';
             throw new Zend_Config_Exception('No filename was set');
         }
 
         if ($this->_config === null) {
-            // require_once 'Zend/Config/Exception.php';
+            require_once 'Zend/Config/Exception.php';
             throw new Zend_Config_Exception('No config was set');
         }
 
@@ -115,7 +115,7 @@ class Zend_Config_Writer_FileAbstract extends Zend_Config_Writer
         $result = @file_put_contents($this->_filename, $configString, $flags);
 
         if ($result === false) {
-            // require_once 'Zend/Config/Exception.php';
+            require_once 'Zend/Config/Exception.php';
             throw new Zend_Config_Exception('Could not write to file "' . $this->_filename . '"');
         }
     }

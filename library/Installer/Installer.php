@@ -834,7 +834,6 @@ class Installer_Installer
                 'bin/hook.php',
                 'frontend/cpanel/psf.php',
                 'frontend/whm/prospamfilter.php',
-                'hooks/plesk.php',
             ),
         );
 

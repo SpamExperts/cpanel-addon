@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Client.php 24159 2011-06-28 12:30:56Z adamlundrigan $
+ * @version    $Id$
  */
 
 
@@ -25,44 +25,44 @@
  * For handling the HTTP connection to the XML-RPC service
  * @see Zend_Http_Client
  */
-// require_once 'Zend/Http/Client.php';
+require_once 'Zend/Http/Client.php';
 
 /**
  * Enables object chaining for calling namespaced XML-RPC methods.
  * @see Zend_XmlRpc_Client_ServerProxy
  */
-// require_once 'Zend/XmlRpc/Client/ServerProxy.php';
+require_once 'Zend/XmlRpc/Client/ServerProxy.php';
 
 /**
  * Introspects remote servers using the XML-RPC de facto system.* methods
  * @see Zend_XmlRpc_Client_ServerIntrospection
  */
-// require_once 'Zend/XmlRpc/Client/ServerIntrospection.php';
+require_once 'Zend/XmlRpc/Client/ServerIntrospection.php';
 
 /**
  * Represent a native XML-RPC value, used both in sending parameters
  * to methods and as the parameters retrieve from method calls
  * @see Zend_XmlRpc_Value
  */
-// require_once 'Zend/XmlRpc/Value.php';
+require_once 'Zend/XmlRpc/Value.php';
 
 /**
  * XML-RPC Request
  * @see Zend_XmlRpc_Request
  */
-// require_once 'Zend/XmlRpc/Request.php';
+require_once 'Zend/XmlRpc/Request.php';
 
 /**
  * XML-RPC Response
  * @see Zend_XmlRpc_Response
  */
-// require_once 'Zend/XmlRpc/Response.php';
+require_once 'Zend/XmlRpc/Response.php';
 
 /**
  * XML-RPC Fault
  * @see Zend_XmlRpc_Fault
  */
-// require_once 'Zend/XmlRpc/Fault.php';
+require_once 'Zend/XmlRpc/Fault.php';
 
 
 /**
@@ -71,7 +71,7 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_XmlRpc_Client
@@ -111,7 +111,7 @@ class Zend_XmlRpc_Client
      * Proxy object for more convenient method calls
      * @var array of Zend_XmlRpc_Client_ServerProxy
      */
-    protected $_proxyCache = array();
+    protected $_proxyCache = [];
 
     /**
      * Flag for skipping system lookup
@@ -166,7 +166,7 @@ class Zend_XmlRpc_Client
     /**
      * Sets the object used to introspect remote servers
      *
-     * @param  Zend_XmlRpc_Client_ServerIntrospection
+     * @param  Zend_XmlRpc_Client_ServerIntrospection $introspector
      * @return Zend_XmlRpc_Client_ServerIntrospection
      */
     public function setIntrospector(Zend_XmlRpc_Client_ServerIntrospection $introspector)
@@ -257,22 +257,28 @@ class Zend_XmlRpc_Client
     {
         $this->_lastRequest = $request;
 
-        iconv_set_encoding('input_encoding', 'UTF-8');
-        iconv_set_encoding('output_encoding', 'UTF-8');
-        iconv_set_encoding('internal_encoding', 'UTF-8');
+        if (PHP_VERSION_ID < 50600) {
+            iconv_set_encoding('input_encoding', 'UTF-8');
+            iconv_set_encoding('output_encoding', 'UTF-8');
+            iconv_set_encoding('internal_encoding', 'UTF-8');
+        } else {
+            ini_set('input_encoding', 'UTF-8');
+            ini_set('output_encoding', 'UTF-8');
+            ini_set('default_charset', 'UTF-8');
+        }
 
         $http = $this->getHttpClient();
         if($http->getUri() === null) {
             $http->setUri($this->_serverAddress);
         }
 
-        $http->setHeaders(array(
+        $http->setHeaders([
             'Content-Type: text/xml; charset=utf-8',
             'Accept: text/xml',
-        ));
+        ]);
 
         if ($http->getHeader('user-agent') === null) {
-            $http->setHeaders(array('User-Agent: Zend_XmlRpc_Client'));
+            $http->setHeaders(['User-Agent: Zend_XmlRpc_Client']);
         }
 
         $xml = $this->_lastRequest->__toString();
@@ -284,7 +290,7 @@ class Zend_XmlRpc_Client
              * Exception thrown when an HTTP error occurs
              * @see Zend_XmlRpc_Client_HttpException
              */
-            // require_once 'Zend/XmlRpc/Client/HttpException.php';
+            require_once 'Zend/XmlRpc/Client/HttpException.php';
             throw new Zend_XmlRpc_Client_HttpException(
                                     $httpResponse->getMessage(),
                                     $httpResponse->getStatus());
@@ -305,7 +311,7 @@ class Zend_XmlRpc_Client
      * @return mixed
      * @throws Zend_XmlRpc_Client_FaultException
      */
-    public function call($method, $params=array())
+    public function call($method, $params=[])
     {
         if (!$this->skipSystemLookup() && ('system.' != substr($method, 0, 7))) {
             // Ensure empty array/struct params are cast correctly
@@ -317,7 +323,7 @@ class Zend_XmlRpc_Client
                 $success = false;
             }
             if ($success) {
-                $validTypes = array(
+                $validTypes = [
                     Zend_XmlRpc_Value::XMLRPC_TYPE_ARRAY,
                     Zend_XmlRpc_Value::XMLRPC_TYPE_BASE64,
                     Zend_XmlRpc_Value::XMLRPC_TYPE_BOOLEAN,
@@ -328,10 +334,10 @@ class Zend_XmlRpc_Client
                     Zend_XmlRpc_Value::XMLRPC_TYPE_NIL,
                     Zend_XmlRpc_Value::XMLRPC_TYPE_STRING,
                     Zend_XmlRpc_Value::XMLRPC_TYPE_STRUCT,
-                );
+                ];
 
                 if (!is_array($params)) {
-                    $params = array($params);
+                    $params = [$params];
                 }
 
                 foreach ($params as $key => $param)
@@ -377,7 +383,7 @@ class Zend_XmlRpc_Client
              * Exception thrown when an XML-RPC fault is returned
              * @see Zend_XmlRpc_Client_FaultException
              */
-            // require_once 'Zend/XmlRpc/Client/FaultException.php';
+            require_once 'Zend/XmlRpc/Client/FaultException.php';
             throw new Zend_XmlRpc_Client_FaultException($fault->getMessage(),
                                                         $fault->getCode());
         }

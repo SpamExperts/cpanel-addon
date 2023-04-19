@@ -14,15 +14,15 @@
  *
  * @category   Zend
  * @package    Zend_Controller
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HttpTestCase.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Controller_Request_Http
  */
-// require_once 'Zend/Controller/Request/Http.php';
+require_once 'Zend/Controller/Request/Http.php';
 
 /**
  * Zend_Controller_Request_HttpTestCase
@@ -39,7 +39,7 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
      * Request headers
      * @var array
      */
-    protected $_headers = array();
+    protected $_headers = [];
 
     /**
      * Request method
@@ -57,14 +57,15 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
      * Valid request method types
      * @var array
      */
-    protected $_validMethodTypes = array(
+    protected $_validMethodTypes = [
         'DELETE',
         'GET',
         'HEAD',
         'OPTIONS',
+        'PATCH',
         'POST',
         'PUT',
-    );
+    ];
 
     /**
      * Clear GET values
@@ -73,7 +74,7 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
      */
     public function clearQuery()
     {
-        $_GET = array();
+        $_GET = [];
         return $this;
     }
 
@@ -84,7 +85,7 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
      */
     public function clearPost()
     {
-        $_POST = array();
+        $_POST = [];
         return $this;
     }
 
@@ -138,7 +139,7 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
      * Set multiple cookies at once
      *
      * @param array $cookies
-     * @return void
+     * @return Zend_Controller_Request_HttpTestCase
      */
     public function setCookies(array $cookies)
     {
@@ -155,7 +156,7 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
      */
     public function clearCookies()
     {
-        $_COOKIE = array();
+        $_COOKIE = [];
         return $this;
     }
 
@@ -169,7 +170,7 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
     {
         $type = strtoupper(trim((string) $type));
         if (!in_array($type, $this->_validMethodTypes)) {
-            // require_once 'Zend/Controller/Exception.php';
+            require_once 'Zend/Controller/Exception.php';
             throw new Zend_Controller_Exception('Invalid request method specified');
         }
         $this->_method = $type;
@@ -247,7 +248,7 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
      */
     public function clearHeaders()
     {
-        $this->_headers = array();
+        $this->_headers = [];
         return $this;
     }
 

@@ -334,13 +334,6 @@ switch( $action )
 		}
 	break;
 
-	case "postdomainadd":
-		// Re-check the MX records and remove the ones that don't belong.
-		// Currently only needed in Plesk
-		Zend_Registry::get('logger')->info("[Hook] Doing postdomainadd for Plesk (Domain: {$domain}).");
-        $status = $hook->AddDomain($domain);
-	break;
-
 	default:
 		$response .= "\nUnknown option";
 		return false;

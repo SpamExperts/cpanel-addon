@@ -14,22 +14,22 @@
  *
  * @category  Zend
  * @package   Zend_Validate
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: ExcludeExtension.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version   $Id$
  */
 
 /**
  * @see Zend_Validate_Abstract
  */
-// require_once 'Zend/Validate/File/Extension.php';
+require_once 'Zend/Validate/File/Extension.php';
 
 /**
  * Validator for the excluding file extensions
  *
  * @category  Zend
  * @package   Zend_Validate
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Validate_File_ExcludeExtension extends Zend_Validate_File_Extension
@@ -43,10 +43,10 @@ class Zend_Validate_File_ExcludeExtension extends Zend_Validate_File_Extension
     /**
      * @var array Error message templates
      */
-    protected $_messageTemplates = array(
+    protected $_messageTemplates = [
         self::FALSE_EXTENSION => "File '%value%' has a false extension",
         self::NOT_FOUND       => "File '%value%' is not readable or does not exist",
-    );
+    ];
 
     /**
      * Defined by Zend_Validate_Interface
@@ -61,7 +61,7 @@ class Zend_Validate_File_ExcludeExtension extends Zend_Validate_File_Extension
     public function isValid($value, $file = null)
     {
         // Is file readable ?
-        // require_once 'Zend/Loader.php';
+        require_once 'Zend/Loader.php';
         if (!Zend_Loader::isReadable($value)) {
             return $this->_throw($file, self::NOT_FOUND);
         }
@@ -74,7 +74,7 @@ class Zend_Validate_File_ExcludeExtension extends Zend_Validate_File_Extension
 
         $extensions = $this->getExtension();
 
-        if ($this->_case and (!in_array($info['extension'], $extensions))) {
+        if ($this->_case && (!in_array($info['extension'], $extensions))) {
             return true;
         } else if (!$this->_case) {
             $found = false;

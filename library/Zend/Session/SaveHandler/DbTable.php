@@ -15,30 +15,30 @@
  *
  * @category   Zend
  * @package    Zend_Session
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbTable.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Session
  */
-// require_once 'Zend/Session.php';
+require_once 'Zend/Session.php';
 
 /**
  * @see Zend_Db_Table_Abstract
  */
-// require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Zend/Db/Table/Abstract.php';
 
 /**
  * @see Zend_Db_Table_Row_Abstract
  */
-// require_once 'Zend/Db/Table/Row/Abstract.php';
+require_once 'Zend/Db/Table/Row/Abstract.php';
 
 /**
  * @see Zend_Config
  */
-// require_once 'Zend/Config.php';
+require_once 'Zend/Config.php';
 
 /**
  * Zend_Session_SaveHandler_DbTable
@@ -46,7 +46,7 @@
  * @category   Zend
  * @package    Zend_Session
  * @subpackage SaveHandler
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Session_SaveHandler_DbTable
@@ -168,7 +168,7 @@ class Zend_Session_SaveHandler_DbTable
             /**
              * @see Zend_Session_SaveHandler_Exception
              */
-            // require_once 'Zend/Session/SaveHandler/Exception.php';
+            require_once 'Zend/Session/SaveHandler/Exception.php';
 
             throw new Zend_Session_SaveHandler_Exception(
                 '$config must be an instance of Zend_Config or array of key/value pairs containing '
@@ -225,6 +225,7 @@ class Zend_Session_SaveHandler_DbTable
      * @param int $lifetime
      * @param boolean $overrideLifetime (optional)
      * @return Zend_Session_SaveHandler_DbTable
+     * @throws Zend_Session_SaveHandler_Exception
      */
     public function setLifetime($lifetime, $overrideLifetime = null)
     {
@@ -232,9 +233,11 @@ class Zend_Session_SaveHandler_DbTable
             /**
              * @see Zend_Session_SaveHandler_Exception
              */
-            // require_once 'Zend/Session/SaveHandler/Exception.php';
+            require_once 'Zend/Session/SaveHandler/Exception.php';
             throw new Zend_Session_SaveHandler_Exception();
-        } else if (empty($lifetime)) {
+        }
+
+        if (empty($lifetime)) {
             $this->_lifetime = (int) ini_get('session.gc_maxlifetime');
         } else {
             $this->_lifetime = (int) $lifetime;
@@ -315,7 +318,7 @@ class Zend_Session_SaveHandler_DbTable
     {
         $return = '';
 
-        $rows = call_user_func_array(array(&$this, 'find'), $this->_getPrimary($id));
+        $rows = call_user_func_array([&$this, 'find'], $this->_getPrimary($id));
 
         if (count($rows)) {
             if ($this->_getExpirationTime($row = $rows->current()) > time()) {
@@ -337,28 +340,24 @@ class Zend_Session_SaveHandler_DbTable
      */
     public function write($id, $data)
     {
-        $return = false;
+        $data = [$this->_modifiedColumn => time(),
+                      $this->_dataColumn     => (string) $data];
 
-        $data = array($this->_modifiedColumn => time(),
-                      $this->_dataColumn     => (string) $data);
-
-        $rows = call_user_func_array(array(&$this, 'find'), $this->_getPrimary($id));
+        $rows = call_user_func_array([&$this, 'find'], $this->_getPrimary($id));
 
         if (count($rows)) {
             $data[$this->_lifetimeColumn] = $this->_getLifetime($rows->current());
-
-            if ($this->update($data, $this->_getPrimary($id, self::PRIMARY_TYPE_WHERECLAUSE))) {
-                $return = true;
-            }
+            $this->update($data, $this->_getPrimary($id, self::PRIMARY_TYPE_WHERECLAUSE));
+            return true;
         } else {
             $data[$this->_lifetimeColumn] = $this->_lifetime;
 
             if ($this->insert(array_merge($this->_getPrimary($id, self::PRIMARY_TYPE_ASSOC), $data))) {
-                $return = true;
+                return true;
             }
         }
 
-        return $return;
+        return false;
     }
 
     /**
@@ -369,13 +368,8 @@ class Zend_Session_SaveHandler_DbTable
      */
     public function destroy($id)
     {
-        $return = false;
-
-        if ($this->delete($this->_getPrimary($id, self::PRIMARY_TYPE_WHERECLAUSE))) {
-            $return = true;
-        }
-
-        return $return;
+        $this->delete($this->_getPrimary($id, self::PRIMARY_TYPE_WHERECLAUSE));
+        return true; //always return true, since if nothing can be deleted, it is already deleted and thats OK.
     }
 
     /**
@@ -420,7 +414,7 @@ class Zend_Session_SaveHandler_DbTable
             /**
              * @see Zend_Session_SaveHandler_Exception
              */
-            // require_once 'Zend/Session/SaveHandler/Exception.php';
+            require_once 'Zend/Session/SaveHandler/Exception.php';
 
             throw new Zend_Session_SaveHandler_Exception('session.save_path is a path and not a table name.');
         }
@@ -439,9 +433,9 @@ class Zend_Session_SaveHandler_DbTable
     protected function _setupPrimaryAssignment()
     {
         if ($this->_primaryAssignment === null) {
-            $this->_primaryAssignment = array(1 => self::PRIMARY_ASSIGNMENT_SESSION_ID);
+            $this->_primaryAssignment = [1 => self::PRIMARY_ASSIGNMENT_SESSION_ID];
         } else if (!is_array($this->_primaryAssignment)) {
-            $this->_primaryAssignment = array(1 => (string) $this->_primaryAssignment);
+            $this->_primaryAssignment = [1 => (string) $this->_primaryAssignment];
         } else if (isset($this->_primaryAssignment[0])) {
             array_unshift($this->_primaryAssignment, null);
 
@@ -452,7 +446,7 @@ class Zend_Session_SaveHandler_DbTable
             /**
              * @see Zend_Session_SaveHandler_Exception
              */
-            // require_once 'Zend/Session/SaveHandler/Exception.php';
+            require_once 'Zend/Session/SaveHandler/Exception.php';
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Value for configuration option '" . self::PRIMARY_ASSIGNMENT . "' must have an assignment "
@@ -461,7 +455,7 @@ class Zend_Session_SaveHandler_DbTable
             /**
              * @see Zend_Session_SaveHandler_Exception
              */
-            // require_once 'Zend/Session/SaveHandler/Exception.php';
+            require_once 'Zend/Session/SaveHandler/Exception.php';
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Value for configuration option '" . self::PRIMARY_ASSIGNMENT . "' must have an assignment "
@@ -481,7 +475,7 @@ class Zend_Session_SaveHandler_DbTable
             /**
              * @see Zend_Session_SaveHandler_Exception
              */
-            // require_once 'Zend/Session/SaveHandler/Exception.php';
+            require_once 'Zend/Session/SaveHandler/Exception.php';
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Configuration must define '" . self::MODIFIED_COLUMN . "' which names the "
@@ -490,7 +484,7 @@ class Zend_Session_SaveHandler_DbTable
             /**
              * @see Zend_Session_SaveHandler_Exception
              */
-            // require_once 'Zend/Session/SaveHandler/Exception.php';
+            require_once 'Zend/Session/SaveHandler/Exception.php';
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Configuration must define '" . self::LIFETIME_COLUMN . "' which names the "
@@ -499,7 +493,7 @@ class Zend_Session_SaveHandler_DbTable
             /**
              * @see Zend_Session_SaveHandler_Exception
              */
-            // require_once 'Zend/Session/SaveHandler/Exception.php';
+            require_once 'Zend/Session/SaveHandler/Exception.php';
 
             throw new Zend_Session_SaveHandler_Exception(
                 "Configuration must define '" . self::DATA_COLUMN . "' which names the "
@@ -522,7 +516,7 @@ class Zend_Session_SaveHandler_DbTable
             $type = self::PRIMARY_TYPE_NUM;
         }
 
-        $primaryArray = array();
+        $primaryArray = [];
 
         foreach ($this->_primary as $index => $primary) {
             switch ($this->_primaryAssignment[$index]) {
