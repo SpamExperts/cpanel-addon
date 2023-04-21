@@ -28,7 +28,10 @@ class IDNA_Convert
      */
     public function decode($encoded)
     {
-        return idn_to_utf8($encoded);
+        if (function_exists('idn_to_utf8')) {
+            return idn_to_utf8($encoded);
+        }
+        return $encoded;
     }
 
     /**
@@ -38,7 +41,10 @@ class IDNA_Convert
      */
     public function encode($decoded)
     {
-        return idn_to_ascii($decoded);
+        if (function_exists('idn_to_ascii')) {
+            return idn_to_ascii($decoded);
+        }
+        return $decoded;
     }
 
 }
