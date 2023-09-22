@@ -2748,22 +2748,38 @@ class SpamFilter_PanelSupport_Cpanel
      */
     public function hasFeatureEnabled($domain)
     {
+        $this->_logger->debug(__METHOD__ . " checking for domain '{$domain}'");
         $package = $this->getDomainPackage($domain);
         $args['featurelist'] = $this->getFeatureList($package);
         $args['api.version'] = '1';
+        $this->_logger->debug(__METHOD__ . " package for domain '{$domain}' is '{$package}'");
+        $this->_logger->debug(__METHOD__ . " feature list for package '{$package}' is '{$args['featurelist']}'");
+        $hasFeatureEnabled = false;
         try {
-            $response = $this->_api->getWhm()->makeQuery('read_featurelist', $args);
+            $response = $this->_api->getWhm()->makeQuery('get_featurelist_data', $args);
             $arr = $response->getResponse('array');
+            if ($arr['metadata']['result'] === 1) {
+                foreach ($arr['data']['features'] as $feature) {
+                    if ($feature['id'] === 'prospamfilter') {
+                        if ($feature['value'] === "1" && $feature['is_disabled'] === "0") {
+                            $hasFeatureEnabled = true;
+                        } else {
+                            if ($feature['value'] === "0") {
+                                $this->_logger->debug(__METHOD__ . " not included in feature list '{$args['featurelist']}'");
+                            }
+                            if ($feature['is_disabled'] === "1") {
+                                $this->_logger->debug(__METHOD__ . " included in feature list 'disabled'");
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
         } catch (Exception $e) {
             $this->_logger->crit("Exception caught in " . __METHOD__ . " method : " . $e->getMessage());
         }
-        // Check if API request is successful
-        // It is required for older versions of WHM & cPanel (below 11.46) where read_featurelist request is unavailble.
-        // Check if feature is not avaible OR spamfilter is not on the feature lists.
-        if ($arr['metadata']['result'] == 0 || !isset($arr['data']['features']['prospamfilter'])) {
-            return true;
-        }
-        return $arr['data']['features']['prospamfilter'] == 1 ? true : false;
+        $this->_logger->debug(__METHOD__ . " result for domain '{$domain}': " . var_export($hasFeatureEnabled, true));
+        return $hasFeatureEnabled;
     }
 
 
