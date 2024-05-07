@@ -107,7 +107,7 @@ class SpamFilter_Version
                 $tier = "frozen";
             }
 
-            $basepath = "http://download.seinternal.com/integration";
+            $basepath = "https://download.cdn.seinternal.com/releases/addons";
             $url = "{$basepath}/?act=getUpdate&panel={$paneltype}&tier={$tier}&curver={$version}";
 
             /** @noinspection PhpUndefinedClassInspection */
