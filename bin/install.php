@@ -51,6 +51,7 @@ define('DS', DIRECTORY_SEPARATOR);
 
 define('DEST_PATH', '/usr/local/prospamfilter');
 define('BASE_PATH', '/usr/src/prospamfilter');
+define('TMP_PATH', BASE_PATH . "/tmp/");
 define('CFG_PATH', '/etc/prospamfilter');
 
 require_once BASE_PATH . DS . 'library' . DS . 'functions.php';
