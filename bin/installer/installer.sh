@@ -29,7 +29,7 @@ function check_php_version {
         echo "$1: invalid PHP binary"
         exit 1
     fi
-    PHPVERSION=`echo "$version_info" | head -n1 | awk {'print $2'} | sed -e 's/-/\n/g' | head -n1`
+    PHPVERSION=`echo "$version_info" | head -n1 | awk '{print $2}' | sed -e 's/-/\n/g' | head -n1`
     if [ -z "$PHPVERSION" ]; then
         echo "$1: PHP version empty"
         exit 1
@@ -141,7 +141,7 @@ else
     exit 1
 fi
 
-random=`cat /dev/urandom | tr -dc A-Za-z0-9 | head -c5 | md5sum | awk {'print $1'}`
+random=`cat /dev/urandom | tr -dc A-Za-z0-9 | head -c5 | md5sum | awk '{print $1}'`
 
 # set base path for the url that checks the current version
 basepath="http://download.seinternal.com/integration"
