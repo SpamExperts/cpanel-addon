@@ -373,6 +373,7 @@ class AdminController extends Zend_Controller_Action
                     $newver = SpamFilter_Version::getCurrentVersion(
                         $values['update_type'], true
                     ); // realtime checking enabled
+                    $newver = $newver ?: SpamFilter_Version::getUsedVersion();
                     $this->_flashMessenger->addMessage(
                         array(
                             'message' => $this->t->_('Installing addon update') . ' <strong>v' . $newver . '</strong> ' . $this->t->_('in tier') . ' <strong>' . $values['update_type'] . '</strong>',
