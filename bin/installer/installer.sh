@@ -144,7 +144,7 @@ fi
 random=`cat /dev/urandom | tr -dc A-Za-z0-9 | head -c5 | md5sum | awk '{print $1}'`
 
 # set base path for the url that checks the current version
-basepath="http://download.seinternal.com/integration"
+basepath="http://download.cdn.seinternal.com/integration"
 
 # check if it's restricted to the 'frozen' tier or not
 if [ "$frozen" == true ] || [ "frozen" == "$1" ]; then
@@ -167,7 +167,7 @@ else
     fi
 fi
 
-version=`$path_wget -q -O - "$CHECKURL" | sed -e 's/[{}]/''/g' | awk -v RS=',"' -F: '/^data/ {print $3}' |  sed s/\"//g`
+version=`$path_wget -q -O - "$CHECKURL" | php -r 'echo json_decode(file_get_contents("php://stdin"))->data->version . PHP_EOL;'`
 
 if [ -z "$version" ]; then
     echo "Unable to retrieve latest version"
@@ -175,7 +175,7 @@ if [ -z "$version" ]; then
 fi
 
 # update basepath for download files
-basepath="$basepath/files/$paneltype"
+basepath="${basepath/integration/}releases/addons/$paneltype"
 package="v$version"
 fullfile="$package$filepart"
 srcpath="/usr/src/prospamfilter"
