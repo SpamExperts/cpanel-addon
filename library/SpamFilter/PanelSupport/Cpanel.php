@@ -1035,7 +1035,7 @@ class SpamFilter_PanelSupport_Cpanel
                     $this->_logger->debug("Search for owner '{$searchby}' account data.");
                     $resellerResponse = $this->_api->whm_api('listaccts', array('search' => 'user', 'searchby' => $searchby));
                     $resellerArr = $resellerResponse->getResponse('array');
-                    $arr['acct'][] = $resellerArr['acct'][0];
+                    $arr['acct'] = array_merge($arr['acct'], $resellerArr['acct']);
                 }
 
             }
