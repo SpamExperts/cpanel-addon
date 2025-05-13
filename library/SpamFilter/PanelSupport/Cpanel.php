@@ -44,7 +44,7 @@
  */
 class SpamFilter_PanelSupport_Cpanel
 {
-    const PANEL_FILESYSTEM_LOCATION = "/usr/local/cpanel/";
+    public const PANEL_FILESYSTEM_LOCATION = "/usr/local/cpanel/";
 
     /**
      * @access public
@@ -66,7 +66,7 @@ class SpamFilter_PanelSupport_Cpanel
     /**
      * @param $_options object
      */
-    var $_options;
+    public $_options;
 
     public static function getHooksList()
     {
@@ -620,7 +620,7 @@ class SpamFilter_PanelSupport_Cpanel
             try {
                 /** @see https://trac.spamexperts.com/ticket/21273#comment:11 */
                 if (in_array(strtolower($user), array('root', 'admin'))) {
-                    /** @var $response Cpanel_Query_Object */
+                    /** @var Cpanel_Query_Object $response */
                     $response = $this->_api->whm_api('domainuserdata', array('domain' => $encodedDomain));
                     $responseData = $response->getResponse('array');
 
@@ -821,12 +821,15 @@ class SpamFilter_PanelSupport_Cpanel
 
         $domain = $params['domain'];
         try {
-            $hook = new SpamFilter_Hooks;
+            $hook = new SpamFilter_Hooks();
             $protect = new SpamFilter_Panel_ProtectWhm($hook, $this->_api);
             $protect->setDomain($domain);
 
-            $accountInstance = new SpamFilter_Panel_Account($params,
-                !$this->_config->handle_only_localdomains, $this->_api);
+            $accountInstance = new SpamFilter_Panel_Account(
+                $params,
+                !$this->_config->handle_only_localdomains,
+                $this->_api
+            );
             $protect->setAccount($accountInstance);
 
             if (0 < $this->_config->handle_only_localdomains
@@ -1138,20 +1141,15 @@ class SpamFilter_PanelSupport_Cpanel
     private function removeMXRecords($domain)
     {
         $this->_logger->debug("Removing MX records for '{$domain}'");
-        $records = $this->getMxRecords($domain);
 
-        if (is_array($records)) {
-            // Reorder list so the highest line is handled first, because line numbers *will* change
-            $this->_logger->debug("MX sort before:" . serialize($records));
-            $records = array_sort($records, 'Line', SORT_DESC); // Sort by highest number first
-            $this->_logger->debug("MX sort after:" . serialize($records));
-
-            // Remove all found MX records.
-            foreach ($records as $record) {
-                $this->_logger->debug("Removing record for {$domain} (Line: {$record['Line']})");
-
-                $this->removeDNSRecord($domain, $record['Line']);
-            }
+        while (
+            is_array($records = $this->GetMXRecords($domain))
+            && count($records)
+        ) {
+            $this->_logger->debug("MX records reported:" . serialize($records));
+            $record = array_pop($records);
+            $this->_logger->debug("Removing record for {$domain} (Line: {$record['Line']})");
+            $this->removeDNSRecord($domain, $record['Line']);
         }
 
         return true;
@@ -1334,7 +1332,7 @@ class SpamFilter_PanelSupport_Cpanel
 
         } else {
 
-            $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES + FILE_TEXT);
+            $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES);
 
             $mainDomain = '';
             foreach ($lines as $line) {
@@ -1396,7 +1394,7 @@ class SpamFilter_PanelSupport_Cpanel
                 $result[] = array('alias' => $domain['domain']);
             }
         } else {
-            $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES + FILE_TEXT);
+            $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES);
             $sectionHasStarted = false;
             foreach ($lines as $line) {
                 if ($sectionHasStarted) {
@@ -1435,7 +1433,7 @@ class SpamFilter_PanelSupport_Cpanel
                 $result[] = array('alias' => $domain['domain']);
             }
         } else {
-            $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES + FILE_TEXT);
+            $lines = file($filename, FILE_IGNORE_NEW_LINES + FILE_SKIP_EMPTY_LINES);
             $sectionHasStarted = false;
             foreach ($lines as $line) {
                 if ($sectionHasStarted) {
@@ -1563,7 +1561,7 @@ class SpamFilter_PanelSupport_Cpanel
      */
     protected function _setupProgressBar($total)
     {
-        /** @var $logger SpamFilter_Logger */
+        /** @var SpamFilter_Logger $logger */
         $logger = Zend_Registry::get('logger');
 
         try {
@@ -1572,7 +1570,8 @@ class SpamFilter_PanelSupport_Cpanel
             if (function_exists('is_cli') && is_cli()) {
                 $adapter = new Zend_ProgressBar_Adapter_Console();
             } else {
-                $adapter = new SpamFilter_ProgressBar_Adapter_JsPush(array(
+                $adapter = new SpamFilter_ProgressBar_Adapter_JsPush(
+                    array(
                         'updateMethodName' => 'Zend_ProgressBar_Update',
                         'finishMethodName' => 'Zend_ProgressBar_Finish'
                     )
@@ -1604,7 +1603,7 @@ class SpamFilter_PanelSupport_Cpanel
     {
         $this->_logger->debug("Retrieving resellers..");
         try {
-            /** @var $response stdClass */
+            /** @var stdClass $response */
             $response = $this->_api->whm_api('listresellers');
             if ($raw) {
                 return $response->reseller; //return the raw content without pre-processing.
@@ -1644,7 +1643,7 @@ class SpamFilter_PanelSupport_Cpanel
     {
         // @TODO: Detect whether this is cPanel or WHM, because it (obviously) makes a difference in what we do/show.
 
-        /** @var $logger SpamFilter_Logger */
+        /** @var SpamFilter_Logger $logger */
         $logger = Zend_Registry::get('logger');
         $logger->debug("Retrieving userlevel");
         // Returns the userlevel from the current user.
@@ -1910,7 +1909,7 @@ class SpamFilter_PanelSupport_Cpanel
         }
         if (!empty($ownerDomain) && SpamFilter_Domain::exists($ownerDomain)) {
             $this->_logger->debug("[isInFilter] Checking for alias of domain '{$ownerDomain}'");
-            $SEAPI = new SpamFilter_ResellerAPI;
+            $SEAPI = new SpamFilter_ResellerAPI();
             $apiResponse = $SEAPI->domainalias()->list(array('domain' => $ownerDomain));
             foreach ($apiResponse as $alias) {
                 if ($alias == $domain) {
@@ -2227,8 +2226,8 @@ class SpamFilter_PanelSupport_Cpanel
 
         if ($informer) {
 
-            /** @var $sessionManager stdClass */
-            $sessionManager = new SpamFilter_Session_Namespace;
+            /** @var stdClass $sessionManager */
+            $sessionManager = new SpamFilter_Session_Namespace();
             $sessionManager->bulkprotectinformer = 'Getting list of domains...';
             $sessionManager->bulkprotectinformerstatus = 'run';
         }
@@ -2240,8 +2239,11 @@ class SpamFilter_PanelSupport_Cpanel
 
             if (is_array($local_accounts) && 0 < sizeof($local_accounts)) {
                 foreach ($local_accounts as $account) {
-                    $accountInstance = new SpamFilter_Panel_Account($account,
-                        !$this->_config->handle_only_localdomains, $this->_api);
+                    $accountInstance = new SpamFilter_Panel_Account(
+                        $account,
+                        !$this->_config->handle_only_localdomains,
+                        $this->_api
+                    );
                     $user = $accountInstance->getUser();
                     $collectionDomains[] = array(
                         'name' => $accountInstance->getDomain(),
@@ -2445,7 +2447,7 @@ class SpamFilter_PanelSupport_Cpanel
         $countDomains = count($domains);
         if ($countDomains > 0) {
             $this->_logger->info("Starting migration.");
-            $hook = new SpamFilter_Hooks;
+            $hook = new SpamFilter_Hooks();
             $freelimit = $hook->GetFreeLimit($username, $password);
             $is_success = false;
             if ('unlimit' == $freelimit || $freelimit - $countDomains >= 0) {
@@ -2480,9 +2482,9 @@ class SpamFilter_PanelSupport_Cpanel
                     if (count($rejected) > 0) {
                         $messages[] = array(
                             'message' => "You don't own some of the listed domains so they aren't moved: " . join(
-                                    ', ',
-                                    $rejected
-                                ),
+                                ', ',
+                                $rejected
+                            ),
                             'status' => 'error'
                         );
                     }
@@ -2638,7 +2640,7 @@ class SpamFilter_PanelSupport_Cpanel
         $filter = $params['filter'];
         $filteredDomains = array();
         foreach ($params['domains'] as $domain) {
-            if (strpos($domain['domain'], $filter) !== FALSE) {
+            if (strpos($domain['domain'], $filter) !== false) {
                 $filteredDomains[] = $domain;
             }
         }
@@ -2827,7 +2829,7 @@ class SpamFilter_PanelSupport_Cpanel
     public function listHooks()
     {
         $json = shell_exec("/usr/local/cpanel/bin/manage_hooks list --output JSON");
-        $array = json_decode($json, TRUE);
+        $array = json_decode($json, true);
         if (is_array($array)) {
             return $array;
         } else {
@@ -2849,7 +2851,7 @@ class SpamFilter_PanelSupport_Cpanel
     {
         if (!empty($hooks[$category][$event])) {
             foreach ($hooks[$category][$event] as $record) {
-                if (strpos($record['hook'], $file) !== FALSE && $record['stage'] == $stage) {
+                if (strpos($record['hook'], $file) !== false && $record['stage'] == $stage) {
                     return true;
                 }
             }
