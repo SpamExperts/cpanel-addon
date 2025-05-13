@@ -1,3 +1,4 @@
 .idea/
+.nvim/
 tests/_output/failed
 sftp-config.json
