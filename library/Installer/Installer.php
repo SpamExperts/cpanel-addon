@@ -2,7 +2,7 @@
 
 class Installer_Installer
 {
-    const API_TOKEN_ID = 'prospamfilter';
+    public const API_TOKEN_ID = 'prospamfilter';
 
     /**
      * @var Filesystem_AbstractFilesystem
@@ -115,14 +115,21 @@ class Installer_Installer
         $this->removeInstallFileAndDisplaySuccessMessage();
     }
 
-    private function setUpApiTokens() {
+    private function setUpApiTokens()
+    {
         $accessTokenFile = "/root/.accesstoken";
         if (!file_exists($accessTokenFile) || !(trim(file_get_contents($accessTokenFile)))) {
             $this->createApiAuthToken($accessTokenFile);
         } else {
-            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_list --output=json");
-            $tokensInfo = json_decode($jsonOutput, true);
-            if (empty($tokensInfo['data']['tokens'][self::API_TOKEN_ID]['acls']['all'])) {
+            // check that the existing access token is actually valid and has its required acls
+            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_get_details --output=json token=$(cat $accessTokenFile)");
+            $tokenDetails = json_decode($jsonOutput, true);
+            $tokenOK = isset($tokenDetails['data'])
+              && isset($tokenDetails['data']['acls'], $tokenDetails['data']['name'])
+              && is_array($tokenDetails['data']['acls'])
+              && in_array('all', $tokenDetails['data']['acls'], true)
+              && $tokenDetails['data']['name'] === self::API_TOKEN_ID;
+            if (!$tokenOK) {
                 shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=" . self::API_TOKEN_ID);
                 $this->createApiAuthToken($accessTokenFile);
             }
@@ -247,7 +254,8 @@ class Installer_Installer
         $file_content[] = 'echo "You\'ll be redirected in about 5 secs. If not, click <a href=\\"/cgi/addon_prospamfilter.cgi\\">here</a>.";' . "\n";
         $file_content[] = "?>";
         $bw_status      = file_put_contents(
-            "/usr/local/cpanel/whostmgr/docroot/cgi/addon_prospamfilter2.php", $file_content
+            "/usr/local/cpanel/whostmgr/docroot/cgi/addon_prospamfilter2.php",
+            $file_content
         );
         $this->logger->debug("[Install] Creating backwards compatibility file resulted in code: {$bw_status}");
 
@@ -268,7 +276,7 @@ class Installer_Installer
         $this->output->info("Going to migrate API user...");
 
         $config = Zend_Registry::get('general_config');
-        $api    = new SpamFilter_ResellerAPI;
+        $api    = new SpamFilter_ResellerAPI();
         if ($api) {
             if (!isset($config)) {
                 $this->output->error("Cannot migrate API user: Missing configuration");
@@ -326,7 +334,7 @@ class Installer_Installer
     {
         // Before cleanup we must check there is no an old cpanelplugin file
         if (file_exists("/usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin")) {
-            if (strstr(file_get_contents('/usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin'), 'name:prospamfilter3') === FALSE) {
+            if (strstr(file_get_contents('/usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin'), 'name:prospamfilter3') === false) {
                 return;
             }
 
@@ -386,7 +394,8 @@ class Installer_Installer
         chmod($this->paths->config . "/settings.conf", 0660);
     }
 
-    private function getCpanelVersion(){
+    private function getCpanelVersion()
+    {
         $output = shell_exec("/usr/local/cpanel/cpanel -V");
         $x = explode(" ", $output);
 
@@ -512,12 +521,14 @@ class Installer_Installer
         // Symlink cPanel icons to CGI dir.
         $this->output->info("Symlinking cPanel addon icons to webdir");
         $ret_val = $this->filesystem->symlink(
-            "/usr/local/prospamfilter/public/images", "/usr/local/prospamfilter/frontend/templatetoolkit/psf"
+            "/usr/local/prospamfilter/public/images",
+            "/usr/local/prospamfilter/frontend/templatetoolkit/psf"
         );
         $this->logger->info("[Install] Symlinking cPanel addon icons to webdir templatetoolkit completed with {$ret_val}");
         $this->output->info("Symlinking cPanel addon icons to webdir");
         $ret_val = $this->filesystem->symlink(
-            "/usr/local/prospamfilter/public/images", "/usr/local/prospamfilter/frontend/cpaneltags/psf"
+            "/usr/local/prospamfilter/public/images",
+            "/usr/local/prospamfilter/frontend/cpaneltags/psf"
         );
         $this->logger->info("[Install] Symlinking cPanel addon icons to webdir cpaneltags completed with {$ret_val}");
 
@@ -690,7 +701,7 @@ class Installer_Installer
 
         // Make new destination folder
         $this->output->info("Creating new folder (" . $this->paths->destination . ")..");
-        if(!file_exists($this->paths->destination)){
+        if (!file_exists($this->paths->destination)) {
             if (!mkdir($this->paths->destination, 0777, true)) {
                 $this->output->error("Unable to create destination folder.");
                 exit(1);
@@ -837,8 +848,8 @@ class Installer_Installer
             ),
         );
 
-        foreach($permissions as $permission => $files) {
-            foreach($files as $file) {
+        foreach ($permissions as $permission => $files) {
+            foreach ($files as $file) {
                 @chmod($this->paths->destination . DS . $file, $permission);
             }
         }
