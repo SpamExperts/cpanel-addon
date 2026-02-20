@@ -132,10 +132,10 @@ class Installer_Installer
             if (!$tokenOK) {
                 shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=" . self::API_TOKEN_ID);
                 $this->createApiAuthToken($accessTokenFile);
+            } else {
+                $this->logger->debug("Access token for WHM API already exists and has correct permissions, skipping step.");
+                $this->output->info("Access token for WHM API already exists and has correct permissions, skipping step.");
             }
-
-            $this->logger->debug("Access token for WHM API already exists and has correct permissions, skipping step.");
-            $this->output->info("Access token for WHM API already exists and has correct permissions, skipping step.");
         }
     }
 
