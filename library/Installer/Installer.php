@@ -118,17 +118,37 @@ class Installer_Installer
     private function setUpApiTokens()
     {
         $accessTokenFile = "/root/.accesstoken";
-        if (!file_exists($accessTokenFile) || !(trim(file_get_contents($accessTokenFile)))) {
+        $accessToken = '';
+        if (file_exists($accessTokenFile)) {
+            $accessToken = trim(file_get_contents($accessTokenFile));
+        }
+        if (empty($accessToken)) {
             $this->createApiAuthToken($accessTokenFile);
         } else {
             // check that the existing access token is actually valid and has its required acls
-            $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_get_details --output=json token=$(cat $accessTokenFile)");
+            // use curl instead of whmapi1 to prevent api token exposure in process lists (ps output)
+            // since the connection is to localhost, ssl verification is disabled for performance
+            $url = "https://127.0.0.1:2087/json-api/api_token_get_details?api.version=1&token=" . urlencode($accessToken);
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_CONNECTTIMEOUT => 3,
+                CURLOPT_TIMEOUT => 10,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_HTTPHEADER => [
+                    "Authorization: whm root:$accessToken"
+                ],
+            ]);
+
+            $jsonOutput = curl_exec($ch);
+            curl_close($ch);
             $tokenDetails = json_decode($jsonOutput, true);
-            $tokenOK = isset($tokenDetails['data'])
-              && isset($tokenDetails['data']['acls'], $tokenDetails['data']['name'])
-              && is_array($tokenDetails['data']['acls'])
-              && in_array('all', $tokenDetails['data']['acls'], true)
-              && $tokenDetails['data']['name'] === self::API_TOKEN_ID;
+            $data = $tokenDetails['data'] ?? [];
+            $tokenOK = isset($data['acls'], $data['name'])
+              && is_array($data['acls'])
+              && in_array('all', $data['acls'], true)
+              && $data['name'] === self::API_TOKEN_ID;
             if (!$tokenOK) {
                 shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=" . self::API_TOKEN_ID);
                 $this->createApiAuthToken($accessTokenFile);
