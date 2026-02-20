@@ -150,7 +150,6 @@ class Installer_Installer
               && in_array('all', $data['acls'], true)
               && $data['name'] === self::API_TOKEN_ID;
             if (!$tokenOK) {
-                shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=" . self::API_TOKEN_ID);
                 $this->createApiAuthToken($accessTokenFile);
             } else {
                 $this->logger->debug("Access token for WHM API already exists and has correct permissions, skipping step.");
@@ -161,6 +160,9 @@ class Installer_Installer
 
     private function createApiAuthToken($accessTokenFile)
     {
+        // revoke any existing token with the same name before creating a new one
+        // this prevents the "A conflicting API token... already exists" error from whmapi1
+        shell_exec("/usr/sbin/whmapi1 api_token_revoke token_name=" . self::API_TOKEN_ID);
         $jsonOutput = shell_exec("/usr/sbin/whmapi1 api_token_create token_name=" . self::API_TOKEN_ID . " acl-1=all --output=json");
         $output = json_decode($jsonOutput, true);
 
