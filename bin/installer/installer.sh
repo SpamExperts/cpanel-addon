@@ -144,7 +144,7 @@ fi
 random=`cat /dev/urandom | tr -dc A-Za-z0-9 | head -c5 | md5sum | awk '{print $1}'`
 
 # set base path for the url that checks the current version
-basepath="http://download.cdn.seinternal.com/integration"
+basepath="https://download.cdn.seinternal.com/integration"
 
 # check if it's restricted to the 'frozen' tier or not
 if [ "$frozen" == true ] || [ "frozen" == "$1" ]; then
