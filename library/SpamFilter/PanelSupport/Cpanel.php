@@ -2076,6 +2076,10 @@ class SpamFilter_PanelSupport_Cpanel
         $this->_logger->info("[Cpanel] Generating cpanelplugin");
         $pluginfile = "/usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin";
 
+        // Newer cPanel versions no longer ship register_cpanelplugin (x3-era plugin system).
+        $registerBin = '/usr/local/cpanel/bin/register_cpanelplugin';
+        $hasRegisterBin = is_executable($registerBin);
+
         $branding = new SpamFilter_Brand();
         if (empty($brandname)) {
             // No name provided, generate it.
@@ -2095,19 +2099,6 @@ class SpamFilter_PanelSupport_Cpanel
                 $this->_logger->info("[Cpanel] Using configured/default icon");
                 $icon_content = $branding->getBrandIcon();
             }
-
-            $file_content = "#cpanel plugin file 2.0 (for use with /usr/local/cpanel/bin/register_cpanelplugin)\n";
-            $file_content .= "version: 2.0\n";
-            $file_content .= "name:prospamfilter\n";
-            $file_content .= "description:{$brandname}\n";
-            $file_content .= "featuremanager:1\n";
-            $file_content .= "url:prospamfilter/index.html\n";
-            $file_content .= "acontent:\n";
-            $file_content .= "onclick:\n";
-            $file_content .= "if:\n";
-            $file_content .= "itemorder:999\n";
-            $file_content .= "itemdesc:{$brandname}\n";
-            $file_content .= "group:mail\n";
 
             // paper_lantern config update
             $paper_brand = array(
@@ -2130,12 +2121,28 @@ class SpamFilter_PanelSupport_Cpanel
                 );
             }
 
-            $icon_content = chunk_split($icon_content, 76, "\n");
-            $file_content .= "image:{$icon_content}";
+            if ($hasRegisterBin) {
+                $file_content = "#cpanel plugin file 2.0 (for use with {$registerBin})\n";
+                $file_content .= "version: 2.0\n";
+                $file_content .= "name:prospamfilter\n";
+                $file_content .= "description:{$brandname}\n";
+                $file_content .= "featuremanager:1\n";
+                $file_content .= "url:prospamfilter/index.html\n";
+                $file_content .= "acontent:\n";
+                $file_content .= "onclick:\n";
+                $file_content .= "if:\n";
+                $file_content .= "itemorder:999\n";
+                $file_content .= "itemdesc:{$brandname}\n";
+                $file_content .= "group:mail\n";
+                $file_content .= "image:" . chunk_split($icon_content, 76, "\n");
 
-            // Write file content
-            $this->_logger->debug("[Cpanel] Writing cpanelplugin content to plugin file.");
-            $written = file_put_contents($pluginfile, $file_content);
+                // Write file content
+                $this->_logger->debug("[Cpanel] Writing cpanelplugin content to plugin file.");
+                $written = file_put_contents($pluginfile, $file_content);
+            } else {
+                $this->_logger->info("[Cpanel] {$registerBin} not found, skipping legacy cpanelplugin file.");
+                $written = true;
+            }
 
             $this->_logger->debug("[Cpanel] Writing paper_lantern new branding config.");
 
@@ -2176,14 +2183,17 @@ class SpamFilter_PanelSupport_Cpanel
 
                 $this->_logger->debug("[Cpanel] Re-registering plugin for other themes & generating sprites.");
 
-                // Creating dynamicui directory
-                // @see https://trac.spamexperts.com/ticket/22354
-                if (is_dir('/usr/local/cpanel/base/frontend/x3')
-                    && !is_dir('/usr/local/cpanel/base/frontend/x3/dynamicui')
-                ) {
-                    mkdir('/usr/local/cpanel/base/frontend/x3/dynamicui');
+                $status = '';
+                if ($hasRegisterBin) {
+                    // Creating dynamicui directory
+                    // @see https://trac.spamexperts.com/ticket/22354
+                    if (is_dir('/usr/local/cpanel/base/frontend/x3')
+                        && !is_dir('/usr/local/cpanel/base/frontend/x3/dynamicui')
+                    ) {
+                        mkdir('/usr/local/cpanel/base/frontend/x3/dynamicui');
+                    }
+                    $status = shell_exec("{$registerBin} {$pluginfile}");
                 }
-                $status = shell_exec("/usr/local/cpanel/bin/register_cpanelplugin {$pluginfile}");
 
                 //@see https://trac.spamexperts.com/ticket/17098
                 $this->_logger->debug("[Cpanel] Setting up brand name for the side-menu");
@@ -2196,7 +2206,7 @@ class SpamFilter_PanelSupport_Cpanel
                     $this->_logger->err("[Cpanel] Could not set brand name to sidemenu. {$cgi} doesn't exist");
                 }
 
-                if (strstr($status, 'Register Complete')) {
+                if (!$hasRegisterBin || strstr($status, 'Register Complete')) {
                     $this->_logger->info("[Cpanel] Regenerating cpanelplugin has been completed.");
 
                     return true;
