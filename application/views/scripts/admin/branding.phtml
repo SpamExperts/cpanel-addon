@@ -31,10 +31,5 @@ if( $this->hasWhitelabel == False )
 $(document).ready(
     function() {
         $(':input').popover({ offset: 15} );
-        <?php if(file_exists('psf/brandicon.png')) { ?>
-            if ($.browser.msie) {
-                $('#some_icon').attr({src: "psf/brandicon.png?"+<?php echo filemtime('psf/brandicon.png'); ?>});
-            }
-        <?php } ?>
 });
 </script>
