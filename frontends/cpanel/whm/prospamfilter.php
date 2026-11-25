@@ -37,3 +37,4 @@
 	exit; // Do not proceed, else we see the output.
 ?>
 #WHMADDON:prospamfilter:Professional Spam Filter
+# WHM reads the line after #WHMADDON for optional ACLs, so keep this line here

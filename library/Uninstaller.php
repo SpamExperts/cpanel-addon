@@ -181,7 +181,9 @@ class Uninstaller
         @unlink("/usr/local/cpanel/whostmgr/docroot/themes/x/icons/prospamfilter.gif");
 
         // Unregister cPanel addon (makes icon sprites)
-        system("/usr/local/cpanel/bin/unregister_cpanelplugin /usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin");
+        if (is_executable('/usr/local/cpanel/bin/unregister_cpanelplugin')) {
+            shell_exec("/usr/local/cpanel/bin/unregister_cpanelplugin /usr/local/prospamfilter/frontend/cpanel/cpanel11/prospamfilter.cpanelplugin");
+        }
 
         // Removes DynamicUI for paper_lantern and jupiter themes
         @unlink("/usr/local/cpanel/base/frontend/paper_lantern/dynamicui/dynamicui_psf.conf");
